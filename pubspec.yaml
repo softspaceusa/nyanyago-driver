@@ -1,0 +1,59 @@
+name: nanny_driver
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.1.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  google_maps_flutter: ^2.5.0
+  
+  nanny_components:
+    path: ./nanny_components
+  
+  nanny_core:
+    path: ./nanny_core
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  flutter_native_splash: ^2.3.5
+  icons_launcher: ^2.1.5
+
+flutter:
+  assets:
+    - ./nanny_components/assets/
+    - ./nanny_components/assets/images/
+
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-Regular.ttf
+
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-Light.ttf
+          weight: 300
+          
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-Bold.ttf
+          weight: 700
+    
+    - family: Fregat
+      fonts:
+        - asset: ./nanny_components/assets/fonts/fregat/Fregat_regular.otf
+
+        - asset: ./nanny_components/assets/fonts/fregat/Fregat_italic.otf
+          style: italic
+
+        - asset: ./nanny_components/assets/fonts/fregat/Fregat_bold.otf
+          weight: 700
+
+        - asset: ./nanny_components/assets/fonts/fregat/Fregat_bold_italic.otf
+          weight: 700
+          style: italic
+    
+
+  uses-material-design: true

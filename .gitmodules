@@ -1,0 +1,6 @@
+[submodule "nanny_core"]
+	path = nanny_core
+	url = https://github.com/LeeKoldun/nanny_core.git
+[submodule "nanny_components"]
+	path = nanny_components
+	url = https://github.com/LeeKoldun/nanny_components.git
