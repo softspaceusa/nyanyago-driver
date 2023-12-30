@@ -13,8 +13,21 @@ class RegVM extends ViewModelBase {
 
   void navigateToLogin() => navigateToView(
     LoginView(
-      imgPath: "imgPath", 
+      imgPath: "packages/nanny_components/assets/images/Saly-10.png", 
       paths: NannyConsts.availablePaths
     ),
+  );
+
+  bool inited = false;
+  final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+
+  Route<dynamic>? onRouteGen(RouteSettings settings) {
+    if(!inited) return MaterialPageRoute(builder: (context) => const RegStepOneView());
+
+    return null;
+  }
+
+  void setupNavigator() => navKey.currentState?.push(
+    MaterialPageRoute(builder: (context) => const RegStepOneView())
   );
 }

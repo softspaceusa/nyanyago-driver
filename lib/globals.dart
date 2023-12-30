@@ -1,7 +1,8 @@
 import 'package:nanny_core/nanny_core.dart';
 
 class NannyDriverGlobals {
-  DriverRegData driverRegForm = DriverRegData();
+  static DriverRegData driverRegForm = DriverRegData();
+  void resetRegForm() => driverRegForm = DriverRegData();
 }
 
 class DriverRegData {
@@ -10,6 +11,6 @@ class DriverRegData {
     userData = UserInfo.createDriverRegForm();
   }
 
-  late final Driver driverData;
-  late final UserInfo userData;
+  late Driver driverData;
+  late UserInfo userData;
 }
