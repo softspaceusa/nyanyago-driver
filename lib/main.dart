@@ -2,13 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:nanny_driver/views/home.dart';
-// import 'package:nanny_driver/views/reg.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
+import 'package:nanny_core/nanny_local_auth.dart';
+import 'package:nanny_driver/views/home.dart';
+import 'package:nanny_driver/views/reg.dart';
 
-void main() async { // TODO: Welcome, home and reg screen views needed
+import 'firebase_options.dart';
+import 'test.dart';
+
+void main() async { // TODO: home and reg screen views needed
   WidgetsFlutterBinding.ensureInitialized();
+  
+  LocationService.initBackgroundLocation();
 
   HttpOverrides.global = MyHttpOverrides();
   
@@ -20,7 +26,10 @@ void main() async { // TODO: Welcome, home and reg screen views needed
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   Intl.defaultLocale = "ru_RU";
   initializeDateFormatting(Intl.defaultLocale);
@@ -29,11 +38,16 @@ void main() async { // TODO: Welcome, home and reg screen views needed
   DioRequest.initDebugLogs();
 
   NannyConsts.setLoginPaths([
-    LoginPath(userType: UserType.client, path: const HomeView()),
-    LoginPath(userType: UserType.admin, path: const AdminHomeView(regView: RegView())),
+    LoginPath(userType: UserType.driver, path: const HomeView()),
+    LoginPath(userType: UserType.admin, path: const AdminHomeView(regView: RegView()) ),
   ]);
 
+  await NannyConsts.initMarkerIcons();
+
+  NannyLocalAuth.init();
+
   await NannyStorage.init();
+  FirebaseMessagingHandler.init();
 
   Logger().d("Storage data:\nLogin data - ${(await NannyStorage.getLoginData())?.toJson()}");
   
@@ -62,8 +76,8 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: NannyTheme.appTheme,
-      home: firstScreen,
-      // home: const TestView(),
+      // home: firstScreen,
+      home: const TestView(),
     );
   }
 }

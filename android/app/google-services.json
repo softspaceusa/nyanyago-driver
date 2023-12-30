@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "477442562518",
+    "project_id": "autonanny-41178",
+    "storage_bucket": "autonanny-41178.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477442562518:android:d5373a4c58a075e7186c77",
+        "android_client_info": {
+          "package_name": "com.nyanyago.nanny_client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqtFDxSZJ3Q46RIcFsONMjF5BXKjMzcA4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477442562518:android:881cd5e96de5d113186c77",
+        "android_client_info": {
+          "package_name": "com.nyanyago.nanny_driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqtFDxSZJ3Q46RIcFsONMjF5BXKjMzcA4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
