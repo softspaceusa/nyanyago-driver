@@ -42,9 +42,12 @@ class _RegViewState extends State<RegView> {
               child: NannyBottomSheet(
                 child: Padding(
                   padding: const EdgeInsets.all(10),
-                  child: Navigator(
-                    key: vm.navKey,
-                    onGenerateRoute: vm.onRouteGen,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Navigator(
+                      key: vm.navKey,
+                      onGenerateRoute: vm.onRouteGen,
+                    ),
                   ),
                 ),
               ),

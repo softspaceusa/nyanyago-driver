@@ -13,4 +13,5 @@ class DriverRegData {
 
   late Driver driverData;
   late UserInfo userData;
+  String password = "";
 }
