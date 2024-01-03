@@ -13,15 +13,25 @@ class RegPageBaseView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: isFirstPage ? null 
-        : const NannyAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-        child: Column(
-          children: children,
-        ),
-      ),
+    return AdaptBuilder(
+      builder: (context, size) {
+        return Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: isFirstPage ? null 
+            : const NannyAppBar(),
+          body: SingleChildScrollView(
+            child: SizedBox(
+              height: size.height * .7,
+              child: Padding(
+                padding: EdgeInsets.only(left: 10, top: isFirstPage ? 20 : 80, right: 10, bottom: 30),
+                child: Column(
+                  children: children,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 }
