@@ -37,6 +37,7 @@ class _RegStepFourViewState extends State<RegStepFourView> {
         NannyTextForm(
           labelText: "Возраст*",
           hintText: "Введите возраст",
+          keyType: TextInputType.number,
           formatters: [FilteringTextInputFormatter.digitsOnly],
           onChanged: (text) => vm.age = text,
         ),
@@ -44,7 +45,11 @@ class _RegStepFourViewState extends State<RegStepFourView> {
         fileButton(
           label: "Фото*",
           description: "Загрузите фотографию",
-          icon: Icons.image_outlined
+          icon: Icons.image_outlined,
+          onTap: vm.getPicture,
+          success: vm.photoLoaded ? FittedBox(
+            child: NetImage(url: vm.photoPath, fitToShortest: false)
+          ) : null,
         ),
         const SizedBox(height: 20),
         Expanded(
@@ -52,7 +57,9 @@ class _RegStepFourViewState extends State<RegStepFourView> {
           child: fileButton(
             label: "Видео",
             description: "Запишите видео-приветствие на камеру, видео может длиться 10-15 секунд",
-            icon: Icons.camera_alt_outlined
+            icon: Icons.camera_alt_outlined,
+            onTap: vm.getVideo,
+            success: vm.videoLoaded ? const Icon(Icons.done, size: 50, color: NannyTheme.green) : null,
           ),
         ),
         const Spacer(),
@@ -69,10 +76,11 @@ class _RegStepFourViewState extends State<RegStepFourView> {
     required String label,
     required String description,
     required IconData icon,
+    required VoidCallback onTap,
     Widget? success,
   }) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: onTap,
       style: NannyButtonStyles.whiteButton,
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -87,11 +95,11 @@ class _RegStepFourViewState extends State<RegStepFourView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(label),
-                  success ?? Text(description, style: const TextStyle(fontWeight: FontWeight.normal)),
+                  Text(description, style: const TextStyle(fontWeight: FontWeight.normal)),
                 ],
               ),
             ),
-            Icon(icon, size: 50),
+            success ?? Icon(icon, size: 50),
         
           ],
         ),

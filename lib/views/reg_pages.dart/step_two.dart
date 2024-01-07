@@ -72,7 +72,7 @@ class _RegStepTwoViewState extends State<RegStepTwoView> {
           key: vm.driveLicenseState,
           child: NannyTextForm(
             labelText: "ВУ (водительское удостоверение)*",
-            hintText: "## ## ######",
+            hintText: "00 00 000000",
             keyType: TextInputType.number,
             formatters: [vm.driveLicenseMask],
             validator: (text) {
