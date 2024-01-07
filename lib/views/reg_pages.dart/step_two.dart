@@ -86,12 +86,14 @@ class _RegStepTwoViewState extends State<RegStepTwoView> {
         Form(
           key: vm.receiveDateState,
           child: NannyTextForm(
+            controller: vm.receiveDateController,
             labelText: "Дата выдачи*",
             hintText: "00.00.0000",
             keyType: TextInputType.number,
             formatters: [vm.receiveDateMask],
             validator: (text) {
-              if(vm.receiveDateMask.getUnmaskedText().length < 8) return "Введите дату выдачи!";
+              if(vm.receiveDateMask.text.replaceAll('.', '').length < 8) return "Введите дату выдачи!";
+              if(!vm.validateDate()) return "Введите корректную дату!";
 
               return null;
             },

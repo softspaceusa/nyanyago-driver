@@ -83,7 +83,7 @@ class MainApp extends StatelessWidget {
 }
 
 // На случай, если Пятисотый забыл сертификаты обновить
-
+  
 class MyHttpOverrides extends HttpOverrides{
   @override
   HttpClient createHttpClient(SecurityContext? context){

@@ -4,11 +4,13 @@ import 'package:nanny_components/nanny_components.dart';
 class RegPageBaseView extends StatelessWidget {
   final List<Widget> children;
   final bool isFirstPage;
+  final double? height;
   
   const RegPageBaseView({
     super.key,
     required this.children,
     this.isFirstPage = false,
+    this.height,
   });
 
   @override
@@ -21,7 +23,7 @@ class RegPageBaseView extends StatelessWidget {
             : const NannyAppBar(),
           body: SingleChildScrollView(
             child: SizedBox(
-              height: size.height * .7,
+              height: size.height * (height ?? .75),
               child: Padding(
                 padding: EdgeInsets.only(left: 10, top: isFirstPage ? 20 : 80, right: 10, bottom: 30),
                 child: Column(

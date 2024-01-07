@@ -31,12 +31,8 @@ class StepTwoVM extends ViewModelBase {
     }
   );
   GlobalKey<FormState> receiveDateState = GlobalKey();
-  MaskTextInputFormatter receiveDateMask = MaskTextInputFormatter(
-    mask: "##.##.####",
-    filter: {
-      '#': RegExp(r"[0-9]")
-    }
-  );
+  TextEditingController receiveDateController= TextEditingController();
+  NannyDateFormatter receiveDateMask = NannyDateFormatter(checkYear: true);
 
   void searchCountry() async {
     var country = await showSearch(
@@ -64,7 +60,7 @@ class StepTwoVM extends ViewModelBase {
       driverLicense: DriverLicense(
         license: driveLicenseMask.getUnmaskedText(),
         receiveCountry: country.id,
-        receiveDate: receiveDateMask.getMaskedText(),
+        receiveDate: receiveDateMask.text,
       ),
     ); 
 
@@ -74,5 +70,17 @@ class StepTwoVM extends ViewModelBase {
     );
 
     slideNavigateToView(const RegStepThreeView());
+  }
+
+  bool validateDate() {
+    var parts = receiveDateMask.text.split('.');
+    String dateToParse = "${parts[2]}-${parts[1]}-${parts[0]}";
+
+    DateTime? parsedDate = DateTime.tryParse(dateToParse);
+
+    if(parsedDate == null) return false;
+    if(parsedDate.isAfter(DateTime.now())) return false;
+
+    return true;
   }
 }
