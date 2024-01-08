@@ -26,20 +26,36 @@ class _RegStepFourViewState extends State<RegStepFourView> {
       height: .9,
       children: [
 
-        NannyTextForm(
-          labelText: "О себе*",
-          hintText: "Напишите несколько слов о себе",
-          maxLines: 5,
-          onChanged: (text) => vm.aboutMe = text,
-          maxLength: 500,
+        Form(
+          key: vm.aboutMeState,
+          child: NannyTextForm(
+            labelText: "О себе*",
+            hintText: "Напишите несколько слов о себе",
+            maxLines: 5,
+            onChanged: (text) => vm.aboutMe = text,
+            maxLength: 500,
+            validator: (text) {
+              if(text!.isEmpty) return "Напишите о себе!";
+              
+              return null;
+            },
+          ),
         ),
         const SizedBox(height: 10),
-        NannyTextForm(
-          labelText: "Возраст*",
-          hintText: "Введите возраст",
-          keyType: TextInputType.number,
-          formatters: [FilteringTextInputFormatter.digitsOnly],
-          onChanged: (text) => vm.age = text,
+        Form(
+          key: vm.ageState,
+          child: NannyTextForm(
+            labelText: "Возраст*",
+            hintText: "Введите возраст",
+            keyType: TextInputType.number,
+            formatters: [FilteringTextInputFormatter.digitsOnly],
+            onChanged: (text) => vm.age = text,
+            validator: (text) {
+              if(text!.isEmpty) return "Введите возраст!";
+              
+              return null;
+            },
+          ),
         ),
         const SizedBox(height: 20),
         fileButton(

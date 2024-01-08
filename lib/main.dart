@@ -34,7 +34,7 @@ void main() async { // TODO: home and reg screen views needed
   Intl.defaultLocale = "ru_RU";
   initializeDateFormatting(Intl.defaultLocale);
   
-  DioRequest.init();
+  DioRequest.init(useOldUrl: true);
   DioRequest.initDebugLogs();
 
   NannyConsts.setLoginPaths([
