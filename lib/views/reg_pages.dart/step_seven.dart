@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/widgets/nanny_text_forms.dart';
-import 'package:nanny_driver/view_models/reg_pages/step_six_vm.dart';
+import 'package:nanny_driver/view_models/reg_pages/step_seven_vm.dart';
 import 'package:nanny_driver/views/reg_pages.dart/reg_page_template.dart';
 
-class RegStepSixView extends StatefulWidget {
-  const RegStepSixView({super.key});
+class RegStepSevenView extends StatefulWidget {
+  const RegStepSevenView({super.key});
 
   @override
-  State<RegStepSixView> createState() => _RegStepSixViewState();
+  State<RegStepSevenView> createState() => _RegStepSevenViewState();
 }
 
-class _RegStepSixViewState extends State<RegStepSixView> {
-  late RegStepSixVM vm;
+class _RegStepSevenViewState extends State<RegStepSevenView> {
+  late RegStepSevenVM vm;
 
   @override
   void initState() {
     super.initState();
-    vm = RegStepSixVM(context: context, update: setState);
+    vm = RegStepSevenVM(context: context, update: setState);
   }
   
   @override
@@ -25,15 +25,15 @@ class _RegStepSixViewState extends State<RegStepSixView> {
       height: .8,
       children: [
 
-        Text("Ребенок мешает вам во время движения (громко разговаривает и отвлекает вас от управления автомобилем). ", style: Theme.of(context).textTheme.labelLarge),
+        Text("Во время поездки случилась предаварийная ситуация, ребенок испугался.", style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 10),
         Form(
-          key: vm.answer3State,
+          key: vm.answer5State,
           child: NannyTextForm(
             hintText: "Ваши действия?",
             maxLines: 5,
             maxLength: 500,
-            onChanged: (text) => vm.answer3 = text,
+            onChanged: (text) => vm.answer5 = text,
             validator: (text) {
               if(text!.isEmpty) return "Введите ответ!";
               
@@ -44,16 +44,16 @@ class _RegStepSixViewState extends State<RegStepSixView> {
         const SizedBox(height: 20),
         Align(
           alignment: Alignment.centerLeft,
-          child: Text("При поездке, ребенка укачало.", style: Theme.of(context).textTheme.labelLarge)
+          child: Text("Ребенок испачкал вам салон.", style: Theme.of(context).textTheme.labelLarge)
         ),
         const SizedBox(height: 10),
         Form(
-          key: vm.answer4State,
+          key: vm.answer6State,
           child: NannyTextForm(
-            hintText: "Ваши действия?",
+            hintText: "Как вы отреагируете?",
             maxLines: 5,
             maxLength: 500,
-            onChanged: (text) => vm.answer4 = text,
+            onChanged: (text) => vm.answer6 = text,
             validator: (text) {
               if(text!.isEmpty) return "Введите ответ!";
               

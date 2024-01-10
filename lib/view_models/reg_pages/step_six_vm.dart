@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/globals.dart';
+import 'package:nanny_driver/views/reg_pages.dart/step_seven.dart';
 
 class RegStepSixVM extends ViewModelBase {
   RegStepSixVM(
@@ -28,6 +29,6 @@ class RegStepSixVM extends ViewModelBase {
       ),
     );
 
-    // slideNavigateToView(const );
+    slideNavigateToView(const RegStepSevenView());
   }
 }
