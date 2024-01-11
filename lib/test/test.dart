@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nanny_driver/views/reg.dart';
+import 'package:nanny_driver/test/map_drive.dart';
 
 class TestView extends StatefulWidget {
   const TestView({super.key});
@@ -11,6 +11,6 @@ class TestView extends StatefulWidget {
 class _TestViewState extends State<TestView> {
   @override
   Widget build(BuildContext context) {
-    return const RegView();
+    return const MapDriveView();
   }
 }

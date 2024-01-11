@@ -51,6 +51,7 @@ class StepThreeVM extends ViewModelBase {
       context: context, 
       delegate: NannySearchDelegate(
         onSearch: (query) => NannyStaticDataApi.getCarMarks(StaticData(title: query)),
+        onResponse: (response) => response.response,
       ),
     );
 
@@ -80,6 +81,7 @@ class StepThreeVM extends ViewModelBase {
             carMarkId: carMark.id < 0 ? null : carMark.id, 
           ),
         ),
+        onResponse: (response) => response.response,
       ),
     );
 
@@ -95,6 +97,7 @@ class StepThreeVM extends ViewModelBase {
       context: context, 
       delegate: NannySearchDelegate(
         onSearch: (query) => NannyStaticDataApi.getColors(StaticData(title: query)),
+        onResponse: (response) => response.response,
       ),
     );
 

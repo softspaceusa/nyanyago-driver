@@ -12,11 +12,11 @@ class RegView extends StatefulWidget {
 class _RegViewState extends State<RegView> {
   late RegVM vm = RegVM(context: context, update: setState);
 
-  @override
-  void initState() {
-    super.initState();
-    vm.setupNavigator();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   vm.setupNavigator();
+  // }
   
   @override
   Widget build(BuildContext context) {

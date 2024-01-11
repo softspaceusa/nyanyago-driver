@@ -38,7 +38,8 @@ class StepTwoVM extends ViewModelBase {
     var country = await showSearch(
       context: context, 
       delegate: NannySearchDelegate(
-        onSearch: (query) => NannyStaticDataApi.getCountries( StaticData(title: query) ), 
+        onSearch: (query) => NannyStaticDataApi.getCountries( StaticData(title: query) ),
+        onResponse: (response) => response.response,
       ),
     );
 

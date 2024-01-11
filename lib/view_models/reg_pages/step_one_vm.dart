@@ -28,6 +28,7 @@ class RegStepOneVM extends ViewModelBase {
       delegate: NannySearchDelegate(
         searchLabel: "Поиск города...",
         onSearch: (query) => NannyStaticDataApi.getCities(StaticData(title: query)),
+        onResponse: (response) => response.response,
         tileBuilder: (data, close) => ListTile(
           title: Text(data.title),
           onTap: close,

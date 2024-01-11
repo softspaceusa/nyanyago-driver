@@ -24,13 +24,13 @@ class RegStepEightVM extends ViewModelBase {
       ),
     );
 
-    // slideNavigateToView(const PhoneConfirmView(
-    //   nextScreen: RegSuccessView(), 
-    //   title: "Подтверждение номера телефона", 
-    //   text: "Введите код из СМС", 
-    //   isReg: false,
-    // )); 
+    slideNavigateToView(const PhoneConfirmView(
+      nextScreen: RegSuccessView(), 
+      title: "Подтверждение номера телефона", 
+      text: "Введите код из СМС", 
+      isReg: false,
+    )); 
 
-    slideNavigateToView(const RegSuccessView());
+    // slideNavigateToView(const RegSuccessView());
   }
 }

@@ -9,12 +9,10 @@ import 'package:nanny_driver/views/home.dart';
 import 'package:nanny_driver/views/reg.dart';
 
 import 'firebase_options.dart';
-import 'test.dart';
+import 'test/test.dart';
 
 void main() async { // TODO: home and reg screen views needed
   WidgetsFlutterBinding.ensureInitialized();
-  
-  LocationService.initBackgroundLocation();
 
   HttpOverrides.global = MyHttpOverrides();
   
@@ -36,6 +34,9 @@ void main() async { // TODO: home and reg screen views needed
   
   DioRequest.init(useOldUrl: true);
   DioRequest.initDebugLogs();
+
+  LocationService.initBackgroundLocation();
+  await LocationService.initLocInfo();
 
   NannyConsts.setLoginPaths([
     LoginPath(userType: UserType.driver, path: const HomeView()),

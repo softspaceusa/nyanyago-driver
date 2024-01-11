@@ -27,7 +27,7 @@ class RegVM extends ViewModelBase {
     return null;
   }
 
-  void setupNavigator() => navKey.currentState?.push(
-    MaterialPageRoute(builder: (context) => const RegStepOneView())
-  );
+  // void setupNavigator() => navKey.currentState?.push(
+  //   MaterialPageRoute(builder: (context) => const RegStepOneView())
+  // );
 }
