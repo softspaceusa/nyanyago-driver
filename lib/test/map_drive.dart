@@ -12,30 +12,40 @@ class MapDriveView extends StatefulWidget {
 }
 
 class _MapDriveViewState extends State<MapDriveView> {
-  final GlobalKey<NavigatorState> navKey = GlobalKey();
-
   @override
   void initState() {
     super.initState();
     init = initView();
+    NannyMapGlobals.routes.addListener( () {
+      setState(() {});
+      Logger().i("Updated map!");
+    });
   }
   
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        body: FutureLoader(
-          future: init,
-          completeView: (context, data) => MapViewer(
-            body: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: data,
+      child: AdaptBuilder(
+        builder: (context, size) {
+          return Scaffold(
+            body: FutureLoader(
+              future: init,
+              completeView: (context, data) => MapViewer(
+                body: GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: data,
+                  ),
+                  polylines: NannyMapGlobals.routes.value,
+                ), 
+                panel: Navigator(
+                  initialRoute: '/',
+                  onGenerateRoute: onRouteGen,
+                ),
               ),
-            ), 
-            panel: const AddressChooseView()
-          ),
-          errorView: (context, error) => ErrorView(errorText: error.toString()),
-        ),
+              errorView: (context, error) => ErrorView(errorText: error.toString()),
+            ),
+          );
+        }
       )
     );
   }
@@ -47,11 +57,11 @@ class _MapDriveViewState extends State<MapDriveView> {
   }
 
   bool inited = false;
-
   Route? onRouteGen(RouteSettings settings) {
-    if(!inited) {
-      inited = true;
-      return MaterialPageRoute(builder: (context) => const AddressChooseView());
+    if(settings.name == '/') {
+      return MaterialPageRoute(
+        builder: (context) => AddressChooseView(baseContext: context)
+      );
     }
     return null;
   }

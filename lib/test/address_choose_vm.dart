@@ -8,15 +8,19 @@ class AddressChooseVM extends ViewModelBase {
   AddressChooseVM({
     required super.context, 
     required super.update,
+    required this.baseContext,
   });
+
+  final BuildContext baseContext;
 
   GeocodeResult? addressA, addressB;
   TextEditingController aController = TextEditingController();
   TextEditingController bController = TextEditingController();
+  Set<Polyline> routes = NannyMapGlobals.routes.value;
 
   void searchAddress(int i) async {
     var result = await showSearch(
-      context: context, 
+      context: baseContext, 
       delegate: NannySearchDelegate(
         onSearch: (query) => GoogleMapApi.geocode(address: query),
         onResponse: (response) => response.response!.geocodeResults,
@@ -39,9 +43,23 @@ class AddressChooseVM extends ViewModelBase {
     }
   }
 
-  void setPolyline() {
+  void setPolyline() async {
     if(addressA == null || addressB == null) return;
+    var orig = addressA!.geometry!.location!;
+    var dest = addressB!.geometry!.location!;
 
+    var route = await RouteManager.calculateRoute(origin: orig, destination: dest);
+    if(route == null) return;
     
+    routes.clear();
+    routes.add(
+      route
+    );
+    NannyMapGlobals.routes.notifyListeners();
+
+    Navigator.push(
+      context, 
+      MaterialPageRoute( builder: (context) => const Center(child: Text("Success!")) )
+    );
   }
 }

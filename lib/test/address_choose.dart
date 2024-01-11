@@ -3,7 +3,12 @@ import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/test/address_choose_vm.dart';
 
 class AddressChooseView extends StatefulWidget {
-  const AddressChooseView({super.key});
+  final BuildContext baseContext;
+  
+  const AddressChooseView({
+    super.key,
+    required this.baseContext,
+  });
 
   @override
   State<AddressChooseView> createState() => _AddressChooseViewState();
@@ -15,7 +20,7 @@ class _AddressChooseViewState extends State<AddressChooseView> {
   @override
   void initState() {
     super.initState();
-    vm = AddressChooseVM(context: context, update: setState);
+    vm = AddressChooseVM(context: context, update: setState, baseContext: widget.baseContext);
   }
   
   @override
