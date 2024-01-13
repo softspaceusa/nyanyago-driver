@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_core/nanny_local_auth.dart';
+import 'package:nanny_driver/franchise/views/franchise_home.dart';
+import 'package:nanny_driver/franchise/views/partner/partner_home.dart';
 import 'package:nanny_driver/views/home.dart';
 import 'package:nanny_driver/views/reg.dart';
 
@@ -40,6 +42,12 @@ void main() async { // TODO: home and reg screen views needed
 
   NannyConsts.setLoginPaths([
     LoginPath(userType: UserType.driver, path: const HomeView()),
+    
+    LoginPath(userType: UserType.franchiseAdmin, path: const FranchiseHomeView()),
+    LoginPath(userType: UserType.manager, path: const FranchiseHomeView()),
+    LoginPath(userType: UserType.operator, path: const FranchiseHomeView()),
+    LoginPath(userType: UserType.partner, path: const PartnerHomeView()),
+    
     LoginPath(userType: UserType.admin, path: const AdminHomeView(regView: RegView()) ),
   ]);
 
@@ -76,9 +84,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: NannyGlobals.navKey,
       theme: NannyTheme.appTheme,
-      // home: firstScreen,
-      home: const TestView(),
+      home: firstScreen,
+      // home: const TestView(),
     );
   }
 }
