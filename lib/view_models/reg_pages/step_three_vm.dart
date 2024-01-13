@@ -12,7 +12,7 @@ class StepThreeVM extends ViewModelBase {
     required super.update
   });
 
-  DriverRegData regForm = NannyDriverGlobals.driverRegForm;
+  RegDriverRequest regForm = NannyDriverGlobals.driverRegForm;
   
   TextEditingController markController = TextEditingController();
   TextEditingController modelController = TextEditingController();

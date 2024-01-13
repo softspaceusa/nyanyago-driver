@@ -13,7 +13,7 @@ class RegStepFourVM extends ViewModelBase {
     DioRequest.updateToken(NannyConsts.regFileToken);
   }
 
-  DriverRegData regForm = NannyDriverGlobals.driverRegForm;
+  RegDriverRequest regForm = NannyDriverGlobals.driverRegForm;
 
   bool get photoLoaded => photoPath.isNotEmpty;
   bool get videoLoaded => videoPath != null && videoPath!.isNotEmpty;

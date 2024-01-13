@@ -10,7 +10,7 @@ class RegStepFiveVM extends ViewModelBase {
     required super.update,
   });
 
-  DriverRegData regForm = NannyDriverGlobals.driverRegForm;
+  RegDriverRequest regForm = NannyDriverGlobals.driverRegForm;
 
   GlobalKey<FormState> answer1State = GlobalKey();
   GlobalKey<FormState> answer2State = GlobalKey();

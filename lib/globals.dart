@@ -1,17 +1,6 @@
-import 'package:nanny_core/nanny_core.dart';
+import 'package:nanny_core/api/api_models/reg_driver_request.dart';
 
 class NannyDriverGlobals {
-  static DriverRegData driverRegForm = DriverRegData();
-  void resetRegForm() => driverRegForm = DriverRegData();
-}
-
-class DriverRegData {
-  DriverRegData() {
-    driverData = Driver.createRegForm();
-    userData = UserInfo.createDriverRegForm();
-  }
-
-  late Driver driverData;
-  late UserInfo userData;
-  String password = "";
+  static RegDriverRequest driverRegForm = RegDriverRequest();
+  void resetRegForm() => driverRegForm = RegDriverRequest();
 }

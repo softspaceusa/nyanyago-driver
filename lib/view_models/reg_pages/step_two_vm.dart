@@ -11,7 +11,7 @@ class StepTwoVM extends ViewModelBase {
     required super.update,
   });
 
-  DriverRegData regForm = NannyDriverGlobals.driverRegForm;
+  RegDriverRequest regForm = NannyDriverGlobals.driverRegForm;
 
   GlobalKey<FormState> countryState = GlobalKey();
   TextEditingController countryTextController = TextEditingController();

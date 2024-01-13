@@ -45,7 +45,8 @@ class _RegViewState extends State<RegView> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Navigator(
-                      key: vm.navKey,
+                      // key: vm.navKey,
+                      initialRoute: '/',
                       onGenerateRoute: vm.onRouteGen,
                     ),
                   ),

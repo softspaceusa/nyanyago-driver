@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
+import 'package:nanny_core/api/api_models/reg_driver_request.dart';
 import 'package:nanny_driver/globals.dart';
 import 'package:nanny_driver/views/reg_pages.dart/step_seven.dart';
 
@@ -9,7 +10,7 @@ class RegStepSixVM extends ViewModelBase {
     required super.update,
   });
 
-  DriverRegData regForm = NannyDriverGlobals.driverRegForm;
+  RegDriverRequest regForm = NannyDriverGlobals.driverRegForm;
 
   GlobalKey<FormState> answer3State = GlobalKey();
   GlobalKey<FormState> answer4State = GlobalKey();

@@ -11,7 +11,7 @@ class RegStepOneVM extends ViewModelBase {
     required super.update,
   });
 
-  DriverRegData regForm = NannyDriverGlobals.driverRegForm;
+  RegDriverRequest regForm = NannyDriverGlobals.driverRegForm;
 
   GlobalKey<FormState> passState = GlobalKey<FormState>();
   GlobalKey<FormState> cityState = GlobalKey<FormState>();
@@ -50,7 +50,7 @@ class RegStepOneVM extends ViewModelBase {
       refCode: refCode,
     );
 
-    regForm.password = password;
+    regForm.password = Md5Converter.convert(password);
 
     slideNavigateToView( const RegStepTwoView() );
   }

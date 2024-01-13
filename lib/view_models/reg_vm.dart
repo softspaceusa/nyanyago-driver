@@ -9,8 +9,6 @@ class RegVM extends ViewModelBase {
     required super.update,
   });
 
-  Widget currentRegPage = const RegStepOneView();
-
   void navigateToLogin() => navigateToView(
     LoginView(
       imgPath: "packages/nanny_components/assets/images/Saly-10.png", 
@@ -18,11 +16,11 @@ class RegVM extends ViewModelBase {
     ),
   );
 
-  bool inited = false;
-  final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+  // bool inited = false;
+  // final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
   Route<dynamic>? onRouteGen(RouteSettings settings) {
-    if(!inited) return MaterialPageRoute(builder: (context) => const RegStepOneView());
+    if(settings.name == '/') return MaterialPageRoute(builder: (context) => const RegStepOneView());
 
     return null;
   }
