@@ -1,6 +1,6 @@
-import 'package:nanny_core/api/api_models/reg_driver_request.dart';
+import 'package:nanny_core/api/api_models/driver_user_request.dart';
 
 class NannyDriverGlobals {
-  static RegDriverRequest driverRegForm = RegDriverRequest();
-  void resetRegForm() => driverRegForm = RegDriverRequest();
+  static DriverUserData driverRegForm = DriverUserData();
+  void resetRegForm() => driverRegForm = DriverUserData();
 }

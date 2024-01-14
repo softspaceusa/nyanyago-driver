@@ -10,7 +10,7 @@ class DriversListView extends StatefulWidget {
   State<DriversListView> createState() => _DriversListViewState();
 }
 
-class _DriversListViewState extends State<DriversListView> {
+class _DriversListViewState extends State<DriversListView> with AutomaticKeepAliveClientMixin {
   late DriverListVM vm;
 
   @override
@@ -21,6 +21,8 @@ class _DriversListViewState extends State<DriversListView> {
   
   @override
   Widget build(BuildContext context) {
+    if(wantKeepAlive) super.build(context);
+    
     return RequestLoader(
       request: Future<ApiResponse>(() => ApiResponse()), 
       completeView: (context, data) => Column(
@@ -34,4 +36,7 @@ class _DriversListViewState extends State<DriversListView> {
       errorView: (context, error) => ErrorView(errorText: error.toString()),
     );
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }

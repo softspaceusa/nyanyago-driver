@@ -24,6 +24,7 @@ class _DriverPaymentsViewState extends State<DriverPaymentsView> {
     return SafeArea(
       child: Scaffold(
         appBar: const NannyAppBar(
+          isTransparent: false,
           title: "Выплаты водителям",
         ),
         body: RequestLoader(

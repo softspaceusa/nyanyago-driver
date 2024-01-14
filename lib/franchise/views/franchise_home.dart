@@ -4,6 +4,7 @@ import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/franchise/view_models/franchise_home_vm.dart';
 import 'package:nanny_driver/franchise/views/driver_management/driver_management.dart';
 import 'package:nanny_driver/franchise/views/driver_payments.dart';
+import 'package:nanny_driver/franchise/views/settings/franchise_settings.dart';
 import 'package:nanny_driver/franchise/views/stats.dart';
 import 'package:nanny_driver/views/reg.dart';
 
@@ -41,7 +42,7 @@ class _FranchiseHomeViewState extends State<FranchiseHomeView> {
     PanelButtonData(
       label: "Панель управления настройками",
       imgPath: "clipboard.png",
-      nextView: const Placeholder()
+      nextView: const FranchiseSettingsView()
     ),
   ];
 

@@ -23,6 +23,7 @@ class _StatsViewState extends State<StatsView> {
     return SafeArea(
       child: Scaffold(
         appBar: const NannyAppBar(
+          isTransparent: false,
           title: "Статистика и отчеты",
         ),
         body: ListView(
