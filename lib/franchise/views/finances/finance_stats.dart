@@ -39,7 +39,12 @@ class _FinanceStatsViewState extends State<FinanceStatsView> {
           ],
         ),
         Card(
-          child: Text(""),
+          child: Column(
+            children: [
+              Text(vm.moneySpended),
+              const Text("")
+            ],
+          ),
         )
         
       ],

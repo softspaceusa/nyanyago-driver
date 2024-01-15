@@ -29,15 +29,16 @@ class _MyContractsViewState extends State<MyContractsView> {
         body: Column(
           children: [
             
-            SizedBox(
-              height: 100,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 100),
               child: Image.asset(
                 'packages/nanny_components/assets/images/travel.png',
-                fit: BoxFit.cover,
-              )
+              ),
             ),
-            ListView(
-              shrinkWrap: true,
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
+              ),
             )
 
           ],

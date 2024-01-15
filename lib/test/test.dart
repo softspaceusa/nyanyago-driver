@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nanny_driver/views/pages/my_contracts.dart';
+import 'package:nanny_driver/test/map_drive.dart';
 
 class TestView extends StatefulWidget {
   const TestView({super.key});
@@ -11,6 +11,10 @@ class TestView extends StatefulWidget {
 class _TestViewState extends State<TestView> {
   @override
   Widget build(BuildContext context) {
-    return const MyContractsView();
+    // return const MyContractsView();
+    // return MonthSelector(
+    //   onMonthChanged: (month) {},
+    // );
+    return const MapDriveView();
   }
 }

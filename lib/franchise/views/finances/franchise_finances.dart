@@ -40,8 +40,7 @@ class _FranchiseFinancesViewState extends State<FranchiseFinancesView> {
                 itemLabel: (item) => item, 
                 onChanged: (item) {}, 
                 onDriverTap: (data) {},
-              ),
-              
+              ),             
 
             ]
           ),

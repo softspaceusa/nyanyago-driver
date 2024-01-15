@@ -7,6 +7,7 @@ class FinanceStatsVM extends ViewModelBase {
   });
 
   bool expensesSelected = true;
+  String moneySpended = "";
 
   void changeSelection(bool expenses) => update(() => expensesSelected = expenses);
 }
