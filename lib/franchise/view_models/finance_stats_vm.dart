@@ -7,7 +7,11 @@ class FinanceStatsVM extends ViewModelBase {
   });
 
   bool expensesSelected = true;
-  String moneySpended = "";
+  String moneySpended = "0 Р";
+  DateTime selectedMonth = DateTime.now();
 
   void changeSelection(bool expenses) => update(() => expensesSelected = expenses);
+  void monthSelected(int month) => update(
+    () => selectedMonth = DateTime(selectedMonth.year, month, 1)
+  );
 }

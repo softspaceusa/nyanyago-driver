@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/api/google_map_api.dart';
+import 'package:nanny_core/map_services/drive_manager.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/geocoding_data.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/test/in_drive.dart';
@@ -58,9 +59,14 @@ class AddressChooseVM extends ViewModelBase {
     );
     NannyMapGlobals.routes.notifyListeners();
 
+    var manager = DriveManager(
+      routes: [route], 
+      addresses: [addressA!, addressB!]
+    );
+
     Navigator.push(
       context, 
-      MaterialPageRoute( builder: (context) => const InDriveView() )
+      MaterialPageRoute( builder: (context) => InDriveView(driveManager: manager) )
     );
   }
 }

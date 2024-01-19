@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
-import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/franchise/view_models/driver_management.dart/driver_list_vm.dart';
 
 class DriversListView extends StatefulWidget {
@@ -23,17 +22,11 @@ class _DriversListViewState extends State<DriversListView> with AutomaticKeepAli
   Widget build(BuildContext context) {
     if(wantKeepAlive) super.build(context);
     
-    return RequestLoader(
-      request: Future<ApiResponse>(() => ApiResponse()), 
-      completeView: (context, data) => Column(
-        children: [
-          DropdownButton<String>(
-            items: const [], 
-            onChanged: vm.onFilterSelected,
-          ),
-        ],
-      ),
-      errorView: (context, error) => ErrorView(errorText: error.toString()),
+    return FranchiseDriverList(
+      filterItems: const [], 
+      itemLabel: (item) => "", 
+      onChanged: (item) {}, 
+      onDriverTap: (data) {},
     );
   }
   

@@ -45,8 +45,10 @@ class _DriverManagementViewState extends State<DriverManagementView> {
           body: TabBarView(
             physics: NeverScrollableScrollPhysics(),
             children: [
+              
               DriversListView(),
               TarifsView(),
+              
             ]
           ),
         ),

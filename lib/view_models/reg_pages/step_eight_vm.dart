@@ -26,8 +26,8 @@ class RegStepEightVM extends ViewModelBase {
     );
 
     regForm.userData = regForm.userData.copyWith(
-      // phone: NannyGlobals.phone,
-      phone: "79262713209", // TODO: ОСТАРОЖНА
+      phone: NannyGlobals.phone,
+      // phone: "79370095967", // TODO: ОСТАРОЖНА
     );
 
     // slideNavigateToView(const PhoneConfirmView(

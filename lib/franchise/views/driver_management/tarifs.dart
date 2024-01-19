@@ -10,9 +10,9 @@ class TarifsView extends StatefulWidget {
 class _TarifsViewState extends State<TarifsView> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
-    if(wantKeepAlive) super.build(context);
+    super.build(context);
     
-    return const Placeholder();
+    return const Center(child: Text("На данный момент тарифов нет..."));
   }
   
   @override

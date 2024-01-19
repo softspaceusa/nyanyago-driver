@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
+import 'package:nanny_driver/franchise/views/finances/finance_stats.dart';
 
 class FranchiseFinancesView extends StatefulWidget {
   const FranchiseFinancesView({super.key});
@@ -40,7 +41,8 @@ class _FranchiseFinancesViewState extends State<FranchiseFinancesView> {
                 itemLabel: (item) => item, 
                 onChanged: (item) {}, 
                 onDriverTap: (data) {},
-              ),             
+              ),
+              const FinanceStatsView(),
 
             ]
           ),

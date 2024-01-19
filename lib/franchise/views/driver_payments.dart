@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
-import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/franchise/view_models/driver_payments_vm.dart';
 
 class DriverPaymentsView extends StatefulWidget {
@@ -27,12 +26,13 @@ class _DriverPaymentsViewState extends State<DriverPaymentsView> {
           isTransparent: false,
           title: "Выплаты водителям",
         ),
-        body: RequestLoader(
-          request: Future<ApiResponse>(() => ApiResponse()),
-          completeView: (context, data) => ListView(
-
-          ),
-          errorView: (context, error) => ErrorView(errorText: error.toString()),
+        body: FranchiseDriverList(
+          showMoneyInstead: true,
+          
+          filterItems: const [], 
+          itemLabel: (item) => "", 
+          onChanged: (item) {}, 
+          onDriverTap: (data) {},
         ),
       ),
     );

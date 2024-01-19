@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nanny_components/base_views/views/driver_info.dart';
+import 'package:nanny_driver/test/in_drive.dart';
 import 'package:nanny_driver/test/map_drive.dart';
+import 'package:nanny_driver/views/reg.dart';
 
 class TestView extends StatefulWidget {
   const TestView({super.key});
@@ -15,6 +18,8 @@ class _TestViewState extends State<TestView> {
     // return MonthSelector(
     //   onMonthChanged: (month) {},
     // );
-    return const MapDriveView();
+    // return const RegView();
+    // return const MapDriveView();
+    return const DriverInfoView();
   }
 }

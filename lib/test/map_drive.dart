@@ -16,6 +16,7 @@ class _MapDriveViewState extends State<MapDriveView> {
   void initState() {
     super.initState();
     init = initView();
+
     NannyMapGlobals.routes.addListener( () {
       setState(() {});
       Logger().i("Updated map!");
@@ -34,8 +35,10 @@ class _MapDriveViewState extends State<MapDriveView> {
                 body: GoogleMap(
                   initialCameraPosition: CameraPosition(
                     target: data,
+                    zoom: 15
                   ),
                   polylines: NannyMapGlobals.routes.value,
+                  markers: NannyMapGlobals.markers.value,
                 ), 
                 panel: Navigator(
                   initialRoute: '/',
