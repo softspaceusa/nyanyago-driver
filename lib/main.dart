@@ -13,7 +13,7 @@ import 'package:nanny_driver/views/reg.dart';
 import 'firebase_options.dart';
 import 'test/test.dart';
 
-void main() async { // TODO: home and reg screen views needed
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HttpOverrides.global = MyHttpOverrides();
@@ -55,7 +55,7 @@ void main() async { // TODO: home and reg screen views needed
 
   NannyLocalAuth.init();
 
-  await NannyStorage.init();
+  await NannyStorage.init(isClient: false);
   FirebaseMessagingHandler.init();
 
   Logger().d("Storage data:\nLogin data - ${(await NannyStorage.getLoginData())?.toJson()}");

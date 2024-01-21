@@ -19,7 +19,11 @@ class _MapDriveViewState extends State<MapDriveView> {
 
     NannyMapGlobals.routes.addListener( () {
       setState(() {});
-      Logger().i("Updated map!");
+      // Logger().i("Updated map!");
+    });
+    NannyMapGlobals.markers.addListener(() {
+      setState(() {});
+      // Logger().i("Updated map markers!");
     });
   }
   
@@ -37,6 +41,9 @@ class _MapDriveViewState extends State<MapDriveView> {
                     target: data,
                     zoom: 15
                   ),
+
+                  onTap: (pos) => NannyMapGlobals.mapTapController.add(pos),
+                  
                   polylines: NannyMapGlobals.routes.value,
                   markers: NannyMapGlobals.markers.value,
                 ), 

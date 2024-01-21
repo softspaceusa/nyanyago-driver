@@ -4,13 +4,18 @@ import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/view_models/pages/offers_vm.dart';
 
 class OffersView extends StatefulWidget {
-  const OffersView({super.key});
+  final bool persistState;
+  
+  const OffersView({
+    super.key,
+    required this.persistState,
+  });
 
   @override
   State<OffersView> createState() => _OffersViewState();
 }
 
-class _OffersViewState extends State<OffersView> {
+class _OffersViewState extends State<OffersView> with AutomaticKeepAliveClientMixin {
   late OffersVM vm;
 
   @override
@@ -21,6 +26,8 @@ class _OffersViewState extends State<OffersView> {
 
   @override
   Widget build(BuildContext context) {
+    if(wantKeepAlive) super.build(context);
+    
     return SafeArea(
       child: Scaffold(
         appBar: const NannyAppBar(
@@ -76,4 +83,7 @@ class _OffersViewState extends State<OffersView> {
       child: Text(offerType.name)
     );
   }
+  
+  @override
+  bool get wantKeepAlive => widget.persistState;
 }

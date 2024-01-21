@@ -27,16 +27,15 @@ class RegStepEightVM extends ViewModelBase {
 
     regForm.userData = regForm.userData.copyWith(
       phone: NannyGlobals.phone,
-      // phone: "79370095967", // TODO: ОСТАРОЖНА
     );
 
-    // slideNavigateToView(const PhoneConfirmView(
-    //   nextScreen: RegSuccessView(), 
-    //   title: "Подтверждение номера телефона", 
-    //   text: "Введите код из СМС", 
-    //   isReg: false,
-    // )); 
+    slideNavigateToView(const PhoneConfirmView(
+      nextScreen: RegSuccessView(), 
+      title: "Подтверждение номера телефона", 
+      text: "Введите код из СМС", 
+      isReg: true,
+    )); 
 
-    slideNavigateToView(const RegSuccessView());
+    // slideNavigateToView(const RegSuccessView());
   }
 }
