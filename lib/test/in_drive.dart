@@ -25,10 +25,20 @@ class _InDriveViewState extends State<InDriveView> {
   
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          const Text("В пути..."),
+          Text("Осталось: ${vm.distanceLeft.toStringAsFixed(2)} км"),
+          LinearProgressIndicator(value: vm.drivePercent),
+          const SizedBox(height: 50),
+          ElevatedButton(
+            onPressed: vm.atEnd ? vm.endDrive : null, 
+            child: const Text("Завершить поездку")
+          ),
+        ],
+      ),
     );
   }
 }

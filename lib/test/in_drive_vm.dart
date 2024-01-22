@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/map_services/drive_manager.dart';
 import 'package:nanny_core/nanny_core.dart';
+import 'package:nanny_driver/test/drive_complete.dart';
 
 class InDriveVM extends ViewModelBase {
   InDriveVM({
@@ -15,6 +16,7 @@ class InDriveVM extends ViewModelBase {
 
     // locSub = LocationService.location.onLocationChanged.listen(updateDriveAndPos);
     tapSub = NannyMapGlobals.onMapTap.listen(updateDriveAndPos);
+    sumDistance = RouteManager.meters2Kilometers( RouteManager.computeDistance(driveManager.currentRoute) );
 
     markers.notifyListeners();
   }
@@ -23,6 +25,8 @@ class InDriveVM extends ViewModelBase {
 
   ValueNotifier<Set<Marker>> markers = NannyMapGlobals.markers;
   ValueNotifier<Set<Polyline>> routes = NannyMapGlobals.routes;
+
+  bool atEnd = false;
   
   LatLng? curLoc;
   LatLng? lastLoc;
@@ -35,6 +39,10 @@ class InDriveVM extends ViewModelBase {
     anchor: const Offset(0.5, 0.5),
     position: NannyMapUtils.locData2LatLng(LocationService.curLoc),
   );
+  double distanceLeft = 0;
+  late double sumDistance;
+
+  double get drivePercent => 1 - distanceLeft / sumDistance;
   
   // late StreamSubscription<LocationData> locSub;
   late StreamSubscription<LatLng> tapSub;
@@ -67,18 +75,40 @@ class InDriveVM extends ViewModelBase {
       lastLoc!,
     );
 
-  
     var upd = driveManager.updateDriveRoute(pos);
-    posMarker = posMarker.copyWith(positionParam: upd);
+    double heading = driveManager.getHeading(lastLoc!, curLoc!);
+    posMarker = posMarker.copyWith(
+      positionParam: upd.loc,
+      rotationParam: upd.heading ?? heading,
+    );
 
-    lastLoc = pos;
+    Logger().i(upd.heading ?? heading);
 
-    // routes.value.clear();
-    // routes.value = {updateResult.route};
-    // routes.notifyListeners();
+    lastLoc = upd.loc;
+
+    routes.value.clear();
+    routes.value = {upd.route};
+    routes.notifyListeners();
 
     markers.value.clear();
     markers.value = {posMarker};
     markers.notifyListeners();
+
+    distanceLeft = RouteManager.meters2Kilometers( RouteManager.computeDistance(upd.route) );
+    atEnd = driveManager.isAtRouteEnd(upd.loc);
+
+    update(() {});
+  }
+
+  void endDrive() {
+    Navigator.pushReplacement(
+      context, 
+      MaterialPageRoute(builder: (context) => const DriveCompleteView())
+    );
+    dispose();
+  }
+
+  void dispose() {
+    tapSub.cancel();
   }
 }

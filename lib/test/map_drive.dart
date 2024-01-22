@@ -18,11 +18,15 @@ class _MapDriveViewState extends State<MapDriveView> {
     init = initView();
 
     NannyMapGlobals.routes.addListener( () {
-      setState(() {});
+      try {
+        setState(() {});
+      } on Exception catch(_) {}
       // Logger().i("Updated map!");
     });
     NannyMapGlobals.markers.addListener(() {
-      setState(() {});
+      try {
+        setState(() {});
+      } on Exception catch(_) {}
       // Logger().i("Updated map markers!");
     });
   }
