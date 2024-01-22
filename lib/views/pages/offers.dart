@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
+import 'package:nanny_driver/test/map_drive.dart';
 import 'package:nanny_driver/view_models/pages/offers_vm.dart';
 
 class OffersView extends StatefulWidget {
@@ -62,8 +63,12 @@ class _OffersViewState extends State<OffersView> with AutomaticKeepAliveClientMi
               ListView( // TODO: Доделать предложения!
                 shrinkWrap: true,
                 children: [
-
+              
                 ],
+              ),
+              ElevatedButton(
+                onPressed: () => vm.navigateToView(const MapDriveView()), 
+                child: const Text("Тестовая поездка вручную"),
               ),
              
             ],

@@ -86,8 +86,8 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: NannyGlobals.navKey,
       theme: NannyTheme.appTheme,
-      // home: firstScreen,
-      home: const TestView(),
+      home: firstScreen,
+      // home: const TestView(),
     );
   }
 }

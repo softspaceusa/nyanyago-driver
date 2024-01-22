@@ -15,7 +15,21 @@ class InDriveVM extends ViewModelBase {
     markers.value.add(posMarker);
 
     // locSub = LocationService.location.onLocationChanged.listen(updateDriveAndPos);
-    tapSub = NannyMapGlobals.onMapTap.listen(updateDriveAndPos);
+    // tapSub = NannyMapGlobals.onMapTap.listen((loc) {
+    //   if(driveManager.getDistanceToFirstPoint(loc) > 500) {
+    //     driveManager.redrawRoute(loc);
+    //     return;
+    //   }
+    //   updateDriveAndPos(loc);
+    // });
+    locSub = LocationService.location.onLocationChanged.listen((loc) {
+      var pos = NannyMapUtils.locData2LatLng(loc);
+      if(driveManager.getDistanceToFirstPoint(pos) > 500) {
+        driveManager.redrawRoute(pos);
+        return;
+      }
+      updateDriveAndPos(pos);
+    });
     sumDistance = RouteManager.meters2Kilometers( RouteManager.computeDistance(driveManager.currentRoute) );
 
     markers.notifyListeners();
@@ -44,8 +58,8 @@ class InDriveVM extends ViewModelBase {
 
   double get drivePercent => 1 - distanceLeft / sumDistance;
   
-  // late StreamSubscription<LocationData> locSub;
-  late StreamSubscription<LatLng> tapSub;
+  // late StreamSubscription<LatLng> tapSub;
+  late StreamSubscription<LocationData> locSub;
 
   // void updateDriveAndPos(LocationData loc) {
   //   if(lastLoc == null) {
@@ -109,6 +123,7 @@ class InDriveVM extends ViewModelBase {
   }
 
   void dispose() {
-    tapSub.cancel();
+    // tapSub.cancel();
+    locSub.cancel();
   }
 }
