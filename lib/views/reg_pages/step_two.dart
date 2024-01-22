@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/view_models/reg_pages/step_two_vm.dart';
-import 'package:nanny_driver/views/reg_pages.dart/reg_page_template.dart';
+import 'package:nanny_driver/views/reg_pages/reg_page_template.dart';
 
 class RegStepTwoView extends StatefulWidget {
   const RegStepTwoView({super.key});

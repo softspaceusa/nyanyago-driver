@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:nanny_components/widgets/nanny_text_forms.dart';
-import 'package:nanny_driver/view_models/reg_pages/step_six_vm.dart';
-import 'package:nanny_driver/views/reg_pages.dart/reg_page_template.dart';
+import 'package:nanny_components/nanny_components.dart';
+import 'package:nanny_driver/view_models/reg_pages/step_five_vm.dart';
+import 'package:nanny_driver/views/reg_pages/reg_page_template.dart';
 
-class RegStepSixView extends StatefulWidget {
-  const RegStepSixView({super.key});
+class RegStepFiveView extends StatefulWidget {
+  const RegStepFiveView({super.key});
 
   @override
-  State<RegStepSixView> createState() => _RegStepSixViewState();
+  State<RegStepFiveView> createState() => _RegStepFiveViewState();
 }
 
-class _RegStepSixViewState extends State<RegStepSixView> {
-  late RegStepSixVM vm;
+class _RegStepFiveViewState extends State<RegStepFiveView> {
+  late RegStepFiveVM vm;
 
   @override
   void initState() {
     super.initState();
-    vm = RegStepSixVM(context: context, update: setState);
+    vm = RegStepFiveVM(context: context, update: setState);
   }
   
   @override
@@ -25,15 +25,15 @@ class _RegStepSixViewState extends State<RegStepSixView> {
       height: .8,
       children: [
 
-        Text("Ребенок мешает вам во время движения (громко разговаривает и отвлекает вас от управления автомобилем). ", style: Theme.of(context).textTheme.labelLarge),
+        Text("Вы встретили ребенка, и он отказывается идти с вами за руку.", style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 10),
         Form(
-          key: vm.answer3State,
+          key: vm.answer1State,
           child: NannyTextForm(
             hintText: "Ваши действия?",
             maxLines: 5,
             maxLength: 500,
-            onChanged: (text) => vm.answer3 = text,
+            onChanged: (text) => vm.answer1 = text,
             validator: (text) {
               if(text!.isEmpty) return "Введите ответ!";
               
@@ -42,18 +42,15 @@ class _RegStepSixViewState extends State<RegStepSixView> {
           ),
         ),
         const SizedBox(height: 20),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text("При поездке, ребенка укачало.", style: Theme.of(context).textTheme.labelLarge)
-        ),
+        Text("Ребенок отказывается пристегивать ремень безопасности в автомобиле.", style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 10),
         Form(
-          key: vm.answer4State,
+          key: vm.answer2State,
           child: NannyTextForm(
             hintText: "Ваши действия?",
             maxLines: 5,
             maxLength: 500,
-            onChanged: (text) => vm.answer4 = text,
+            onChanged: (text) => vm.answer2 = text,
             validator: (text) {
               if(text!.isEmpty) return "Введите ответ!";
               
@@ -66,8 +63,8 @@ class _RegStepSixViewState extends State<RegStepSixView> {
           onPressed: vm.nextStep, 
           child: const Text("Далее"),
         ),
-        
-      ]
+
+      ],
     );
   }
 }

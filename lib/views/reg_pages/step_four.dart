@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/view_models/reg_pages/step_four_vm.dart';
-import 'package:nanny_driver/views/reg_pages.dart/reg_page_template.dart';
+import 'package:nanny_driver/views/reg_pages/reg_page_template.dart';
 
 class RegStepFourView extends StatefulWidget {
   const RegStepFourView({super.key});

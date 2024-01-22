@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
-import 'package:nanny_driver/views/reg_pages.dart/step_one.dart';
+import 'package:nanny_driver/views/reg_pages/step_one.dart';
 
 class RegVM extends ViewModelBase {
   RegVM({

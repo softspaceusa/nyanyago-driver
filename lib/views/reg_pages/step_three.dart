@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/view_models/reg_pages/step_three_vm.dart';
-import 'package:nanny_driver/views/reg_pages.dart/reg_page_template.dart';
+import 'package:nanny_driver/views/reg_pages/reg_page_template.dart';
 
 class RegStepThreeView extends StatefulWidget {
   const RegStepThreeView({super.key});
@@ -78,7 +78,7 @@ class _RegStepThreeViewState extends State<RegStepThreeView> {
           key: vm.stateNumState,
           child: NannyTextForm(
             labelText: "Госномер*",
-            hintText: "А 000 АА",
+            hintText: "А 000 АА 000",
             formatters: [
               NannyUpperFormatter(),
               vm.stateNumMask

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/api/api_models/driver_user_data.dart';
 import 'package:nanny_driver/globals.dart';
-import 'package:nanny_driver/views/reg_pages.dart/step_seven.dart';
+import 'package:nanny_driver/views/reg_pages/step_seven.dart';
 
 class RegStepSixVM extends ViewModelBase {
   RegStepSixVM(

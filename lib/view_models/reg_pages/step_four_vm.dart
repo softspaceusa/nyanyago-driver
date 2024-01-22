@@ -3,7 +3,7 @@ import 'package:nanny_components/dialogs/loading.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/globals.dart';
-import 'package:nanny_driver/views/reg_pages.dart/step_five.dart';
+import 'package:nanny_driver/views/reg_pages/step_five.dart';
 
 class RegStepFourVM extends ViewModelBase {
   RegStepFourVM({

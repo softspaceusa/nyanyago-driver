@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/globals.dart';
-import 'package:nanny_driver/views/reg_pages.dart/reg_success.dart';
+import 'package:nanny_driver/views/reg_pages/reg_success.dart';
 
 class RegStepEightVM extends ViewModelBase {
   RegStepEightVM({

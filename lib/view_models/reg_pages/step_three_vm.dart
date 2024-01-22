@@ -4,7 +4,7 @@ import 'package:nanny_core/api/api_models/car_model_data.dart';
 import 'package:nanny_core/api/api_models/static_data.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/globals.dart';
-import 'package:nanny_driver/views/reg_pages.dart/step_four.dart';
+import 'package:nanny_driver/views/reg_pages/step_four.dart';
 
 class StepThreeVM extends ViewModelBase {
   StepThreeVM({
@@ -32,7 +32,7 @@ class StepThreeVM extends ViewModelBase {
   bool get isMarkSelected => carMark.id != -1;
 
   MaskTextInputFormatter stateNumMask = MaskTextInputFormatter(
-    mask: "@ ### @@",
+    mask: "@ ### @@ ###",
     filter: {
       '@': RegExp(r"[А-Я]"),
       '#': RegExp(r"[0-9]"),
