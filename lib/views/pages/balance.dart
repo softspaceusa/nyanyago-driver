@@ -47,10 +47,24 @@ class _BalanceViewState extends State<BalanceView> with AutomaticKeepAliveClient
                     const SizedBox(height: 20),
                     const Text("Текущий баланс:"),
                     Text("${data!.balance} Р", style: Theme.of(context).textTheme.titleMedium),
-                    const Spacer(),
-                    ElevatedButton( 
-                      onPressed: vm.navigateToWallet,
-                      child: const Text("Вывести денежные средства"),
+                    const SizedBox(height: 20),
+                    Column(
+                      children: [
+                        ElevatedButton( 
+                          onPressed: vm.toPay,
+                          child: const Text(
+                            "Вывести денежные средства", 
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton( 
+                          onPressed: vm.toCashback,
+                          child: const Text(
+                            "Кэшбек",
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
                 
