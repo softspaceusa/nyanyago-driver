@@ -16,14 +16,24 @@ class _FranchiseFinancesViewState extends State<FranchiseFinancesView> {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          appBar: const NannyAppBar(
+          appBar: NannyAppBar(
             isTransparent: false,
             title: "Управление финансами",
             bottom: TabBar(
               indicatorColor: NannyTheme.primary,
               labelColor: NannyTheme.primary,
               unselectedLabelColor: NannyTheme.onSecondary,
-              tabs: [
+              splashBorderRadius: BorderRadius.circular(30),
+              indicator: BoxDecoration(
+                border: const Border(
+                  bottom: BorderSide(
+                    width: 4,
+                    color: NannyTheme.primary
+                  )
+                ),
+                borderRadius: BorderRadius.circular(30)
+              ),
+              tabs: const [
                 Tab(
                   text: "Список водителей",
                 ),

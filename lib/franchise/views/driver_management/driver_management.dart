@@ -22,17 +22,27 @@ class _DriverManagementViewState extends State<DriverManagementView> {
   
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(
+    return SafeArea(
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
           appBar: NannyAppBar(
             title: "Управление водителями",
             bottom: TabBar(
+              indicatorColor: NannyTheme.primary,
               labelColor: NannyTheme.primary,
               unselectedLabelColor: NannyTheme.onSecondary,
-              indicatorColor: NannyTheme.primary,
-              tabs: [
+              splashBorderRadius: BorderRadius.circular(30),
+              indicator: BoxDecoration(
+                border: const Border(
+                  bottom: BorderSide(
+                    width: 4,
+                    color: NannyTheme.primary
+                  )
+                ),
+                borderRadius: BorderRadius.circular(30)
+              ),
+              tabs: const [
                 Tab(
                   text: "Список водителей",
                 ),
@@ -42,7 +52,7 @@ class _DriverManagementViewState extends State<DriverManagementView> {
               ]
             ),
           ),
-          body: TabBarView(
+          body: const TabBarView(
             physics: NeverScrollableScrollPhysics(),
             children: [
               

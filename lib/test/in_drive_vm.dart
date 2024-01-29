@@ -22,14 +22,7 @@ class InDriveVM extends ViewModelBase {
     //   }
     //   updateDriveAndPos(loc);
     // });
-    locSub = LocationService.location.onLocationChanged.listen((loc) {
-      var pos = NannyMapUtils.locData2LatLng(loc);
-      if(driveManager.getDistanceToFirstPoint(pos) > 500) {
-        driveManager.redrawRoute(pos);
-        return;
-      }
-      updateDriveAndPos(pos);
-    });
+    locSub = Timer.periodic(const Duration(seconds: 1), (timer) => driveSubUpdate());
     sumDistance = RouteManager.meters2Kilometers( RouteManager.computeDistance(driveManager.currentRoute) );
 
     markers.notifyListeners();
@@ -59,7 +52,7 @@ class InDriveVM extends ViewModelBase {
   double get drivePercent => 1 - distanceLeft / sumDistance;
   
   // late StreamSubscription<LatLng> tapSub;
-  late StreamSubscription<LocationData> locSub;
+  late Timer locSub;
 
   // void updateDriveAndPos(LocationData loc) {
   //   if(lastLoc == null) {
@@ -78,6 +71,16 @@ class InDriveVM extends ViewModelBase {
   //   posMarker = posMarker.copyWith(positionParam: pos);
   //   markers.notifyListeners();
   // }
+
+  void driveSubUpdate() async {
+    var loc = await LocationService.location.getLocation();
+    var pos = NannyMapUtils.locData2LatLng(loc);
+    if(driveManager.getDistanceToFirstPoint(pos) > 100) {
+      driveManager.redrawRoute(pos);
+      return;
+    }
+    updateDriveAndPos(pos);
+  }
 
   void updateDriveAndPos(LatLng loc) {
     lastLoc ??= loc;
@@ -109,7 +112,7 @@ class InDriveVM extends ViewModelBase {
     markers.notifyListeners();
 
     distanceLeft = RouteManager.meters2Kilometers( RouteManager.computeDistance(upd.route) );
-    atEnd = driveManager.isAtRouteEnd(upd.loc);
+    if(!atEnd) atEnd = driveManager.isAtRouteEnd(upd.loc);
 
     update(() {});
   }
