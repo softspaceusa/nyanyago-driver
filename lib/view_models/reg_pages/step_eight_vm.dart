@@ -30,7 +30,9 @@ class RegStepEightVM extends ViewModelBase {
     );
 
     slideNavigateToView(const PhoneConfirmView(
-      nextScreen: RegSuccessView(), 
+      nextScreen: FirstPinSet(
+        nextView: RegSuccessView()
+      ), 
       title: "Подтверждение номера телефона", 
       text: "Введите код из СМС", 
       isReg: true,
