@@ -20,7 +20,7 @@ class _FranchiseHomeViewState extends State<FranchiseHomeView> {
   late FranchiseHomeVM vm;
 
   final List<PanelButtonData> data = [
-    PanelButtonData(
+    if(NannyUser.userInfo!.role.contains(UserType.franchiseAdmin)) PanelButtonData(
       label: "Просмотр статистики и отчетов",
       imgPath: "files.png",
       nextView: const StatsView()
@@ -30,17 +30,20 @@ class _FranchiseHomeViewState extends State<FranchiseHomeView> {
       imgPath: "card.png",
       nextView: const DriverPaymentsView()
     ),
-    PanelButtonData(
+    if(
+      NannyUser.userInfo!.role.contains(UserType.franchiseAdmin) ||
+      NannyUser.userInfo!.role.contains(UserType.manager)
+    )PanelButtonData(
       label: "Панель управления водителями",
       imgPath: "bike.png",
       nextView: const DriverManagementView()
     ),
-    PanelButtonData(
+    if(NannyUser.userInfo!.role.contains(UserType.franchiseAdmin)) PanelButtonData(
       label: "Панель управления финансами",
       imgPath: "money.png",
       nextView: const FranchiseFinancesView()
     ),
-    PanelButtonData(
+    if(NannyUser.userInfo!.role.contains(UserType.franchiseAdmin)) PanelButtonData(
       label: "Панель управления настройками",
       imgPath: "clipboard.png",
       nextView: const FranchiseSettingsView()
