@@ -27,76 +27,110 @@ class _MyReferalsViewState extends State<MyReferalsView> {
         ),
         body: RequestLoader(
           request: vm.request, 
-          completeView: (context, data) => Column(
+          completeView: (context, data) => Stack(
             children: [
 
-              Row(
+              Column(
                 children: [
+              
+                  Row(
+                    children: [
+                      Expanded(
+                        child: textInfo(
+                          title: "Общий баланс:", 
+                          subtitle: data!.allIncoming.toString()
+                        )
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: textInfo(
+                          title: "Вы получите:", 
+                          subtitle: data.getPercent.toString()
+                        )
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
                   Expanded(
-                    child: textInfo(
-                      title: "Общий баланс:", 
-                      subtitle: data!.allIncoming.toString()
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: data.referals.asMap().entries.map(
+                        (e) => ListTile(
+                          isThreeLine: true,
+                          leading: ProfileImage(
+                            url: e.value.photoPath, 
+                            radius: 50
+                          ),
+                          title: Text("${e.value.name} ${e.value.surname}"),
+                          subtitle: Padding(
+                            padding: EdgeInsets.only(
+                              top: 5, 
+                              bottom: e.key == data.referals.length - 1 ? 80 : 5
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Присоединился ${e.value.dateReg}", 
+                                  style: TextStyle(color: NannyTheme.onSecondary.withAlpha(150))
+                                ),
+                                const SizedBox(height: 5),
+                                RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      const TextSpan(
+                                        text: "Всего заработано ",
+                                        style: TextStyle(color: NannyTheme.primary)
+                                      ),
+                                      TextSpan(
+                                        text: e.value.roleData!.allIncoming.toString(),
+                                        style: const TextStyle(color: NannyTheme.onSecondary)
+                                      ),
+                                    ]
+                                  )
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      const TextSpan(
+                                        text: "Вы получите (% от суммы) ",
+                                        style: TextStyle(color: NannyTheme.primary)
+                                      ),
+                                      TextSpan(
+                                        text: e.value.roleData!.getPercent.toString(),
+                                        style: const TextStyle(color: NannyTheme.onSecondary)
+                                      ),
+                                    ]
+                                  )
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ).toList(),
                     )
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: textInfo(
-                      title: "Вы получите:", 
-                      subtitle: data.getPercent.toString()
-                    )
-                  ),
+                  
                 ],
               ),
-              Expanded(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: data.referals.map(
-                    (e) => ListTile(
-                      isThreeLine: true,
-                      leading: ProfileImage(
-                        url: e.photoPath, 
-                        radius: 30
-                      ),
-                      title: Text("${e.name} ${e.surname}"),
-                      subtitle: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text("Присоединился ${e.dateReg}", style: TextStyle(color: NannyTheme.onSecondary.withAlpha(150))),
-                          const SizedBox(height: 5),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                const TextSpan(
-                                  text: "Всего заработано",
-                                  style: TextStyle(color: NannyTheme.primary)
-                                ),
-                                TextSpan(
-                                  text: e.roleData!.allIncoming.toString()
-                                ),
-                              ]
-                            )
-                          ),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                const TextSpan(
-                                  text: "Вы получите (% от суммы) ",
-                                  style: TextStyle(color: NannyTheme.primary)
-                                ),
-                                TextSpan(
-                                  text: e.roleData!.getPercent.toString()
-                                ),
-                              ]
-                            )
-                          ),
-                        ],
-                      ),
-                    )
-                  ).toList(),
-                )
-              )
-              
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: ElevatedButton(
+                    onPressed: () => vm.navigateToView(
+                      const WalletView(
+                        title: "Отправить запрос", 
+                        subtitle: "Выберите карту"
+                      )
+                    ), 
+                    child: const Text("Отправить запрос")
+                  ),
+                ),
+              ),
             ],
+            
           ), 
           errorView: (context, error) => ErrorView(errorText: error.toString()),
         ),

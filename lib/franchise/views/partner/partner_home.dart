@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/franchise/view_models/partner/partner_home_vm.dart';
+import 'package:nanny_driver/franchise/views/partner/money_history.dart';
+import 'package:nanny_driver/franchise/views/partner/my_referals.dart';
 
 class PartnerHomeView extends StatefulWidget {
   const PartnerHomeView({super.key});
@@ -14,18 +16,21 @@ class _PartnerHomeViewState extends State<PartnerHomeView> {
   final List<PanelButtonData> data = [
     PanelButtonData(
       label: "Рефералы",
-      imgPath: "file.png",
-      nextView: const Placeholder(),
+      imgPath: "files.png",
+      nextView: const MyReferalsView(),
     ),
     PanelButtonData(
       label: "Кошелек",
       imgPath: "clipboard.png",
-      nextView: const Placeholder(),
+      nextView: const WalletView(
+        title: "Карты",
+        subtitle: "Ваши карты",
+      ),
     ),
     PanelButtonData(
       label: "Отчет вывода денег",
       imgPath: "money.png",
-      nextView: const Placeholder(),
+      nextView: const MoneyHistoryView(),
     ),
   ];
 
@@ -39,9 +44,14 @@ class _PartnerHomeViewState extends State<PartnerHomeView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const NannyAppBar(
+        appBar: NannyAppBar(
           hasBackButton: false,
           title: "Панель управления",
+          leading: IconButton(
+            onPressed: vm.navigateToProfile,
+            icon: const Icon(Icons.account_circle),
+            iconSize: 25,
+          ),
         ),
         body: ListView(
           children: data.asMap().entries.map(
@@ -56,24 +66,27 @@ class _PartnerHomeViewState extends State<PartnerHomeView> {
   }
 
   Widget panelButton(PanelButtonData data, ButtonStyle style) {
-    return SizedBox(
-      width: double.maxFinite,
-      child: ElevatedButton(
-        style: style,
-        onPressed: () => vm.navigateToView(data.nextView), 
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(data.label),
-              Image.asset(
-                'packages/nanny_components/assets/images/${data.imgPath}',
-                width: 100,
-              ),
-            ],
-          ),
-        )
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: SizedBox(
+        width: double.maxFinite,
+        child: ElevatedButton(
+          style: style,
+          onPressed: () => vm.navigateToView(data.nextView), 
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(data.label),
+                Image.asset(
+                  'packages/nanny_components/assets/images/${data.imgPath}',
+                  width: 100,
+                ),
+              ],
+            ),
+          )
+        ),
       ),
     );
   }
