@@ -40,6 +40,7 @@ class _MapDriveViewState extends State<MapDriveView> {
             body: FutureLoader(
               future: init,
               completeView: (context, data) => MapViewer(
+                onPanelBuild: (sc) => scrController = sc,
                 body: GoogleMap(
                   initialCameraPosition: CameraPosition(
                     target: data,
@@ -51,6 +52,7 @@ class _MapDriveViewState extends State<MapDriveView> {
                   polylines: NannyMapGlobals.routes.value,
                   markers: NannyMapGlobals.markers.value,
                 ), 
+                
                 panel: Navigator(
                   initialRoute: '/',
                   onGenerateRoute: onRouteGen,
@@ -64,6 +66,8 @@ class _MapDriveViewState extends State<MapDriveView> {
     );
   }
 
+  ScrollController scrController = ScrollController();
+
   late Future<LatLng> init;
   Future<LatLng> initView() async {
     var location = await LocationService.location.getLocation();
@@ -74,7 +78,7 @@ class _MapDriveViewState extends State<MapDriveView> {
   Route? onRouteGen(RouteSettings settings) {
     if(settings.name == '/') {
       return MaterialPageRoute(
-        builder: (context) => AddressChooseView(baseContext: context)
+        builder: (context) => AddressChooseView(baseContext: context, scrController: scrController)
       );
     }
     return null;

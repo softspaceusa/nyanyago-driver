@@ -22,7 +22,7 @@ class OffersVM extends ViewModelBase {
 
     params = paramRes.response!;
 
-    var offerRes = await NannyDriverApi.getScheduleResponses(SearchQueryRequest());
+    var offerRes = await NannyDriverApi.getScheduleRequests(SearchQueryRequest());
     if(!offerRes.success) return false;
 
     offers = offerRes.response!;
@@ -30,5 +30,8 @@ class OffersVM extends ViewModelBase {
     return true;
   }
 
-  void changeOfferType(OfferType type) => update(() => selectedOfferType = type);
+  void changeOfferType(OfferType type) => update(() {
+    selectedOfferType = type;
+    reloadPage();
+  });
 }

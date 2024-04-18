@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/view_models/pages/my_contracts_vm.dart';
+import 'package:nanny_components/widgets/today_schedule_view.dart';
 
 class MyContractsView extends StatefulWidget {
   const MyContractsView({super.key});
@@ -42,11 +43,39 @@ class _MyContractsViewState extends State<MyContractsView> {
                   alignment: Alignment.bottomCenter,
                   child: NannyBottomSheet(
                     height: size.height * .6,
-                    child: const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Center(
-                        child: Text("У вас пока нет активных контрактов..."),
-                      ),
+                    child: FutureLoader(
+                      future: vm.loadRequest, 
+                      completeView: (context, data) {
+                        if(!data) return const ErrorView(errorText: "Не удалось загрузить данные!");
+                    
+                        if(vm.schedules.isEmpty) {
+                          return const Center(
+                            child: Text("Контрактов на сегодня нет..."),
+                          );
+                        }
+                    
+                        return Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            Text("На сегодня:", style: Theme.of(context).textTheme.displayLarge),
+                            Expanded(
+                              child: ListView(
+                                shrinkWrap: true,
+                                children: vm.schedules.map(
+                                  (e) => Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                                    child: TodayScheduleView(
+                                      schedule: e,
+                                      onPressed: () => vm.viewSchedule(e.id),
+                                    ),
+                                  )
+                                ).toList(),
+                              ),
+                            ),
+                          ],
+                        );
+                      }, 
+                      errorView: (context, error) => ErrorView(errorText: error.toString()),
                     ),
                   ),
                 )

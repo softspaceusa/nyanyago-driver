@@ -16,7 +16,11 @@ class BalanceVM extends ViewModelBase {
     Navigator.push(
       context, 
       MaterialPageRoute(
-        builder: (context) => const WalletView(title: "Вывод средств", subtitle: "Выберите карту для вывода средств")
+        builder: (context) => const WalletView(
+          title: "Вывод средств", 
+          subtitle: "Выберите карту для вывода средств",
+          isDriver: true,
+        )
       )
     );
   }
@@ -25,7 +29,11 @@ class BalanceVM extends ViewModelBase {
     Navigator.push(
       context, 
       MaterialPageRoute(
-        builder: (context) => const WalletView(title: "Получение кэшбека", subtitle: "Выберите карту, на которую запросится кэшбек")
+        builder: (context) => const WalletView(
+          title: "Получение кэшбека", 
+          subtitle: "Выберите карту, на которую запросится кэшбек",
+          isDriver: true,
+        )
       )
     );
   }
