@@ -56,8 +56,22 @@ class _RegStepOneViewState extends State<RegStepOneView> {
         const SizedBox(height: 20),
         NannyTextForm(
           labelText: "Реферальный код",
-          hintText: "Введите Реферальный код",
+          hintText: "Введите реферальный код",
           onChanged: (text) => vm.refCode = text,
+        ),
+        const SizedBox(height: 20),
+        Form(
+          key: vm.innState,
+          child: NannyTextForm(
+            labelText: "ИНН*",
+            hintText: "Введите ИНН",
+            onChanged: (text) => vm.inn = text,
+            validator: (text) {
+              if(vm.inn.isEmpty) return "Введите ИНН!";
+
+              return null;
+            },
+          ),
         ),
         const Spacer(),
         ElevatedButton(

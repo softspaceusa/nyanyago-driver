@@ -14,12 +14,14 @@ class RegStepOneVM extends ViewModelBase {
   DriverUserData regForm = NannyDriverGlobals.driverRegForm;
 
   GlobalKey<FormState> passState = GlobalKey<FormState>();
+  GlobalKey<FormState> innState = GlobalKey<FormState>();
   GlobalKey<FormState> cityState = GlobalKey<FormState>();
   String password = "";
 
   final TextEditingController cityTextController = TextEditingController();
   
   String refCode = "";
+  String inn = "";
   StaticData city = StaticData();
 
   void searchForCity() async {
@@ -48,6 +50,7 @@ class RegStepOneVM extends ViewModelBase {
     regForm.driverData = regForm.driverData.copyWith(
       city: city.id,
       refCode: refCode,
+      inn: inn
     );
 
     regForm.password = Md5Converter.convert(password);
