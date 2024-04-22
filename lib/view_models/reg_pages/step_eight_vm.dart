@@ -29,15 +29,15 @@ class RegStepEightVM extends ViewModelBase {
       phone: NannyGlobals.phone,
     );
 
-    slideNavigateToView(const PhoneConfirmView(
-      nextScreen: FirstPinSet(
-        nextView: RegSuccessView()
-      ), 
-      title: "Подтверждение номера телефона", 
-      text: "Введите код из СМС", 
-      isReg: true,
-    )); 
+    // slideNavigateToView(const PhoneConfirmView(
+    //   nextScreen: FirstPinSet(
+    //     nextView: RegSuccessView()
+    //   ), 
+    //   title: "Подтверждение номера телефона", 
+    //   text: "Введите код из СМС", 
+    //   isReg: true,
+    // )); 
 
-    // slideNavigateToView(const RegSuccessView());
+    slideNavigateToView(const RegSuccessView());
   }
 }
