@@ -11,7 +11,6 @@ import 'package:nanny_driver/views/home.dart';
 import 'package:nanny_driver/views/reg.dart';
 
 import 'firebase_options.dart';
-import 'test/test.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/driver_schedule_response.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule.dart';
+import 'package:nanny_core/models/from_api/other_parametr.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/test/map_drive.dart';
 import 'package:nanny_driver/view_models/pages/offers_vm.dart';
@@ -111,7 +112,7 @@ class _OffersViewState extends State<OffersView> with AutomaticKeepAliveClientMi
                                         (e) => CheckboxListTile(
                                           value: true,
                                           onChanged: null,
-                                          title: Text(vm.params.firstWhere((param) => param.id == e.id!).title!),
+                                          title: Text(vm.params.firstWhere((param) => param.id == e.id!, orElse: () => OtherParametr()).title!),
                                         )
                                       ).toList(),
                                     ),
