@@ -73,7 +73,7 @@ class _OffersViewState extends State<OffersView> with AutomaticKeepAliveClientMi
                       
                   return ListView( // TODO: Доделать предложения!
                     shrinkWrap: true,
-                    children: vm.selectedOfferType == OfferType.oneTime ?
+                    children: vm.selectedOfferType == OfferType.oneTime || vm.selectedOfferType == OfferType.replacement ?
                       vm.offers.map(
                         (e) => Card(
                           
