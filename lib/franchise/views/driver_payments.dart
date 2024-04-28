@@ -27,8 +27,6 @@ class _DriverPaymentsViewState extends State<DriverPaymentsView> {
           title: "Выплаты водителям",
         ),
         body: FranchiseDriverList(
-          showMoneyInstead: true,
-          
           filterItems: const [], 
           itemLabel: (item) => "", 
           onChanged: (item) {}, 
