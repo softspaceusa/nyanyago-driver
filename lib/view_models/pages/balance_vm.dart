@@ -19,7 +19,7 @@ class BalanceVM extends ViewModelBase {
         builder: (context) => const WalletView(
           title: "Вывод средств", 
           subtitle: "Выберите карту для вывода средств",
-          isDriver: true,
+          hasReplenishButtons: true,
         )
       )
     );
@@ -32,7 +32,7 @@ class BalanceVM extends ViewModelBase {
         builder: (context) => const WalletView(
           title: "Получение кэшбека", 
           subtitle: "Выберите карту, на которую запросится кэшбек",
-          isDriver: true,
+          hasReplenishButtons: true,
         )
       )
     );

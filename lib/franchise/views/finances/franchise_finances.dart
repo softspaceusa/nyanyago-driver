@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nanny_components/base_views/views/driver_info.dart';
 import 'package:nanny_components/nanny_components.dart';
+import 'package:nanny_driver/franchise/view_models/finances/franchise_finances_vm.dart';
 import 'package:nanny_driver/franchise/views/finances/finance_stats.dart';
 
 class FranchiseFinancesView extends StatefulWidget {
@@ -10,6 +12,14 @@ class FranchiseFinancesView extends StatefulWidget {
 }
 
 class _FranchiseFinancesViewState extends State<FranchiseFinancesView> {
+  late FranchiseFinancesVM vm;
+
+  @override
+  void initState() {
+    super.initState();
+    vm = FranchiseFinancesVM(context: context, update: setState);
+  }
+  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -47,10 +57,17 @@ class _FranchiseFinancesViewState extends State<FranchiseFinancesView> {
             children: [
 
               FranchiseDriverList<String>(
+                showNewDrivers: false,
+                
                 filterItems: [],
                 itemLabel: (item) => item, 
-                onChanged: (item) {}, 
-                onDriverTap: (data) {},
+                onItemChanged: (item) {}, 
+                onDriverTap: (user) => vm.navigateToView(
+                  DriverInfoView(
+                    id: user.id,
+                    franchiseView: true,
+                  )
+                ),
               ),
               const FinanceStatsView(),
 

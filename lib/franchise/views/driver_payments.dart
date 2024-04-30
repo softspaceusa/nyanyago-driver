@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nanny_components/base_views/views/driver_info.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/franchise/view_models/driver_payments_vm.dart';
 
@@ -27,10 +28,17 @@ class _DriverPaymentsViewState extends State<DriverPaymentsView> {
           title: "Выплаты водителям",
         ),
         body: FranchiseDriverList(
+          showNewDrivers: false,
+          
           filterItems: const [], 
           itemLabel: (item) => "", 
-          onChanged: (item) {}, 
-          onDriverTap: (data) {},
+          onItemChanged: (item) {}, 
+          onDriverTap: (user) => vm.navigateToView(
+            DriverInfoView(
+              id: user.id,
+              hasPaymentButtons: true,
+            )
+          ),
         ),
       ),
     );

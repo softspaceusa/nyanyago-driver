@@ -6,7 +6,11 @@ class DriverListVM extends ViewModelBase {
     required super.update,
   });
 
+  bool showNewDrivers = false;
+
   void onFilterSelected(String? type) {
     
   }
+
+  void listTypeChanged(bool? value) => update(() => showNewDrivers = value!);
 }
