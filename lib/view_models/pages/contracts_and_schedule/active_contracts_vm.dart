@@ -3,7 +3,6 @@ import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/api/nanny_orders_api.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/today_schedule_data.dart';
 import 'package:nanny_core/nanny_core.dart';
-import 'package:nanny_driver/views/schedule_checker.dart';
 
 class ActiveContractsVM extends ViewModelBase {
   ActiveContractsVM({

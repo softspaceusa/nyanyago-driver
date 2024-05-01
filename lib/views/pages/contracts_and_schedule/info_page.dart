@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
-import 'package:nanny_components/widgets/today_schedule_view.dart';
 import 'package:nanny_driver/view_models/pages/contracts_and_schedule/info_page_vm.dart';
 import 'package:nanny_driver/views/pages/contracts_and_schedule/active_contracts.dart';
 import 'package:nanny_driver/views/pages/contracts_and_schedule/driver_schedule.dart';
