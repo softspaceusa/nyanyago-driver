@@ -12,6 +12,9 @@ class MyContractsVM extends ViewModelBase {
   });
 
   List<TodayScheduleData> schedules = [];
+  bool showContracts = false;
+
+  void changeShowContract(bool show) => update(() => showContracts = show);
 
   void viewSchedule(int id) async {
     LoadScreen.showLoad(context, true);

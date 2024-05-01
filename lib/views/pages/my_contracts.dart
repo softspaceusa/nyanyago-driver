@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/view_models/pages/my_contracts_vm.dart';
 import 'package:nanny_components/widgets/today_schedule_view.dart';
@@ -28,7 +29,7 @@ class _MyContractsViewState extends State<MyContractsView> {
             extendBodyBehindAppBar: true,
             appBar: const NannyAppBar(
               hasBackButton: false,
-              title: "Активные контракты",
+              title: "Мои контракты",
             ),
             body: Stack(
               children: [
@@ -41,44 +42,71 @@ class _MyContractsViewState extends State<MyContractsView> {
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: NannyBottomSheet(
-                    height: size.height * .6,
-                    child: FutureLoader(
-                      future: vm.loadRequest, 
-                      completeView: (context, data) {
-                        if(!data) return const ErrorView(errorText: "Не удалось загрузить данные!");
-                    
-                        if(vm.schedules.isEmpty) {
-                          return const Center(
-                            child: Text("Контрактов на сегодня нет..."),
-                          );
-                        }
-                    
-                        return Column(
-                          children: [
-                            const SizedBox(height: 10),
-                            Text("На сегодня:", style: Theme.of(context).textTheme.displayLarge),
-                            Expanded(
-                              child: ListView(
-                                shrinkWrap: true,
-                                children: vm.schedules.map(
-                                  (e) => Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                                    child: TodayScheduleView(
-                                      schedule: e,
-                                      onPressed: () => vm.viewSchedule(e.id),
-                                    ),
-                                  )
-                                ).toList(),
-                              ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Row(
+                        children: [
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () => vm.changeShowContract(true), 
+                              style: vm.showContracts ? null : NannyButtonStyles.whiteButton,
+                              child: const Text("Активные контракты", textAlign: TextAlign.center)
                             ),
-                          ],
-                        );
-                      }, 
-                      errorView: (context, error) => ErrorView(errorText: error.toString()),
-                    ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () => vm.changeShowContract(false), 
+                              style: vm.showContracts ? NannyButtonStyles.whiteButton : null,
+                              child: const Text("Расписание на сегодня", textAlign: TextAlign.center)
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      NannyBottomSheet(
+                        height: size.height * .6,
+                        child: FutureLoader(
+                          future: vm.loadRequest, 
+                          completeView: (context, data) {
+                            if(!data) return const ErrorView(errorText: "Не удалось загрузить данные!");
+                        
+                            if(vm.schedules.isEmpty) {
+                              return const Center(
+                                child: Text("Контрактов на сегодня нет..."),
+                              );
+                            }
+                        
+                            return Column(
+                              children: [
+                                const SizedBox(height: 10),
+                                Text("На сегодня:", style: Theme.of(context).textTheme.displayLarge),
+                                Expanded(
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                    children: vm.schedules.map(
+                                      (e) => Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                                        child: TodayScheduleView(
+                                          schedule: e,
+                                          onPressed: () => vm.viewSchedule(e.id),
+                                        ),
+                                      )
+                                    ).toList(),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }, 
+                          errorView: (context, error) => ErrorView(errorText: error.toString()),
+                        ),
+                      ),
+                    ],
                   ),
-                )
+                ),
           
               ],
             ),

@@ -72,7 +72,7 @@ class ScheduleCheckerVm extends ViewModelBase {
 
     if(context.mounted) {
       LoadScreen.showLoad(context, false);
-      NannyDialogs.showMessageBox(context, "Успех!", "Заявка отпрвлена на рассмотрение");
+      NannyDialogs.showMessageBox(context, "Успех!", "Заявка отправлена на рассмотрение");
     }
   }
 }
