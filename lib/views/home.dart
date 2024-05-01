@@ -3,7 +3,7 @@ import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/view_models/home_vm.dart';
 import 'package:nanny_driver/views/pages/balance.dart';
-import 'package:nanny_driver/views/pages/my_contracts.dart';
+import 'package:nanny_driver/views/pages/contracts_and_schedule/info_page.dart';
 import 'package:nanny_driver/views/pages/offers.dart';
 import 'package:nanny_driver/views/reg.dart';
 
@@ -24,7 +24,7 @@ class _HomeViewState extends State<HomeView> {
     vm = HomeVM(context: context, update: setState);
     pages = [
       const OffersView(persistState: true),
-      const MyContractsView(),
+      const InfoPageView(),
       const BalanceView(persistState: true),
       const ChatsView(persistState: false),
       ProfileView(

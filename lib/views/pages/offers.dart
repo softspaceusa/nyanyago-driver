@@ -44,7 +44,7 @@ class _OffersViewState extends State<OffersView> with AutomaticKeepAliveClientMi
         
             Image.asset(
               'packages/nanny_components/assets/images/offers.png',
-              height: 200,
+              height: 100,
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,

@@ -5,21 +5,18 @@ import 'package:nanny_core/models/from_api/drive_and_map/today_schedule_data.dar
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/views/schedule_checker.dart';
 
-class MyContractsVM extends ViewModelBase {
-  MyContractsVM({
+class ActiveContractsVM extends ViewModelBase {
+  ActiveContractsVM({
     required super.context, 
     required super.update,
   });
 
   List<TodayScheduleData> schedules = [];
-  bool showContracts = false;
 
-  void changeShowContract(bool show) => update(() => showContracts = show);
-
-  void viewSchedule(int id) async {
+  void viewSchedule(int id) async { // TODO: Нужен Road Viewer
     LoadScreen.showLoad(context, true);
 
-    var schedReq = NannyOrdersApi.getScheduleById(id);
+    var schedReq = NannyOrdersApi.getScheduleRoadById(id);
     bool success = await DioRequest.handleRequest(
       context, 
       schedReq
@@ -27,11 +24,11 @@ class MyContractsVM extends ViewModelBase {
 
     if(!success) return;
 
-    var schedule = await schedReq;
+    // var schedule = await schedReq;
 
-    navigateToView(
-      ScheduleCheckerView(schedule: schedule.response!)
-    );
+    // navigateToView(
+    //   ScheduleCheckerView(schedule: schedule.response!)
+    // );
   }
 
   @override

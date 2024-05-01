@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:nanny_components/nanny_components.dart';
-import 'package:nanny_driver/view_models/pages/my_contracts_vm.dart';
 import 'package:nanny_components/widgets/today_schedule_view.dart';
+import 'package:nanny_driver/view_models/pages/contracts_and_schedule/info_page_vm.dart';
+import 'package:nanny_driver/views/pages/contracts_and_schedule/active_contracts.dart';
+import 'package:nanny_driver/views/pages/contracts_and_schedule/driver_schedule.dart';
 
-class MyContractsView extends StatefulWidget {
-  const MyContractsView({super.key});
+class InfoPageView extends StatefulWidget {
+  const InfoPageView({super.key});
 
   @override
-  State<MyContractsView> createState() => _MyContractsViewState();
+  State<InfoPageView> createState() => _InfoPageViewState();
 }
 
-class _MyContractsViewState extends State<MyContractsView> {
-  late MyContractsVM vm;
+class _InfoPageViewState extends State<InfoPageView> {
+  late InfoPageVM vm;
 
   @override
   void initState() {
     super.initState();
-    vm = MyContractsVM(context: context, update: setState);
+    vm = InfoPageVM(context: context, update: setState);
   }
   
   @override
@@ -69,40 +70,7 @@ class _MyContractsViewState extends State<MyContractsView> {
                       const SizedBox(height: 10),
                       NannyBottomSheet(
                         height: size.height * .6,
-                        child: FutureLoader(
-                          future: vm.loadRequest, 
-                          completeView: (context, data) {
-                            if(!data) return const ErrorView(errorText: "Не удалось загрузить данные!");
-                        
-                            if(vm.schedules.isEmpty) {
-                              return const Center(
-                                child: Text("Контрактов на сегодня нет..."),
-                              );
-                            }
-                        
-                            return Column(
-                              children: [
-                                const SizedBox(height: 10),
-                                Text("На сегодня:", style: Theme.of(context).textTheme.displayLarge),
-                                Expanded(
-                                  child: ListView(
-                                    shrinkWrap: true,
-                                    children: vm.schedules.map(
-                                      (e) => Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                                        child: TodayScheduleView(
-                                          schedule: e,
-                                          onPressed: () => vm.viewSchedule(e.id),
-                                        ),
-                                      )
-                                    ).toList(),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }, 
-                          errorView: (context, error) => ErrorView(errorText: error.toString()),
-                        ),
+                        child: vm.showContracts ? const ActiveContractsView() : const DriverScheduleView()
                       ),
                     ],
                   ),
