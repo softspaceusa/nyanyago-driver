@@ -28,7 +28,7 @@ class _DriverScheduleViewState extends State<DriverScheduleView> {
     
         if(vm.schedules.isEmpty) {
           return const Center(
-            child: Text("У вас ещё нет активных контрактов..."),
+            child: Text("На сегодня маршрутов нет..."),
           );
         }
     

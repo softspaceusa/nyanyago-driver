@@ -15,10 +15,10 @@ class DriverScheduleVM extends ViewModelBase {
   void viewSchedule(int id) async { // TODO: Нужен Road Viewer
     LoadScreen.showLoad(context, true);
 
-    var schedReq = NannyOrdersApi.getScheduleRoadById(id);
+    var roadReq = NannyOrdersApi.getScheduleRoadById(id);
     bool success = await DioRequest.handleRequest(
       context, 
-      schedReq
+      roadReq
     );
 
     if(!success) return;

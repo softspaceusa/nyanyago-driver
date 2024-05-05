@@ -24,7 +24,7 @@ class _ActiveContractsViewState extends State<ActiveContractsView> {
       future: vm.loadRequest, 
       completeView: (context, data) {
         return const Center(
-          child: Text("На сегодня маршрутов нет..."),
+          child: Text("У вас пока что нет активных контрактов..."),
         );
       }, 
       errorView: (context, error) => ErrorView(errorText: error.toString()),
