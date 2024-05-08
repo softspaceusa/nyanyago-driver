@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
-import 'package:nanny_driver/franchise/view_models/driver_management.dart/tariffs_vm.dart';
+import 'package:nanny_driver/franchise/view_models/driver_management/tariffs_vm.dart';
 
 class TarifsView extends StatefulWidget {
   const TarifsView({super.key});
@@ -29,13 +29,47 @@ class _TarifsViewState extends State<TarifsView> with AutomaticKeepAliveClientMi
           return const Center(child: Text("На данный момент тарифов нет..."));
         }
 
-        return ListView(
-          children: data.map(
-            (e) => ListTile(
-              title: Text(e.title!),
-              subtitle: Text("~${e.amount} рублей"),
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
+                children: data.map(
+                  (e) => Slidable(
+                    endActionPane: ActionPane(
+                      motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) {}
+                        )
+                      ]
+                    ),
+                    child: ListTile(
+                      title: Text(e.title!),
+                      subtitle: Text("~${e.amount} рублей"),
+                    
+                      onTap: () => vm.editTariff(e),
+                    ),
+                  )
+                ).toList(),
+              ),
+            ),
+            NannyBottomSheet(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    FloatingActionButton(
+                      onPressed: vm.addTariff,
+                      child: const Icon(Icons.add),
+                    ),
+                    const Text("Добавить тариф")
+                  ],
+                ),
+              ),
             )
-          ).toList(),
+          ],
         );
       },
       errorView: (context, error) => ErrorView(errorText: error.toString()),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/base_views/views/driver_info.dart';
 import 'package:nanny_components/nanny_components.dart';
-import 'package:nanny_driver/franchise/view_models/driver_management.dart/driver_list_vm.dart';
+import 'package:nanny_driver/franchise/view_models/driver_management/driver_list_vm.dart';
 import 'package:nanny_driver/franchise/views/driver_request_view.dart';
 
 class DriversListView extends StatefulWidget {

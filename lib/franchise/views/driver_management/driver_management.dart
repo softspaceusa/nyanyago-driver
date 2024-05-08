@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
-import 'package:nanny_driver/franchise/view_models/driver_management_vm.dart';
+import 'package:nanny_driver/franchise/view_models/driver_management/driver_management_vm.dart';
 import 'package:nanny_driver/franchise/views/driver_management/drivers_list.dart';
 import 'package:nanny_driver/franchise/views/driver_management/tariffs.dart';
 
