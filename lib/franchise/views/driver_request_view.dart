@@ -125,7 +125,7 @@ class _DriverRequestViewState extends State<DriverRequestView> {
                             child: ExpansionTile(
                               title: const Text("Доступные тарифы"),
                               children: vm.tariffs.map(
-                                (e) => CheckboxListTile(
+                                (e) => e.id == -1 ? const SizedBox() : CheckboxListTile(
                                   value: e.id <= vm.maxAllowedTariffId,
                                   activeColor: NannyTheme.primary,
                                   title: Text(e.title!),

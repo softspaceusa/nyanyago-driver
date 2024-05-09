@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nanny_components/base_views/views/driver_info.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/franchise/view_models/driver_management/driver_list_vm.dart';
-import 'package:nanny_driver/franchise/views/driver_request_view.dart';
 
 class DriversListView extends StatefulWidget {
   const DriversListView({super.key});
@@ -40,9 +39,7 @@ class _DriversListViewState extends State<DriversListView> with AutomaticKeepAli
             itemLabel: (item) => "", 
             onItemChanged: (item) {}, 
             onDriverTap: (user) => vm.showNewDrivers ? 
-              vm.navigateToView(
-                DriverRequestView(id: user.id)
-              )
+              () => vm.toNewDriverRequest(user.id)
               :
               NannyDialogs.showModalDialog(
                 context: context, 

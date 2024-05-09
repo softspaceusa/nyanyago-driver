@@ -68,7 +68,13 @@ class TariffsVM extends ViewModelBase {
                   photoPath = await pickPhoto() ?? "";
                   setState(() {});
                 }, 
-                child: photoPath.isEmpty ? const Text("Выберите фото") : NetImage(url: photoPath)
+                child: photoPath.isEmpty ? const Text("Выберите фото") : Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: SizedBox(
+                    height: 150,
+                    child: NetImage(url: photoPath, radius: 5, fitToShortest: false)
+                  ),
+                )
               ),
               const SizedBox(height: 20),
             ],
@@ -101,7 +107,7 @@ class TariffsVM extends ViewModelBase {
     if(!context.mounted) return;
 
     LoadScreen.showLoad(context, false);
-    NannyDialogs.showMessageBox(context, "Успех", "Тариф изменен");
+    NannyDialogs.showMessageBox(context, "Успех", "Тариф создан");
     reloadView();
   }
 

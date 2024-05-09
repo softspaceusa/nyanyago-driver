@@ -1,4 +1,5 @@
 import 'package:nanny_components/nanny_components.dart';
+import 'package:nanny_driver/franchise/views/driver_request_view.dart';
 
 class DriverListVM extends ViewModelBase {
   DriverListVM({
@@ -13,4 +14,9 @@ class DriverListVM extends ViewModelBase {
   }
 
   void listTypeChanged(bool? value) => update(() => showNewDrivers = value!);
+
+  void toNewDriverRequest(int id) async {
+    await navigateToView(DriverRequestView(id: id));
+    update(() {});
+  }
 }
