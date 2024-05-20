@@ -39,8 +39,8 @@ class TariffsVM extends ViewModelBase {
 
   void addTariff() async {
     String title = "";
+    String description = "";
     String photoPath = "";
-    double amount = 0;
     
     bool confirm = await NannyDialogs.showModalDialog(
       context: context, 
@@ -56,11 +56,11 @@ class TariffsVM extends ViewModelBase {
               ),
               const SizedBox(height: 10),
               NannyTextForm(
-                labelText: "Стоимость",
-                hintText: "Стоимость",
-                keyType: TextInputType.number,
+                labelText: "Описание",
+                hintText: "Описание",
                 formatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: (text) => amount = double.parse(text),
+                onChanged: (text) => description = text,
+                maxLines: 5,
               ),
               const SizedBox(height: 10),
               ElevatedButton(
@@ -86,7 +86,7 @@ class TariffsVM extends ViewModelBase {
     if(!confirm) return;
     if(!context.mounted) return;
 
-    if(title.isEmpty || amount < 1) {
+    if(title.isEmpty) {
       NannyDialogs.showMessageBox(context, "Ошибка", "Не все данные были заполнены!");
       return;
     }
@@ -98,7 +98,7 @@ class TariffsVM extends ViewModelBase {
       NannyFranchiseApi.createTariff(
         FranchiseTariff(
           title: title,
-          amount: amount,
+          description: description
         )
       )
     );
@@ -113,7 +113,7 @@ class TariffsVM extends ViewModelBase {
 
   void editTariff(DriveTariff tariff) async {
     String title = tariff.title!;
-    double amount = tariff.amount!;
+    String description = "";
     
     bool confirm = await NannyDialogs.showModalDialog(
       context: context, 
@@ -128,12 +128,12 @@ class TariffsVM extends ViewModelBase {
           ),
           const SizedBox(height: 10),
           NannyTextForm(
-            labelText: "Стоимость",
-            hintText: "Стоимость",
-            initialValue: amount.toString(),
+            labelText: "Описание",
+            hintText: "Описание",
             keyType: TextInputType.number,
             formatters: [FilteringTextInputFormatter.digitsOnly],
-            onChanged: (text) => amount = double.parse(text),
+            onChanged: (text) => description = text,
+            maxLines: 5,
           ),
           const SizedBox(height: 20),
         ],
@@ -151,7 +151,7 @@ class TariffsVM extends ViewModelBase {
         FranchiseTariff(
           id: tariff.id,
           title: title,
-          amount: amount,
+          description: description,
         )
       )
     );

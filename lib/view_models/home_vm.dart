@@ -12,7 +12,7 @@ class HomeVM extends ViewModelBase {
   int currentIndex = 1;
   void indexChanged(int index) => update(() => currentIndex = index);
   void initialSetup() async {
-    await NannyGlobals.initChatSocket();
+      await NannyGlobals.initChatSocket();
     FirebaseMessagingHandler.checkInitialMessage();
   }
 }
