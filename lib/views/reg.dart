@@ -23,6 +23,7 @@ class _RegViewState extends State<RegView> {
     return SafeArea(
       child: Scaffold(
         appBar: NannyAppBar(
+
           actions: [
             TextButton(
               style: NannyButtonStyles.transparent.copyWith(

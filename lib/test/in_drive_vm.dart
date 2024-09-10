@@ -8,11 +8,11 @@ import 'package:nanny_driver/test/drive_complete.dart';
 
 class InDriveVM extends ViewModelBase {
   InDriveVM({
-    required super.context, 
+    required super.context,
     required super.update,
     required this.driveManager,
   }) {
-    markers.value.add(posMarker);
+    if (posMarker != null) markers.value.add(posMarker!);
 
     // locSub = LocationService.location.onLocationChanged.listen(updateDriveAndPos);
     // tapSub = NannyMapGlobals.onMapTap.listen((loc) {
@@ -22,10 +22,13 @@ class InDriveVM extends ViewModelBase {
     //   }
     //   updateDriveAndPos(loc);
     // });
-    locSub = Timer.periodic(const Duration(seconds: 1), (timer) => driveSubUpdate());
-    sumDistance = RouteManager.meters2Kilometers( RouteManager.computeDistance(driveManager.currentRoute) );
-
-    markers.notifyListeners();
+    locSub =
+        Timer.periodic(const Duration(seconds: 1), (timer) => driveSubUpdate());
+    sumDistance = RouteManager.meters2Kilometers(
+        RouteManager.computeDistance(driveManager.currentRoute));
+    WidgetsBinding.instance.addPostFrameCallback((timestamp) {
+      markers.notifyListeners();
+    });
   }
 
   final DriveManager driveManager;
@@ -34,23 +37,24 @@ class InDriveVM extends ViewModelBase {
   ValueNotifier<Set<Polyline>> routes = NannyMapGlobals.routes;
 
   bool atEnd = false;
-  
+
   LatLng? curLoc;
   LatLng? lastLoc;
-  Marker posMarker = Marker(
-    consumeTapEvents: true,
-    flat: true,
-
-    markerId: NannyConsts.driverPosId,
-    icon: NannyConsts.driverPosIcon,
-    anchor: const Offset(0.5, 0.5),
-    position: NannyMapUtils.locData2LatLng(LocationService.curLoc),
-  );
+  Marker? posMarker = LocationService.curLoc != null
+      ? Marker(
+          consumeTapEvents: true,
+          flat: true,
+          markerId: NannyConsts.driverPosId,
+          icon: NannyConsts.driverPosIcon,
+          anchor: const Offset(0.5, 0.5),
+          position: NannyMapUtils.locData2LatLng(LocationService.curLoc!),
+        )
+      : null;
   double distanceLeft = 0;
   late double sumDistance;
 
   double get drivePercent => 1 - distanceLeft / sumDistance;
-  
+
   // late StreamSubscription<LatLng> tapSub;
   late Timer locSub;
 
@@ -62,12 +66,12 @@ class InDriveVM extends ViewModelBase {
   //     lastLoc = curLoc;
   //   }
   //   curLoc = loc;
-  
+
   //   var pos = NannyMapUtils.filterMovement(
-  //     NannyMapUtils.locData2LatLng(curLoc!), 
+  //     NannyMapUtils.locData2LatLng(curLoc!),
   //     NannyMapUtils.locData2LatLng(lastLoc!)
   //   );
-  
+
   //   posMarker = posMarker.copyWith(positionParam: pos);
   //   markers.notifyListeners();
   // }
@@ -75,7 +79,7 @@ class InDriveVM extends ViewModelBase {
   void driveSubUpdate() async {
     var loc = await LocationService.location.getLocation();
     var pos = NannyMapUtils.locData2LatLng(loc);
-    if(driveManager.getDistanceToFirstPoint(pos) > 100) {
+    if (driveManager.getDistanceToFirstPoint(pos) > 100) {
       driveManager.redrawRoute(pos);
       return;
     }
@@ -84,17 +88,12 @@ class InDriveVM extends ViewModelBase {
 
   void updateDriveAndPos(LatLng loc) {
     lastLoc ??= loc;
-
     curLoc = loc;
-  
-    var pos = NannyMapUtils.filterMovement(
-      curLoc!, 
-      lastLoc!,
-    );
+    var pos = NannyMapUtils.filterMovement(curLoc!, lastLoc!);
 
     var upd = driveManager.updateDriveRoute(pos);
     double heading = driveManager.getHeading(lastLoc!, curLoc!);
-    posMarker = posMarker.copyWith(
+    posMarker = posMarker?.copyWith(
       positionParam: upd.loc,
       rotationParam: upd.heading ?? heading,
     );
@@ -108,20 +107,22 @@ class InDriveVM extends ViewModelBase {
     routes.notifyListeners();
 
     markers.value.clear();
-    markers.value = {posMarker};
+    if (posMarker != null) {
+      markers.value = {posMarker!};
+    }
+
     markers.notifyListeners();
 
-    distanceLeft = RouteManager.meters2Kilometers( RouteManager.computeDistance(upd.route) );
-    if(!atEnd) atEnd = driveManager.isAtRouteEnd(upd.loc);
+    distanceLeft =
+        RouteManager.meters2Kilometers(RouteManager.computeDistance(upd.route));
+    if (!atEnd) atEnd = driveManager.isAtRouteEnd(upd.loc);
 
     update(() {});
   }
 
   void endDrive() {
-    Navigator.pushReplacement(
-      context, 
-      MaterialPageRoute(builder: (context) => const DriveCompleteView())
-    );
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (context) => const DriveCompleteView()));
     dispose();
   }
 

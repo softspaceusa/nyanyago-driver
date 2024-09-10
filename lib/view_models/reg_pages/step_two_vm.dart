@@ -33,7 +33,12 @@ class StepTwoVM extends ViewModelBase {
   GlobalKey<FormState> receiveDateState = GlobalKey();
   TextEditingController receiveDateController= TextEditingController();
   NannyDateFormatter receiveDateMask = NannyDateFormatter(checkYear: true);
-
+  MaskTextInputFormatter receiveMaskSecond = MaskTextInputFormatter(
+      mask: "##.##.####",
+      filter: {
+        '#': RegExp(r'[a-zA-Z0-9]')
+      }
+  );
   void searchCountry() async {
     var country = await showSearch(
       context: context, 
@@ -76,12 +81,13 @@ class StepTwoVM extends ViewModelBase {
   bool validateDate() {
     var parts = receiveDateMask.text.split('.');
     String dateToParse = "${parts[2]}-${parts[1]}-${parts[0]}";
-
     DateTime? parsedDate = DateTime.tryParse(dateToParse);
-
     if(parsedDate == null) return false;
+    if(parsedDate.year < 1940) return false;
+    if(parsedDate.month < 1) return false;
+    if(parsedDate.day < 1) return false;
     if(parsedDate.isAfter(DateTime.now())) return false;
-
+    update((){});
     return true;
   }
 }

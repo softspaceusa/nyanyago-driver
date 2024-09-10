@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_driver/view_models/reg_pages/step_two_vm.dart';
 import 'package:nanny_driver/views/reg_pages/reg_page_template.dart';
@@ -18,12 +19,14 @@ class _RegStepTwoViewState extends State<RegStepTwoView> {
     super.initState();
     vm = StepTwoVM(context: context, update: setState);
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return RegPageBaseView(
-      children: [
-
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: RegPageBaseView(children: [
         Form(
           key: vm.countryState,
           child: NannyTextForm(
@@ -33,7 +36,7 @@ class _RegStepTwoViewState extends State<RegStepTwoView> {
             labelText: "Страна получения*",
             hintText: "Выберите страну",
             validator: (text) {
-              if(vm.country.id < 0) return "Выберите страну!";
+              if (vm.country.id < 0) return "Выберите страну!";
 
               return null;
             },
@@ -47,7 +50,7 @@ class _RegStepTwoViewState extends State<RegStepTwoView> {
             hintText: "Введите фамилию",
             onChanged: (text) => vm.surname = text,
             validator: (text) {
-              if(text == null || text.isEmpty) return "Введите фамилию!";
+              if (text == null || text.isEmpty) return "Введите фамилию!";
 
               return null;
             },
@@ -61,7 +64,7 @@ class _RegStepTwoViewState extends State<RegStepTwoView> {
             hintText: "Введите имя",
             onChanged: (text) => vm.name = text,
             validator: (text) {
-              if(text == null || text.isEmpty) return "Введите имя!";
+              if (text == null || text.isEmpty) return "Введите имя!";
 
               return null;
             },
@@ -69,43 +72,37 @@ class _RegStepTwoViewState extends State<RegStepTwoView> {
         ),
         const SizedBox(height: 20),
         Form(
-          key: vm.driveLicenseState,
-          child: NannyTextForm(
-            labelText: "ВУ (водительское удостоверение)*",
-            hintText: "00 00 000000",
-            keyType: TextInputType.number,
-            formatters: [vm.driveLicenseMask],
-            validator: (text) {
-              if(vm.driveLicenseMask.getUnmaskedText().length < 10) return "Введите номер ВУ!";
-
-              return null;
-            },
-          ),
-        ),
+            key: vm.driveLicenseState,
+            child: NannyTextForm(
+                labelText: "ВУ (водительское удостоверение)*",
+                hintText: "00 00 000000",
+                keyType: TextInputType.number,
+                formatters: [vm.driveLicenseMask],
+                validator: (text) {
+                  if (vm.driveLicenseMask.getUnmaskedText().length < 10) {
+                    return "Введите номер ВУ!";
+                  }
+                  return null;
+                })),
         const SizedBox(height: 20),
         Form(
-          key: vm.receiveDateState,
-          child: NannyTextForm(
-            controller: vm.receiveDateController,
-            labelText: "Дата выдачи*",
-            hintText: "00.00.0000",
-            keyType: TextInputType.number,
-            formatters: [vm.receiveDateMask],
-            validator: (text) {
-              if(vm.receiveDateMask.text.replaceAll('.', '').length < 8) return "Введите дату выдачи!";
-              if(!vm.validateDate()) return "Введите корректную дату!";
-
-              return null;
-            },
-          ),
-        ),
+            key: vm.receiveDateState,
+            child: NannyTextForm(
+                controller: vm.receiveDateController,
+                labelText: "Дата выдачи*",
+                hintText: "00.00.0000",
+                keyType: TextInputType.number,
+                formatters: [vm.receiveDateMask],
+                validator: (text) {
+                  if (vm.receiveDateMask.text.replaceAll('.', '').length < 8) {
+                    return "Введите дату выдачи!";
+                  }
+                  if (!vm.validateDate()) return "Введите корректную дату!";
+                  return null;
+                })),
         const Spacer(),
-        ElevatedButton(
-          onPressed: vm.nextStep, 
-          child: const Text("Далее"),
-        ),
-
-      ]
+        ElevatedButton(onPressed: vm.nextStep, child: const Text("Далее"))
+      ]),
     );
   }
 }

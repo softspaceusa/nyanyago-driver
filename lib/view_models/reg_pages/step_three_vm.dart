@@ -7,13 +7,10 @@ import 'package:nanny_driver/globals.dart';
 import 'package:nanny_driver/views/reg_pages/step_four.dart';
 
 class StepThreeVM extends ViewModelBase {
-  StepThreeVM({
-    required super.context, 
-    required super.update
-  });
+  StepThreeVM({required super.context, required super.update});
 
   DriverUserData regForm = NannyDriverGlobals.driverRegForm;
-  
+
   TextEditingController markController = TextEditingController();
   TextEditingController modelController = TextEditingController();
   TextEditingController colorController = TextEditingController();
@@ -24,6 +21,7 @@ class StepThreeVM extends ViewModelBase {
   GlobalKey<FormState> colorState = GlobalKey();
   GlobalKey<FormState> stateNumState = GlobalKey();
   GlobalKey<FormState> stsState = GlobalKey();
+  GlobalKey<FormState> yearState = GlobalKey();
 
   StaticData carMark = StaticData();
   CarModelData carModel = CarModelData();
@@ -31,36 +29,33 @@ class StepThreeVM extends ViewModelBase {
 
   bool get isMarkSelected => carMark.id != -1;
 
-  MaskTextInputFormatter stateNumMask = MaskTextInputFormatter(
-    mask: "@ ### @@ ###",
-    filter: {
-      '@': RegExp(r"[А-Я]"),
-      '#': RegExp(r"[0-9]"),
-    }
-  );
-  MaskTextInputFormatter stsMask = MaskTextInputFormatter(
-    mask: "## @@ ######",
-    filter: {
-      '@': RegExp(r"[А-Я]"),
-      '#': RegExp(r"[0-9]"),
-    }
-  ); 
+  MaskTextInputFormatter stateNumMask =
+      MaskTextInputFormatter(mask: "@ ### @@ ###", filter: {
+    '@': RegExp(r"[А-Я]"),
+    '#': RegExp(r"[0-9]"),
+  });
+  MaskTextInputFormatter stsMask =
+      MaskTextInputFormatter(mask: "## @@ ######", filter: {
+    '@': RegExp(r"[А-Я0-9]"),
+    '#': RegExp(r"[0-9]"),
+  });
 
   void searchMark() async {
     var mark = await showSearch(
-      context: context, 
+      context: context,
       delegate: NannySearchDelegate(
-        onSearch: (query) => NannyStaticDataApi.getCarMarks(StaticData(title: query)),
+        onSearch: (query) =>
+            NannyStaticDataApi.getCarMarks(StaticData(title: query)),
         onResponse: (response) => response.response,
       ),
     );
 
-    if(mark == null) return;
+    if (mark == null) return;
 
     carMark = mark;
     markController.text = mark.title;
 
-    if(mark.id != carModel.carMarkId) {
+    if (mark.id != carModel.carMarkId) {
       carModel = CarModelData();
       modelController.text = "";
 
@@ -69,61 +64,63 @@ class StepThreeVM extends ViewModelBase {
 
     update(() {});
   }
-  
+
   void searchModel() async {
     var model = await showSearch(
-      context: context, 
-      delegate: NannySearchDelegate(
-        emptyLabel: "Кажется модели с такой маркой нет в базе данных...",
-        onSearch: (query) => NannyStaticDataApi.getCarModels(
-          CarModelData(
-            title: query, 
-            carMarkId: carMark.id < 0 ? null : carMark.id, 
-          ),
-        ),
-        onResponse: (response) => response.response,
-      ),
-    );
+        context: context,
+        delegate: NannySearchDelegate(
+            emptyLabel: "Кажется модели с такой маркой нет в базе данных...",
+            onSearch: (query) => NannyStaticDataApi.getCarModels(CarModelData(
+                title: query, carMarkId: carMark.id < 0 ? null : carMark.id)),
+            onResponse: (response) => response.response));
 
-    if(model == null) return;
+    if (model == null) return;
 
     carModel = model;
     modelController.text = model.title;
     yearController.text = model.releaseYear.toString();
   }
-  
+
   void searchColor() async {
     var color = await showSearch(
-      context: context, 
+      context: context,
       delegate: NannySearchDelegate(
-        onSearch: (query) => NannyStaticDataApi.getColors(StaticData(title: query)),
+        onSearch: (query) =>
+            NannyStaticDataApi.getColors(StaticData(title: query)),
         onResponse: (response) => response.response,
       ),
     );
 
-    if(color == null) return;
+    if (color == null) return;
 
     carColor = color;
     colorController.text = color.title;
   }
 
+  String? validateController(String v) {
+    var date = int.tryParse(v);
+    if (date == null || date > DateTime.now().year || date < 1930) {
+      return 'Некорректный год выпуска!';
+    }
+    return null;
+  }
+
   void nextStep() {
-    if(!markState.currentState!.validate() ||
-       !modelState.currentState!.validate() ||
-       !colorState.currentState!.validate() ||
-       !stateNumState.currentState!.validate() ||
-       !stsState.currentState!.validate()
-    ) return;
+    if (!markState.currentState!.validate() ||
+        !modelState.currentState!.validate() ||
+        !colorState.currentState!.validate() ||
+        !stateNumState.currentState!.validate() ||
+        !stsState.currentState!.validate() ||
+        !yearState.currentState!.validate()) return;
 
     regForm.driverData = regForm.driverData.copyWith(
       carData: CarData(
-        autoMark: carMark.id, 
-        autoModel: carModel.id, 
-        autoColor: carColor.id,
-        releaseYear: carModel.releaseYear!, 
-        stateNumber: stateNumMask.getUnmaskedText(), 
-        ctc: stsMask.getUnmaskedText()
-      ),
+          autoMark: carMark.id,
+          autoModel: carModel.id,
+          autoColor: carColor.id,
+          releaseYear: int.tryParse(yearController.text)!,
+          stateNumber: stateNumMask.getUnmaskedText(),
+          ctc: stsMask.getUnmaskedText()),
     );
 
     slideNavigateToView(const RegStepFourView());

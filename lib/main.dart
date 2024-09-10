@@ -16,38 +16,34 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HttpOverrides.global = MyHttpOverrides();
-  
+
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: NannyTheme.primary
-    )
-  );
+      SystemUiOverlayStyle(statusBarColor: Colors.grey[50]!));
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   Intl.defaultLocale = "ru_RU";
   initializeDateFormatting(Intl.defaultLocale);
-  
+
   DioRequest.init();
   DioRequest.initDebugLogs();
 
   LocationService.initBackgroundLocation();
-  await LocationService.initLocInfo();
+  LocationService.initLocInfo();
 
   NannyConsts.setLoginPaths([
     LoginPath(userType: UserType.driver, path: const HomeView()),
-    
-    LoginPath(userType: UserType.franchiseAdmin, path: const FranchiseHomeView()),
+    LoginPath(
+        userType: UserType.franchiseAdmin, path: const FranchiseHomeView()),
     LoginPath(userType: UserType.manager, path: const FranchiseHomeView()),
     LoginPath(userType: UserType.operator, path: const FranchiseHomeView()),
     LoginPath(userType: UserType.partner, path: const PartnerHomeView()),
-    
-    LoginPath(userType: UserType.admin, path: const AdminHomeView(regView: RegView()) ),
+    LoginPath(
+        userType: UserType.admin,
+        path: const AdminHomeView(regView: RegView())),
   ]);
 
   await NannyConsts.initMarkerIcons();
@@ -57,24 +53,20 @@ void main() async {
   await NannyStorage.init(isClient: false);
   FirebaseMessagingHandler.init();
 
-  Logger().d("Storage data:\nLogin data - ${(await NannyStorage.getLoginData())?.toJson()}");
-  
-  runApp(
-    MainApp(
+  Logger().d(
+      "Storage data:\nLogin data - ${(await NannyStorage.getLoginData())?.toJson()}");
+
+  runApp(MainApp(
       firstScreen: await NannyUser.autoLogin(
-        paths: NannyConsts.availablePaths, 
-        defaultView: WelcomeView(
-          regView: const RegView(),
-          loginPaths: NannyConsts.availablePaths,
-        ),
-      ),
-    ),
-  );
+          paths: NannyConsts.availablePaths,
+          defaultView: WelcomeView(
+              regView: const RegView(),
+              loginPaths: NannyConsts.availablePaths))));
 }
 
 class MainApp extends StatelessWidget {
   final Widget firstScreen;
-  
+
   const MainApp({
     super.key,
     required this.firstScreen,
@@ -83,20 +75,21 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: NannyGlobals.navKey,
-      theme: NannyTheme.appTheme,
-      home: firstScreen,
-      // home: const TestView(),
-    );
+        navigatorKey: NannyGlobals.navKey,
+        theme: NannyTheme.appTheme,
+        home: firstScreen
+        // home: const TestView(),
+        );
   }
 }
 
 // На случай, если Пятисотый забыл сертификаты обновить
-  
-class MyHttpOverrides extends HttpOverrides{
+
+class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext? context){
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

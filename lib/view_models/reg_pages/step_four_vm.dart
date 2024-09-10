@@ -1,3 +1,5 @@
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nanny_components/dialogs/loading.dart';
 import 'package:nanny_components/nanny_components.dart';
@@ -20,6 +22,7 @@ class RegStepFourVM extends ViewModelBase {
 
   GlobalKey<FormState> aboutMeState = GlobalKey();
   GlobalKey<FormState> ageState = GlobalKey();
+  TextEditingController ageController = TextEditingController();
 
   String aboutMe = "";
   String age = "";
