@@ -9,13 +9,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   google_maps_flutter: ^2.5.0
   firebase_core: ^2.30.1
-  
+
   nanny_components:
     path: ./nanny_components
-  
+
   nanny_core:
     path: ./nanny_core
 
@@ -38,10 +40,10 @@ flutter:
 
         - asset: ./nanny_components/assets/fonts/nunito/Nunito-Light.ttf
           weight: 300
-          
+
         - asset: ./nanny_components/assets/fonts/nunito/Nunito-Bold.ttf
           weight: 700
-    
+
     - family: Fregat
       fonts:
         - asset: ./nanny_components/assets/fonts/fregat/Fregat_regular.otf
@@ -55,6 +57,5 @@ flutter:
         - asset: ./nanny_components/assets/fonts/fregat/Fregat_bold_italic.otf
           weight: 700
           style: italic
-    
 
   uses-material-design: true
