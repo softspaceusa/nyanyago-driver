@@ -3,10 +3,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:nanny_core/nanny_core.dart';
 
 class TextMasks {
-  static MaskTextInputFormatter phoneMask() => MaskTextInputFormatter(
-        mask: '+ 7 (###) ###-##-##',
-        filter: {'#': RegExp(r'[0-9]')},
-      );
+  static CustomPhoneInputFormatter phoneMask() => CustomPhoneInputFormatter();
 
   static MaskTextInputFormatter digitsMask(int max) {
     String mask = "";
@@ -46,7 +43,8 @@ class NannyDateFormatter extends TextInputFormatter {
             (newText.indexOf('.') != 2 && newText.indexOf('.') != 5)) ||
         newText.contains(' ') ||
         newText.contains(',') ||
-        newText.contains('-') || newText.length > 10) {
+        newText.contains('-') ||
+        newText.length > 10) {
       return oldValue;
     }
     _text = newText;
@@ -79,5 +77,41 @@ class NannyDateFormatter extends TextInputFormatter {
     }
 
     return TextEditingValue(text: _text);
+  }
+}
+
+class CustomPhoneInputFormatter extends MaskTextInputFormatter {
+  CustomPhoneInputFormatter()
+      : super(
+          mask: '+ 7 (###) ###-##-##',
+          filter: {'#': RegExp(r'[0-9]')},
+        );
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    String newText = newValue.text;
+
+    // Проверяем, вставлен ли текст (разница длин больше одного символа)
+    if (newValue.text.length - oldValue.text.length > 1) {
+      // Если вставленный текст начинается с +7, 7 или 8
+      if (newText.startsWith('+7')) {
+        newText = newText.replaceFirst('+7', '');
+      } else if (newText.startsWith('7')) {
+        newText = newText.substring(1);
+      } else if (newText.startsWith('8')) {
+        newText = newText.substring(1);
+      }
+    }
+
+    // Форматируем текст с помощью MaskTextInputFormatter
+    final updatedValue = super.formatEditUpdate(
+        oldValue,
+        TextEditingValue(
+          text: newText,
+          selection: newValue.selection,
+        ));
+
+    return updatedValue;
   }
 }
