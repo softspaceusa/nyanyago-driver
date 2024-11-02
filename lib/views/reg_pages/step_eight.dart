@@ -18,35 +18,27 @@ class _RegStepEightViewState extends State<RegStepEightView> {
     super.initState();
     vm = RegStepEightVM(context: context, update: setState);
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return RegPageBaseView(
-      children: [
-
-        Text("Вы попали в ДТП, ребенок получил травму.", style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 10),
-        Form(
+    return RegPageBaseView(children: [
+      Text("Вы попали в ДТП, ребенок получил травму.",
+          style: Theme.of(context).textTheme.labelLarge),
+      const SizedBox(height: 10),
+      Form(
           key: vm.answer7State,
           child: NannyTextForm(
-            hintText: "Ваши действия пошагово?",
-            maxLines: 10,
-            maxLength: 500,
-            onChanged: (text) => vm.answer7 = text,
-            validator: (text) {
-              if(text!.isEmpty) return "Введите ответ!";
-              
-              return null;
-            },
-          ),
-        ),
-        const Spacer(),
-        ElevatedButton(
-          onPressed: vm.nextStep, 
-          child: const Text("Далее"),
-        ),
-        
-      ]
-    );
+              hintText: "Ваши действия пошагово?",
+              maxLines: 10,
+              maxLength: 500,
+              onChanged: (text) => vm.answer7 = text,
+              validator: (text) {
+                if (text!.isEmpty) return "Введите ответ!";
+
+                return null;
+              })),
+      const Spacer(),
+      ElevatedButton(onPressed: vm.nextStep, child: const Text("Далее"))
+    ]);
   }
 }

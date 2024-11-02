@@ -38,6 +38,6 @@ class RegStepEightVM extends ViewModelBase {
     //   isReg: true,
     // )); 
 
-    slideNavigateToView(const RegSuccessView());
+    Navigator.of(context).pushNamed('stepSuccess');
   }
 }

@@ -48,14 +48,14 @@ class WelcomeVM extends ViewModelBase {
   }
 
   Future<void> requestPermissions() async {
-    await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      carPlay: true,
-      criticalAlert: true,
-      sound: true,
-      provisional: true,
-    );
+    // await FirebaseMessaging.instance.requestPermission(
+    //   alert: true,
+    //   badge: true,
+    //   carPlay: true,
+    //   criticalAlert: true,
+    //   sound: true,
+    //   provisional: true,
+    // );
     List<String> deniedPerms = [];
 
     if (await Permission.locationAlways.isDenied) {
@@ -68,7 +68,7 @@ class WelcomeVM extends ViewModelBase {
       // if(result.isPermanentlyDenied || result.isDenied) deniedPerms.add(Permission.locationAlways.toString());
     }
     if (Platform.isIOS) {
-      await FirebaseMessaging.instance.requestPermission(
+       FirebaseMessaging.instance.requestPermission(
         alert: true,
         badge: true,
         carPlay: true,

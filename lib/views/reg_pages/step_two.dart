@@ -13,6 +13,11 @@ class RegStepTwoView extends StatefulWidget {
 
 class _RegStepTwoViewState extends State<RegStepTwoView> {
   late StepTwoVM vm;
+  final countryNode = FocusNode();
+  final surnameNode = FocusNode();
+  final nameNode = FocusNode();
+  final dateNode = FocusNode();
+  final licenseNode = FocusNode();
 
   @override
   void initState() {
@@ -28,52 +33,50 @@ class _RegStepTwoViewState extends State<RegStepTwoView> {
       },
       child: RegPageBaseView(children: [
         Form(
-          key: vm.countryState,
-          child: NannyTextForm(
-            controller: vm.countryTextController,
-            readOnly: true,
-            onTap: vm.searchCountry,
-            labelText: "Страна получения*",
-            hintText: "Выберите страну",
-            validator: (text) {
-              if (vm.country.id < 0) return "Выберите страну!";
+            key: vm.countryState,
+            child: NannyTextForm(
+                controller: vm.countryTextController,
+                node: countryNode,
+                readOnly: true,
+                onTap: vm.searchCountry,
+                labelText: "Страна получения*",
+                hintText: "Выберите страну",
+                validator: (text) {
+                  if (vm.country.id < 0) return "Выберите страну!";
 
-              return null;
-            },
-          ),
-        ),
+                  return null;
+                })),
         const SizedBox(height: 20),
         Form(
-          key: vm.surnameState,
-          child: NannyTextForm(
-            labelText: "Фамилия*",
-            hintText: "Введите фамилию",
-            onChanged: (text) => vm.surname = text,
-            validator: (text) {
-              if (text == null || text.isEmpty) return "Введите фамилию!";
+            key: vm.surnameState,
+            child: NannyTextForm(
+                labelText: "Фамилия*",
+                node: surnameNode,
+                hintText: "Введите фамилию",
+                onChanged: (text) => vm.surname = text,
+                validator: (text) {
+                  if (text == null || text.isEmpty) return "Введите фамилию!";
 
-              return null;
-            },
-          ),
-        ),
+                  return null;
+                })),
         const SizedBox(height: 20),
         Form(
-          key: vm.nameState,
-          child: NannyTextForm(
-            labelText: "Имя*",
-            hintText: "Введите имя",
-            onChanged: (text) => vm.name = text,
-            validator: (text) {
-              if (text == null || text.isEmpty) return "Введите имя!";
+            key: vm.nameState,
+            child: NannyTextForm(
+                labelText: "Имя*",
+                node: nameNode,
+                hintText: "Введите имя",
+                onChanged: (text) => vm.name = text,
+                validator: (text) {
+                  if (text == null || text.isEmpty) return "Введите имя!";
 
-              return null;
-            },
-          ),
-        ),
+                  return null;
+                })),
         const SizedBox(height: 20),
         Form(
             key: vm.driveLicenseState,
             child: NannyTextForm(
+                node: licenseNode,
                 labelText: "ВУ (водительское удостоверение)*",
                 hintText: "00 00 000000",
                 keyType: TextInputType.number,
@@ -88,6 +91,7 @@ class _RegStepTwoViewState extends State<RegStepTwoView> {
         Form(
             key: vm.receiveDateState,
             child: NannyTextForm(
+                node: dateNode,
                 controller: vm.receiveDateController,
                 labelText: "Дата выдачи*",
                 hintText: "00.00.0000",

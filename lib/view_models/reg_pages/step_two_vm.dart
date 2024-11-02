@@ -75,7 +75,7 @@ class StepTwoVM extends ViewModelBase {
       surname: surname,
     );
 
-    slideNavigateToView(const RegStepThreeView());
+    Navigator.of(context).pushNamed('step3');
   }
 
   bool validateDate() {

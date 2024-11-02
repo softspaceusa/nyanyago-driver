@@ -30,6 +30,6 @@ class RegStepSixVM extends ViewModelBase {
       ),
     );
 
-    slideNavigateToView(const RegStepSevenView());
+    Navigator.of(context).pushNamed('step7');
   }
 }

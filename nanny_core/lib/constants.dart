@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
 
@@ -10,37 +13,62 @@ class NannyConsts {
   static const String baseUrlOld = "https://77.232.137.74/api/v1.0";
   static const String socketUrl = "wss://nyanyago.ru/api/v1.0";
 
-  static const String regFileToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjotMSwiZmJpZCI6IlJlZ2lzdHJhdGlvbiIsImV4cCI6NDg0MjY2NzY2NX0.lzICh4ya1hVSehS4tCFLBTwOTD6TDxaxoBpJgt6YRrw";
-  static const String tinkoffPublikKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv5yse9ka3ZQE0feuGtemYv3IqOlLck8zHUM7lTr0za6lXTszRSXfUO7jMb+L5C7e2QNFs+7sIX2OQJ6a+HG8kr+jwJ4tS3cVsWtd9NXpsU40PE4MeNr5RqiNXjcDxA+L4OsEm/BlyFOEOh2epGyYUd5/iO3OiQFRNicomT2saQYAeqIwuELPs1XpLk9HLx5qPbm8fRrQhjeUD5TLO8b+4yCnObe8vy/BMUwBfq+ieWADIjwWCMp2KTpMGLz48qnaD9kdrYJ0iyHqzb2mkDhdIzkim24A3lWoYitJCBrrB2xM05sm9+OdCI1f7nPNJbl5URHobSwR94IRGT7CJcUjvwIDAQAB";
+  static const String regFileToken =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjotMSwiZmJpZCI6IlJlZ2lzdHJhdGlvbiIsImV4cCI6NDg0MjY2NzY2NX0.lzICh4ya1hVSehS4tCFLBTwOTD6TDxaxoBpJgt6YRrw";
+  static const String tinkoffPublikKey =
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv5yse9ka3ZQE0feuGtemYv3IqOlLck8zHUM7lTr0za6lXTszRSXfUO7jMb+L5C7e2QNFs+7sIX2OQJ6a+HG8kr+jwJ4tS3cVsWtd9NXpsU40PE4MeNr5RqiNXjcDxA+L4OsEm/BlyFOEOh2epGyYUd5/iO3OiQFRNicomT2saQYAeqIwuELPs1XpLk9HLx5qPbm8fRrQhjeUD5TLO8b+4yCnObe8vy/BMUwBfq+ieWADIjwWCMp2KTpMGLz48qnaD9kdrYJ0iyHqzb2mkDhdIzkim24A3lWoYitJCBrrB2xM05sm9+OdCI1f7nPNJbl5URHobSwR94IRGT7CJcUjvwIDAQAB";
 
   static late final List<LoginPath> availablePaths;
+
   static void setLoginPaths(List<LoginPath> path) => availablePaths = path;
 
   // Map Data
-  static String get mapKey => Platform.isAndroid ? androidMapApiKey : iosMapApiKey;
+  static String get mapKey =>
+      Platform.isAndroid ? androidMapApiKey : iosMapApiKey;
   static const String iosMapApiKey = "AIzaSyCDL4ROU7QnbEH0wswZ-1IvTyjNYuqkqIU";
-  static const String androidMapApiKey = "AIzaSyAqYRRKrNm1fkUvEey0zX9XOUYTxGSuQmU";
+  static const String androidMapApiKey =
+      "AIzaSyAqYRRKrNm1fkUvEey0zX9XOUYTxGSuQmU";
   static const MarkerId curPosId = MarkerId("curPos");
   static const MarkerId driverPosId = MarkerId("driverPos");
 
   static late final BitmapDescriptor curPosIcon;
   static late final BitmapDescriptor driverPosIcon;
 
+  static Future<Uint8List?> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+        ?.buffer
+        .asUint8List();
+  }
+
   static Future<void> initMarkerIcons() async {
-    curPosIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration.empty, 
-      'packages/nanny_components/assets/images/map/client_location.png'
-    );
-    driverPosIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration.empty, 
-      'packages/nanny_components/assets/images/map/driver_location.png'
-    );
-    
+    var bytes = await getBytesFromAsset(
+        'packages/nanny_components/assets/images/map/client_location.png', 350);
+    if (bytes != null) {
+      curPosIcon = BitmapDescriptor.fromBytes(bytes, size: const Size(350, 350));
+    } else {
+      curPosIcon = await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration.empty,
+          'packages/nanny_components/assets/images/map/client_location.png');
+    }
+    var driverBytes = await getBytesFromAsset(
+        'packages/nanny_components/assets/images/map/driver_location.png', 350);
+    if (driverBytes != null) {
+      driverPosIcon =
+          BitmapDescriptor.fromBytes(driverBytes, size: const Size(350, 350));
+    } else {
+      driverPosIcon = await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration.empty,
+          'packages/nanny_components/assets/images/map/driver_location.png');
+    }
   }
 }
 
 // 3 - Operator
-// 4 - Manager 
+// 4 - Manager
 // 5 - Partner
 // 6 - Franchise admin
 
@@ -48,7 +76,6 @@ enum UserType {
   client("Родитель", 0),
   driver("Водитель", 0),
   admin("Администратор", 0),
-  
   partner("Партнёр", 5),
   operator("Оператор", 3),
   manager("Менеджер", 4),
@@ -56,6 +83,7 @@ enum UserType {
 
   final String name;
   final int id;
+
   const UserType(this.name, this.id);
 }
 
@@ -66,8 +94,8 @@ enum UserStatus {
   notConfirmed("Не подтверждён"),
   unrecognized("Неизвестен");
 
-  
   final String name;
+
   const UserStatus(this.name);
 }
 
@@ -76,7 +104,7 @@ enum UserStatus {
 //   econom("Эконом"),
 //   comfort("Комфорт"),
 //   business("Бизнес");
-  
+
 //   final String name;
 //   const TariffType(this.name);
 // }
@@ -96,6 +124,7 @@ enum DriveType {
 
   final String name;
   final int id;
+
   const DriveType(this.name, this.id);
 }
 
@@ -103,8 +132,9 @@ enum OfferType {
   route("Маршрут"),
   oneTime("Разовая поездка"),
   replacement("На замену");
-  
+
   final String name;
+
   const OfferType(this.name);
 }
 
@@ -116,6 +146,7 @@ enum GraphType {
 
   final String name;
   final int duration;
+
   const GraphType(this.name, this.duration);
 }
 
@@ -128,13 +159,11 @@ enum DateType {
   year("Год");
 
   final String name;
+
   const DateType(this.name);
 }
 
-enum PeriodType {
-  graph,
-  table
-}
+enum PeriodType { graph, table }
 
 enum NannyWeekday {
   monday("Понедельник", "Пн"),
@@ -147,6 +176,7 @@ enum NannyWeekday {
 
   final String fullName;
   final String shortName;
+
   const NannyWeekday(this.fullName, this.shortName);
 }
 
@@ -161,73 +191,74 @@ enum NotificationAction {
   replyOrder("reply_order");
 
   final String name;
+
   const NotificationAction(this.name);
 }
 
 // Map data
 /// **Google address types**
-/// 
+///
 /// `streetAddress` - указывает точный адрес
-/// 
+///
 /// `route` - указывает именованный маршрут (например, «US 101»)
-/// 
+///
 /// `intersection` - указывает на крупный перекресток, обычно двух основных дорог
-/// 
+///
 /// `political` - указывает на политическую сущность. Обычно этот тип обозначает полигон какой-либо гражданской администрации
-/// 
+///
 /// `country` - указывает национальное политическое образование и обычно является типом высшего порядка, возвращаемым геокодером
-/// 
-/// `adminArea1` - указывает гражданское лицо первого порядка ниже уровня страны. В Соединенных Штатах такими административными 
-/// уровнями являются штаты. Не все страны демонстрируют эти административные уровни. В большинстве случаев короткие названия 
-/// административной_области_уровня_1 будут точно соответствовать подразделениям ISO 3166-2 и другим широко распространенным спискам; 
+///
+/// `adminArea1` - указывает гражданское лицо первого порядка ниже уровня страны. В Соединенных Штатах такими административными
+/// уровнями являются штаты. Не все страны демонстрируют эти административные уровни. В большинстве случаев короткие названия
+/// административной_области_уровня_1 будут точно соответствовать подразделениям ISO 3166-2 и другим широко распространенным спискам;
 /// однако это не гарантируется, поскольку наши результаты геокодирования основаны на различных сигналах и данных о местоположении
-/// 
-/// `adminArea2` - указывает на гражданский объект второго порядка ниже уровня страны. В Соединенных Штатах такими административными 
+///
+/// `adminArea2` - указывает на гражданский объект второго порядка ниже уровня страны. В Соединенных Штатах такими административными
 /// уровнями являются округа. Не все страны демонстрируют эти административные уровни
-/// 
-/// `adminArea3` - указывает на гражданское лицо третьего порядка ниже уровня страны. Этот тип указывает на незначительное 
+///
+/// `adminArea3` - указывает на гражданское лицо третьего порядка ниже уровня страны. Этот тип указывает на незначительное
 /// гражданское деление. Не все страны демонстрируют эти административные уровни
-/// 
-/// `adminArea4` - указывает на гражданский объект четвертого порядка ниже уровня страны. Этот тип указывает на 
+///
+/// `adminArea4` - указывает на гражданский объект четвертого порядка ниже уровня страны. Этот тип указывает на
 /// незначительное гражданское деление. Не все страны демонстрируют эти административные уровни
-/// 
-/// `adminArea5` - указывает на гражданскую единицу пятого порядка ниже уровня страны. Этот тип указывает на 
+///
+/// `adminArea5` - указывает на гражданскую единицу пятого порядка ниже уровня страны. Этот тип указывает на
 /// незначительное гражданское деление. Не все страны демонстрируют эти административные уровни
-/// 
-/// `adminArea6` - указывает на гражданскую единицу шестого порядка ниже уровня страны. Этот тип указывает на 
+///
+/// `adminArea6` - указывает на гражданскую единицу шестого порядка ниже уровня страны. Этот тип указывает на
 /// незначительное гражданское деление. Не все страны демонстрируют эти административные уровни
-/// 
-/// `adminArea7` - указывает на гражданское лицо седьмого порядка ниже уровня страны. Этот тип указывает на 
+///
+/// `adminArea7` - указывает на гражданское лицо седьмого порядка ниже уровня страны. Этот тип указывает на
 /// незначительное гражданское деление. Не все страны демонстрируют эти административные уровни
-/// 
+///
 /// `colloquialArea` - указывает часто используемое альтернативное имя объекта
-/// 
+///
 /// `locality` - указывает на объединенное политическое образование города или поселка.
-/// 
-/// `sublocality` - указывает на гражданское образование первого порядка ниже населенного пункта. 
-/// Для некоторых локаций может быть присвоен один из дополнительных типов: sublocality_level_1 до sublocality_level_5. 
+///
+/// `sublocality` - указывает на гражданское образование первого порядка ниже населенного пункта.
+/// Для некоторых локаций может быть присвоен один из дополнительных типов: sublocality_level_1 до sublocality_level_5.
 /// Каждый уровень сублокации является гражданским образованием. Большие числа указывают на меньшую географическую область
-/// 
+///
 /// `neighborhood` - указывает на именованный район
-/// 
+///
 /// `premise` - указывает на названное место, обычно это здание или совокупность зданий с общим названием
-/// 
-/// `subpremise` - указывает на объект первого порядка ниже именованного местоположения, обычно это отдельное здание в 
+///
+/// `subpremise` - указывает на объект первого порядка ниже именованного местоположения, обычно это отдельное здание в
 /// группе зданий с общим названием
-/// 
-/// `plus_code` - указывает закодированную ссылку на местоположение, полученную на основе широты и долготы. 
-/// Плюсовые коды можно использовать вместо адресов в местах, где их нет (где здания не пронумерованы или улицы не названы). 
+///
+/// `plus_code` - указывает закодированную ссылку на местоположение, полученную на основе широты и долготы.
+/// Плюсовые коды можно использовать вместо адресов в местах, где их нет (где здания не пронумерованы или улицы не названы).
 /// Подробности см. на https://plus.codes
-/// 
+///
 /// `postal_code` - указывает почтовый индекс, используемый для адреса почтовой почты внутри страны
-/// 
+///
 /// `natural_feature` - указывает на выдающуюся природную особенность
-/// 
+///
 /// `airport` - указывает на аэропорт
-/// 
+///
 /// `park` - указывает на именованный парк
-/// 
-/// `point_of_interest` - указывает на именованную достопримечательность. Как правило, эти «POI» представляют собой 
+///
+/// `point_of_interest` - указывает на именованную достопримечательность. Как правило, эти «POI» представляют собой
 /// известные местные объекты, которые нелегко вписать в другую категорию, например «Эмпайр-Стейт-Билдинг» или «Эйфелева башня»
 enum AddressType {
   streetAddress("street_address"),
@@ -255,40 +286,43 @@ enum AddressType {
   premise("premise"),
   subpremise("subpremise"),
   plusCode("plus_code"),
-  postalCode ("postal_code"),
+  postalCode("postal_code"),
   naturalFeature("natural_feature"),
   airport("airport"),
   park("park"),
   pointOfInterest("point_of_interest"),
-
   indefined("indefined");
 
   final String jsonKey;
+
   const AddressType(this.jsonKey);
 
-  static AddressType fromJsonKey(String key) => AddressType.values.firstWhere((e) => e.jsonKey == key,orElse: () => AddressType.indefined);
+  static AddressType fromJsonKey(String key) => AddressType.values
+      .firstWhere((e) => e.jsonKey == key, orElse: () => AddressType.indefined);
 }
 
 /// **Google location types**
-/// 
+///
 /// `ROOFTOP` - возвращает только те адреса, для которых Google имеет информацию о местоположении с точностью до адреса
-/// 
-/// `RANGE_INTERPOLATED` - возвращает только те адреса, которые отражают приближение (обычно на дороге), интерполированное 
-/// между двумя точными точками (например, перекрестками). Интерполированный диапазон обычно указывает на то, 
+///
+/// `RANGE_INTERPOLATED` - возвращает только те адреса, которые отражают приближение (обычно на дороге), интерполированное
+/// между двумя точными точками (например, перекрестками). Интерполированный диапазон обычно указывает на то,
 /// что геокоды крыши недоступны для адреса
-/// 
-/// `GEOMETRIC_CENTER` - возвращает только геометрические центры местоположения, такого как ломаная линия (например, улица) 
+///
+/// `GEOMETRIC_CENTER` - возвращает только геометрические центры местоположения, такого как ломаная линия (например, улица)
 /// или многоугольник (регион)
-/// 
+///
 /// `APPROXIMATE` - возвращает только те адреса, которые характеризуются как приблизительные.
 enum LocationType {
   rooftop("ROOFTOP"),
   rangeInterpolated("RANGE_INTERPOLATED"),
   geometricCenter("GEOMETRIC_CENTER"),
   approximate("APPROXIMATE");
-  
+
   final String jsonKey;
+
   const LocationType(this.jsonKey);
 
-  static LocationType fromJsonKey(String key) => LocationType.values.firstWhere((e) => e.jsonKey == key);
+  static LocationType fromJsonKey(String key) =>
+      LocationType.values.firstWhere((e) => e.jsonKey == key);
 }

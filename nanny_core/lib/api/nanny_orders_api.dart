@@ -7,6 +7,8 @@ import 'package:nanny_core/models/from_api/drive_and_map/schedule.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule_responses_data.dart';
 import 'package:nanny_core/nanny_core.dart';
 
+import '../models/from_api/drive_and_map/current_order_response.dart';
+
 class NannyOrdersApi {
   static Future<ApiResponse<void>> createSchedule(Schedule schedule) {
     return RequestBuilder<void>().create(
@@ -80,8 +82,16 @@ class NannyOrdersApi {
             .post("/orders/answer_schedule_responses", data: request.toJson()));
   }
 
-  static Future<ApiResponse<void>> getCurrentOrder() =>
-      throw UnimplementedError(); // TODO: Доделать
+  static Future<ApiResponse<CurrentOrderInfo>> getCurrentOrder() =>
+      RequestBuilder<CurrentOrderInfo>().create(
+        dioRequest: DioRequest.dio.get("/orders/get_current_order"),
+        onSuccess: (response) => CurrentOrderInfo.fromJson(response.data)
+      );
+  static Future<ApiResponse<bool>> getClientToken() =>
+      RequestBuilder<bool>().create(
+          dioRequest: DioRequest.dio.get("/orders/get_client_token"),
+          onSuccess: (response) => false
+      );
   static Future<ApiResponse<void>> startCurrentDrive() =>
       throw UnimplementedError(); // TODO: Доделать
 
@@ -102,8 +112,9 @@ class NannyOrdersApi {
 
   static Future<ApiResponse> acceptOrder(int orderId) =>
       RequestBuilder().create(
-          dioRequest: DioRequest.dio
-              .post('/orders/accept_order', data: {"id_order": orderId}));
+
+          dioRequest:
+              DioRequest.dio.post('/orders/accept_order?id_order=$orderId'));
 
   static Future<ApiResponse<List<OneTimeDriveResponse>>> getOnetimeOrder(
       {bool isOneTime = true}) async {

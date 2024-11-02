@@ -41,6 +41,12 @@ class NannyDriverApi {
     );
   }
 
+  static Future<ApiResponse<String>> getClientToken() async {
+    return RequestBuilder<String>().create(
+        dioRequest: DioRequest.dio.get('orders/get_client_token'),
+        onSuccess: (response) => response.data.toString());
+  }
+
   static Future<ApiResponse<dynamic>> changeOrderStatus(
           Map<String, dynamic> json) =>
       RequestBuilder<dynamic>().create(
@@ -66,6 +72,12 @@ class NannyDriverApi {
     );
   }
 
+  static Future<ApiResponse<dynamic>> getMySchedules() async {
+    return RequestBuilder<dynamic>().create(
+        dioRequest: DioRequest.dio.get("/drivers/get_my_schedules"),
+        onSuccess: (data) => data.data);
+  }
+
   static Future<ApiResponse<List<TodayScheduleData>>>
       getTodaySchedules() async {
     return RequestBuilder<List<TodayScheduleData>>().create(
@@ -86,7 +98,9 @@ class NannyDriverApi {
 class OrdersSearchSocket extends NannyWebSocket {
   final String token;
 
-  OrdersSearchSocket(this.token);
+  OrdersSearchSocket(this.token)
+      : super('OrdersSearchSocket',
+            "${NannyConsts.socketUrl}/orders/current-drive-mode/$token");
 
   @override
   String get address =>

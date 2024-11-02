@@ -23,7 +23,9 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+ await Firebase.initializeApp(
+      options:
+          Platform.isAndroid ? DefaultFirebaseOptions.currentPlatform : null);
 
   Intl.defaultLocale = "ru_RU";
   initializeDateFormatting(Intl.defaultLocale);
@@ -46,7 +48,7 @@ void main() async {
         path: const AdminHomeView(regView: RegView())),
   ]);
 
-  await NannyConsts.initMarkerIcons();
+  NannyConsts.initMarkerIcons();
 
   NannyLocalAuth.init();
 
@@ -56,12 +58,17 @@ void main() async {
   Logger().d(
       "Storage data:\nLogin data - ${(await NannyStorage.getLoginData())?.toJson()}");
 
-  runApp(MainApp(
-      firstScreen: await NannyUser.autoLogin(
-          paths: NannyConsts.availablePaths,
-          defaultView: WelcomeView(
-              regView: const RegView(),
-              loginPaths: NannyConsts.availablePaths))));
+  runApp(
+    MainApp(
+      firstScreen:
+          // RegView()
+          await NannyUser.autoLogin(
+              paths: NannyConsts.availablePaths,
+              defaultView: WelcomeView(
+                  regView: const RegView(),
+                  loginPaths: NannyConsts.availablePaths)),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {

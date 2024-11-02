@@ -6,7 +6,7 @@ class OneTimeDriveResponse {
   final String? phone;
   final String? userPhoto;
   final double? amount;
-  final int? idStatus;
+  final dynamic idStatus;
   final List<AddressOneTimeDrive>? addresses;
 
   OneTimeDriveResponse(
@@ -20,7 +20,7 @@ class OneTimeDriveResponse {
 
   factory OneTimeDriveResponse.fromJson(Map<String, dynamic> json) {
     return OneTimeDriveResponse(
-        idOrder: json['id_order'],
+        idOrder: json['id_order'] ?? json['order_id'],
         username: json['username'],
         phone: json['phone'],
         userPhoto: json['user_photo'],
@@ -37,7 +37,7 @@ class OneTimeDriveResponse {
       isFromSocket: isFromSocket,
       price: (amount ?? 0).toString(),
       orderId: idOrder ?? 0,
-      orderStatus: idStatus ?? 0,
+      orderStatus: idStatus,
       addresses: addresses?.map((e) => e.toUI()).toList() ?? []);
 }
 

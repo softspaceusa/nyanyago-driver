@@ -123,6 +123,6 @@ class StepThreeVM extends ViewModelBase {
           ctc: stsMask.getUnmaskedText()),
     );
 
-    slideNavigateToView(const RegStepFourView());
+    Navigator.of(context).pushNamed('step4');
   }
 }

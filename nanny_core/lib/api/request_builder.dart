@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import 'api_models/base_models/api_response.dart';
 
-class RequestBuilder<T>{
+class RequestBuilder<T> {
   Future<ApiResponse<T>> create({
     required Future<Response<dynamic>> dioRequest,
     T Function(Response response)? onSuccess,
@@ -12,37 +12,34 @@ class RequestBuilder<T>{
     late Response result;
     try {
       result = await dioRequest;
-    }
-    on DioException catch (e) {
-      if(e.response == null) {
+    } on DioException catch (e) {
+      print('trace:: ${e.stackTrace}');
+      if (e.response == null) {
         return ApiResponse(
-          statusCode: 422, 
-          errorMessage: "Сервер ничего не вернул или отсутствует подключение к интернету"
-        );
+            statusCode: 422,
+            errorMessage:
+                "Сервер ничего не вернул или отсутствует подключение к интернету");
       }
 
-      if(e.response!.statusCode == 500) {
+      if (e.response!.statusCode == 500) {
         return ApiResponse(
-          statusCode: 500, 
-          errorMessage: "Сервер не отвечает!"
-        );
+            statusCode: 500, errorMessage: "Сервер не отвечает!");
       }
 
       String? errorMessage;
       errorCodeMsgs?.forEach((key, value) {
-        if(e.response!.statusCode == key) errorMessage = value;
+        if (e.response!.statusCode == key) errorMessage = value;
       });
 
       return ApiResponse(errorMessage: errorMessage ?? defaultErrorMsg);
-    }
-    catch(e) {
+    } catch (e) {
       return ApiResponse(errorMessage: "Отсутствует подключение к интернету");
     }
 
     String errorMessage = "Запрос успешен";
 
     errorCodeMsgs?.forEach((key, value) {
-      if(result.statusCode == key) errorMessage = value;
+      if (result.statusCode == key) errorMessage = value;
     });
 
     // bool success = false;
@@ -53,12 +50,10 @@ class RequestBuilder<T>{
     //   success = result.data['status'];
     // }
 
-
     return ApiResponse<T>(
-      statusCode: result.statusCode!,
-      errorMessage: errorMessage,
-      success: result.statusCode == 200,
-      response: onSuccess?.call(result)
-    );
-  } 
+        statusCode: result.statusCode!,
+        errorMessage: errorMessage,
+        success: result.statusCode == 200,
+        response: onSuccess?.call(result));
+  }
 }

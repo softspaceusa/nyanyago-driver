@@ -35,8 +35,8 @@ dependencies:
     path: ./flutter_polyline_points
   google_maps_utils: ^2.0.0+1
 
-  firebase_core: ^2.24.2
-  firebase_messaging: ^14.7.9
+  firebase_core: ^3.2.0
+  firebase_messaging: ^15.0.2
   app_links: ^4.0.0
 
   tinkoff_acquiring: ^3.0.10

@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/api/api_models/search_query_request.dart';
 import 'package:nanny_core/api/nanny_orders_api.dart';
 import 'package:nanny_core/api/web_sockets/nanny_web_socket.dart';
+import 'package:nanny_core/models/from_api/drive_and_map/current_order_response.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/driver_schedule_response.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/one_time_drive_socket.dart';
 import 'package:nanny_core/models/from_api/other_parametr.dart';
@@ -20,18 +20,20 @@ class OffersVM extends ViewModelBase {
     initDriveMode();
   }
 
+  List<Order> orders = [];
   var driveToken = '';
   var selectedId = 0;
   OfferType selectedOfferType = OfferType.route;
   List<OneTimeDriveModel> oneTimeDrive = [];
   List<DriverScheduleResponse> offers = [];
   List<OtherParametr> params = [];
-  late final NannyWebSocket searchSocket;
+  late NannyWebSocket searchSocket;
 
   Future<void> loadOneTimeDrives() async {
     final response = await NannyOrdersApi.getOnetimeOrder();
-    oneTimeDrive = (response.response ?? []).map((e) => e.toUi()).toList();
-    update(() {});
+    update(() {
+      oneTimeDrive = (response.response ?? []).map((e) => e.toUi()).toList();
+    });
   }
 
   void setSelected(int orderId) {
@@ -39,17 +41,55 @@ class OffersVM extends ViewModelBase {
     update(() {});
   }
 
-  void onCancel() {
-    print('on cancel call');
-    if (selectedId == 0) return;
-    if (oneTimeDrive.any((e) => e.isFromSocket)) {
-      var order = oneTimeDrive.firstWhere((e) => e.isFromSocket);
-      if (order.orderId == selectedId) {
-        searchSocket.channel.sink
-            .add('{"id_order": $selectedId, "cancel": True, "type": "order"}');
-      }
+  Future<void> updateStatuses() async {
+    var result = await NannyOrdersApi.getCurrentOrder();
+    if (result.success) {
+      orders = (result.response?.orders ?? []).toList();
+      print('${orders.map((e) => "${e.idOrder}|${e.idStatus}|${e.idUser}")}');
     } else {
-      NannyOrdersApi.declineOrder(selectedId);
+      return;
+    }
+    if (orders.isEmpty) return;
+    for (var item in orders) {
+      if (item.idStatus == 4) {
+        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 2});
+
+        // NannyOrdersApi.acceptOrder(item.idOrder ?? 0);
+        // return;
+      }
+      if (item.idStatus == 13) {
+        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 5});
+      }
+      if (item.idStatus == 5) {
+        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 7});
+      }
+      if (item.idStatus == 7) {
+        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 14});
+      }
+      if (item.idStatus == 14) {
+        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 15});
+      }
+      if (item.idStatus == 15) {
+        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 11});
+      }
+    }
+  }
+
+  Future<void> onCancel() async {
+    if (selectedId == 0) return;
+    var selected = selectedId;
+    var order = oneTimeDrive.firstWhere((e) => e.orderId == selected);
+    update(() {
+      oneTimeDrive.removeWhere((e) => e.orderId == selectedId);
+      selectedId = 0;
+    });
+    if (order.orderId == selected) {
+      await NannyOrdersApi.acceptOrder(selected).then((v) {
+        searchSocket.sinkValue(
+            {"id_order": selected, "cancel": "True", "type": "order"});
+      }).then((v) async {
+        await loadOneTimeDrives();
+      });
     }
   }
 
@@ -57,19 +97,28 @@ class OffersVM extends ViewModelBase {
     if (selectedId == 0) return;
     var loc = await LocationService.location.getLocation();
     navigateToView(MapViewOrder(
-        myLocation: LatLng(loc.latitude ?? 0, loc.longitude ?? 0),
-        model: oneTimeDrive.firstWhere((e) => e.orderId == selectedId),
-        driveToken: driveToken,
-        orderId: selectedId));
-    if (oneTimeDrive.any((e) => e.isFromSocket)) {
-      var order = oneTimeDrive.firstWhere((e) => e.isFromSocket);
-      if (order.orderId == selectedId) {
-        searchSocket.channel.sink
-            .add('{"id_order": $selectedId, "accept": True, "type": "order"}');
-      }
-    } else {
-      NannyOrdersApi.acceptOrder(selectedId);
-    }
+            myLocation: LatLng(loc.latitude ?? 0, loc.longitude ?? 0),
+            model: oneTimeDrive.firstWhere((e) => e.orderId == selectedId),
+            driveToken: driveToken,
+            orderId: selectedId))
+        .then((v) {
+
+    update(() {
+        selectedId = 0;
+      });
+      loadOneTimeDrives();
+      initDriveMode();
+    });
+    NannyOrdersApi.acceptOrder(selectedId);
+    // if (oneTimeDrive.any((e) => e.isFromSocket)) {
+    //   var order = oneTimeDrive.firstWhere((e) => e.isFromSocket);
+    //   if (order.orderId == selectedId) {
+    //     searchSocket.channel.sink
+    //         .add('{"id_order": $selectedId, "accept": True, "type": "order"}');
+    //   }
+    // } else {
+    //
+    // }
   }
 
   Future<void> initDriveMode() async {
@@ -88,22 +137,22 @@ class OffersVM extends ViewModelBase {
   void initListen() {
     searchSocket.stream.listen((v) {
       if (v is Map<String, dynamic>) {
+        if (v['id_order'] == null && v['order_id'] == null) return;
         var result = OneTimeDriveResponse.fromJson(v);
-        if (oneTimeDrive.any((e) => e.orderId != result.idOrder)) {
-          update(() {
-            oneTimeDrive.add(result.toUi(isFromSocket: true));
-            oneTimeDrive.sort((a, b) => a.isFromSocket ? 0 : 1);
-          });
-        }
-      }
-      if (v is String) {
-        var result = OneTimeDriveResponse.fromJson(jsonDecode(v));
-        if (oneTimeDrive.any((e) => e.orderId != result.idOrder)) {
-          update(() {
-            oneTimeDrive.add(result.toUi(isFromSocket: true));
-            oneTimeDrive.sort((a, b) => a.isFromSocket ? 0 : 1);
-          });
-        }
+        update(() {
+          if (oneTimeDrive.any((e) => e.orderId == result.idOrder)) return;
+          oneTimeDrive.add(result.toUi());
+          oneTimeDrive.sort((a, b) => a.isFromSocket ? 0 : 1);
+        });
+      } else if (v is String) {
+        var value = jsonDecode(v);
+        if (value['id_order'] == null && value['order_id'] == null) return;
+        var result = OneTimeDriveResponse.fromJson(value);
+        update(() {
+          if (oneTimeDrive.any((e) => e.orderId == result.idOrder)) return;
+          oneTimeDrive.add(result.toUi());
+          oneTimeDrive.sort((a, b) => a.isFromSocket ? 0 : 1);
+        });
       }
     });
   }
@@ -112,15 +161,16 @@ class OffersVM extends ViewModelBase {
   Future<bool> loadPage() async {
     var paramRes = await NannyStaticDataApi.getOtherParams();
     if (!paramRes.success) return false;
-
-    params = paramRes.response!;
+    for (var e in paramRes.response!) {
+      if (!params.any((e) => e.id == e.id)) {
+        params.add(e);
+      }
+    }
 
     var offerRes =
         await NannyDriverApi.getScheduleRequests(SearchQueryRequest());
     if (!offerRes.success) return false;
-
     offers = offerRes.response!;
-
     return true;
   }
 
@@ -128,8 +178,6 @@ class OffersVM extends ViewModelBase {
         if (type != OfferType.oneTime) {
           selectedId = 0;
         }
-
         selectedOfferType = type;
-        reloadPage();
       });
 }

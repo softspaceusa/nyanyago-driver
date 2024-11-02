@@ -96,6 +96,6 @@ class RegStepFourVM extends ViewModelBase {
       videoPath: videoPath,
     );
 
-    slideNavigateToView(const RegStepFiveView());
+    Navigator.of(context).pushNamed('step5');
   }
 }

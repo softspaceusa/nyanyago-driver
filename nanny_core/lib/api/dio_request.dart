@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:nanny_components/dialogs/loading.dart';
@@ -30,7 +31,7 @@ class DioRequest {
       handler.next(options);
     }, onResponse: (response, handler) {
       Logger().d(
-          "Got response from ${response.requestOptions.path} with data:\n${response.data.toString()}");
+          "Got response from ${response.requestOptions.path} with data:\n${jsonEncode(response.data)}");
 
       handler.next(response);
     }, onError: (e, handler) {

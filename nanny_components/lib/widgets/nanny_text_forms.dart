@@ -8,6 +8,7 @@ class NannyTextForm extends StatelessWidget {
   final String? labelText;
   final String? initialValue;
   final TextInputType? keyType;
+  final FocusNode? node;
   final List<TextInputFormatter>? formatters;
   final void Function(String text)? onChanged;
   final VoidCallback? onTap;
@@ -22,6 +23,7 @@ class NannyTextForm extends StatelessWidget {
     super.key,
     this.onChanged,
     this.onTap,
+    this.node,
     this.hintText,
     this.labelText,
     this.initialValue,
@@ -43,6 +45,7 @@ class NannyTextForm extends StatelessWidget {
 
       // style: NannyTextStyles.textTheme.bodyMedium,
       textAlignVertical: TextAlignVertical.center,
+      focusNode: node,
       decoration: style?.copyWith(
             labelText: labelText,
             hintText: hintText,
@@ -51,6 +54,7 @@ class NannyTextForm extends StatelessWidget {
             labelText: labelText,
             hintText: hintText,
           ),
+      onTapOutside: (_) => node?.unfocus(),
       inputFormatters: formatters,
       keyboardType: keyType,
       validator: validator,

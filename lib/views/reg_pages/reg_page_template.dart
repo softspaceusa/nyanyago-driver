@@ -18,14 +18,13 @@ class RegPageBaseView extends StatelessWidget {
     return AdaptBuilder(builder: (context, size) {
       return Scaffold(
           extendBodyBehindAppBar: true,
-          appBar: isFirstPage ? null : const NannyAppBar(),
           body: SingleChildScrollView(
               child: SizedBox(
                   height: size.height * (height ?? .75),
                   child: Padding(
                       padding: EdgeInsets.only(
                           left: 10,
-                          top: isFirstPage ? 20 : 80,
+                          top: isFirstPage ? 20 : 20,
                           right: 10,
                           bottom: 30),
                       child: Column(children: children)))));

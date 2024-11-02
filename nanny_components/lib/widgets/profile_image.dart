@@ -25,9 +25,12 @@ class ProfileImage extends StatelessWidget {
             onPressed: onTap,
             splashRadius: radius * .5,
             icon: ClipOval(
-                child: NetImage(
-                    url: url,
-                    placeholderPath:
-                    "packages/nanny_components/assets/images/no_user.jpg"))));
+                child: url.isNotEmpty
+                    ? NetImage(
+                        url: url,
+                        placeholderPath:
+                            "packages/nanny_components/assets/images/no_user.jpg")
+                    : Image.asset(
+                        'packages/nanny_components/assets/images/no_user.jpg'))));
   }
 }

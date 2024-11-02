@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/driver_schedule_response.dart';
@@ -29,7 +31,10 @@ class _OffersViewState extends State<OffersView>
   @override
   void initState() {
     super.initState();
-    vm = OffersVM(context: context, update: setState);
+    vm = OffersVM(context: context, update: setState)
+      ..loadOneTimeDrives().then((v) {
+        setState(() {});
+      });
   }
 
   @override
@@ -42,9 +47,14 @@ class _OffersViewState extends State<OffersView>
                 hasBackButton: false, title: "Список предложений"),
             body: Stack(children: [
               Column(children: [
-                Image.asset(
-                    'packages/nanny_components/assets/images/offers.png',
-                    height: 100),
+                CupertinoButton(
+                  onPressed: () {
+                    vm.updateStatuses();
+                  },
+                  child: Image.asset(
+                      'packages/nanny_components/assets/images/offers.png',
+                      height: 100),
+                ),
                 SizedBox(
                     height: 88,
                     width: double.infinity,
@@ -71,75 +81,23 @@ class _OffersViewState extends State<OffersView>
                               // TODO: Доделать предложения!
                               padding: const EdgeInsets.only(bottom: 140),
                               shrinkWrap: true,
-                              children:
-                                  vm.selectedOfferType == OfferType.oneTime ||
-                                          vm.selectedOfferType ==
-                                              OfferType.replacement
-                                      ? vm.oneTimeDrive
-                                          .map((e) => OneTimeDriveWidget(
-                                              e,
-                                              vm.setSelected,
-                                              vm.selectedId == e.orderId))
-                                          .toList()
-                                      : vm.offers
-                                          .map((e) => Padding(
-                                              padding: const EdgeInsets.all(10),
-                                              child: GestureDetector(
-                                                  onTap: () =>
-                                                      vm.navigateToView(
-                                                          ScheduleCheckerView(
-                                                              schedule: e)),
-                                                  child: Card(
-                                                      child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(20),
-                                                          child: Column(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: [
-                                                                clientProfile(
-                                                                    e),
-                                                                ListView(
-                                                                    shrinkWrap:
-                                                                        true,
-                                                                    children: e
-                                                                        .roads
-                                                                        .map((road) =>
-                                                                            Card(
-                                                                                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                                                              Text(road.weekDay.fullName),
-                                                                              Text("${road.startTime.formatTime()} - ${road.endTime.formatTime()}")
-                                                                            ])))
-                                                                        .toList()),
-                                                                Column(
-                                                                    mainAxisSize:
-                                                                        MainAxisSize
-                                                                            .min,
-                                                                    children: e
-                                                                        .otherParametrs
-                                                                        .map((e) =>
-                                                                            CheckboxListTile(
-                                                                              value: true,
-                                                                              onChanged: null,
-                                                                              title: Text(vm.params.firstWhere((param) => param.id == e.id!, orElse: () => OtherParametr()).title!),
-                                                                            ))
-                                                                        .toList()),
-                                                                Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .centerLeft,
-                                                                    child: Text(
-                                                                        "Общая стоимость: ${e.allSalary}"))
-                                                              ]))))))
-                                          .toList());
+                              children: vm.selectedOfferType ==
+                                          OfferType.oneTime ||
+                                      vm.selectedOfferType ==
+                                          OfferType.replacement
+                                  ? vm.oneTimeDrive
+                                      .map((e) => OneTimeDriveWidget(
+                                          e,
+                                          vm.setSelected,
+                                          vm.selectedId == e.orderId))
+                                      .toList()
+                                  : vm.offers
+                                      .map((e) => listItemWidget(e))
+                                      .toList());
                         },
                         errorView: (context, error) =>
                             ErrorView(errorText: error.toString()))),
-                  ElevatedButton(
-                      onPressed: () => vm.navigateToView(const MapDriveView()),
-                      child: const Text("Тестовая поездка вручную"))
+
               ]),
               Visibility(
                   visible: vm.selectedId != 0,
@@ -187,7 +145,14 @@ class _OffersViewState extends State<OffersView>
 
   Widget clientProfile(DriverScheduleResponse schedule) {
     return ListTile(
-      leading: ProfileImage(url: schedule.user.photoPath, radius: 50),
+      leading: SizedBox(
+          height: 60,
+          width: 60,
+          child: ProfileImage(
+            url: schedule.user.photoPath,
+            radius: 50,
+            padding: EdgeInsets.zero,
+          )),
       title: Text(schedule.user.name),
       subtitle: Text("Детей: ${schedule.childrenCount}"),
       // trailing: Card(
@@ -195,6 +160,107 @@ class _OffersViewState extends State<OffersView>
       //   child: Text(schedule.),
       // ),
     );
+  }
+
+  Widget listItemWidget(DriverScheduleResponse e) {
+    return Padding(
+        padding: const EdgeInsets.all(10),
+        child: GestureDetector(
+            onTap: () => vm.navigateToView(ScheduleCheckerView(schedule: e)),
+            child: Card(
+                child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      clientProfile(e),
+                      SizedBox(
+                          height: 80,
+                          width: double.infinity,
+                          child: ListView(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              children: e.roads
+                                  .map((road) => Container(
+                                      margin: const EdgeInsets.only(left: 6),
+                                      decoration: const BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                                blurRadius: 8,
+                                                offset: Offset(2, 2),
+                                                color: Colors.black12)
+                                          ],
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(12))),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 8),
+                                      child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(road.weekDay.fullName),
+                                            Text(
+                                                "${road.startTime.formatTime()} - ${road.endTime.formatTime()}")
+                                          ])))
+                                  .toList())),
+                      Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: vm.params.toSet().map((param) {
+                            var widget = otherParamWidget(param,
+                                e.otherParametrs.any((e) => e.id == param.id));
+                            if (widget != null) return widget;
+                            return const SizedBox();
+                          }).toList()),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Стоимость одного маршрута: ",
+                              style: NannyTextStyles.defaultTextStyle.copyWith(
+                                  fontSize: 12, fontWeight: FontWeight.w400)),
+                          Text('${e.salaryRoad?.toStringAsFixed(1) ?? '0.0'}₽',
+                              style: NannyTextStyles.defaultTextStyle.copyWith(
+                                  fontSize: 16, fontWeight: FontWeight.w400))
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Общая стоимость: ",
+                              style: NannyTextStyles.defaultTextStyle
+                                  .copyWith(fontSize: 18)),
+                          Text('${e.allSalary.toStringAsFixed(1)}₽',
+                              style: NannyTextStyles.defaultTextStyle.copyWith(
+                                  fontSize: 25, fontWeight: FontWeight.w700))
+                        ],
+                      )
+                    ])))));
+  }
+
+  Widget? otherParamWidget(OtherParametr param, bool selected) {
+    return selected
+        ? Padding(
+            padding: const EdgeInsets.only(left: 20, top: 12),
+            child: Row(children: [
+              Container(
+                  height: 12,
+                  width: 12,
+                  decoration: BoxDecoration(
+                      color: selected ? NannyTheme.primary : Colors.white,
+                      shape: BoxShape.circle,
+                      border: selected
+                          ? null
+                          : Border.all(
+                              color: NannyTheme.primary,
+                              width: 1,
+                            ))),
+              const SizedBox(width: 10),
+              Text(param.title ?? '',
+                  style: NannyTextStyles.nw40018
+                      .copyWith(fontSize: 16, color: Colors.black))
+            ]))
+        : null;
   }
 
   // List<DriverScheduleResponse> testSched = [

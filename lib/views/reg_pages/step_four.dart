@@ -56,7 +56,7 @@ class _RegStepFourViewState extends State<RegStepFourView> {
               validator: (text) {
                 if (text!.isEmpty) return "Введите возраст!";
                 var parsed = int.tryParse(text);
-                if (parsed == null) return "Некорректный возраст!";
+                if (parsed == null || parsed < 18) return "Некорректный возраст!";
                 return null;
               })),
       const SizedBox(height: 20),

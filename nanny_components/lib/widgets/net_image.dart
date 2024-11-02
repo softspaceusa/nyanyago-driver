@@ -29,9 +29,10 @@ class NetImage extends StatelessWidget {
                     height: size.shortestSide,
                     fit: fit ?? BoxFit.cover,
                     placeholder: AssetImage(placeholderPath),
+
                     image: NetworkImage(url, headers: {
                       "Authorization": "Bearer ${DioRequest.authToken}"
-                    })));
+                    }), ));
           })
         : ClipRRect(
             borderRadius: BorderRadius.circular(radius),

@@ -80,7 +80,7 @@ class OneTimeDriveWidget extends StatelessWidget {
                         .copyWith(fontSize: 18)),
                 Text(model.price,
                     style: NannyTextStyles.defaultTextStyle
-                        .copyWith(fontSize: 24, fontWeight: FontWeight.w700))
+                        .copyWith(fontSize: 25, fontWeight: FontWeight.w700))
               ])
             ])));
   }
@@ -91,7 +91,7 @@ class OneTimeDriveModel {
   final String username;
   final String price;
   final int orderId;
-  final int orderStatus;
+  final dynamic orderStatus;
   final List<OneTimeDriveAddress> addresses;
   final bool isFromSocket;
 
