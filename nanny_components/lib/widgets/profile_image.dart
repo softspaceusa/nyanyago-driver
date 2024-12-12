@@ -31,6 +31,7 @@ class ProfileImage extends StatelessWidget {
                         placeholderPath:
                             "packages/nanny_components/assets/images/no_user.jpg")
                     : Image.asset(
-                        'packages/nanny_components/assets/images/no_user.jpg'))));
+                        'packages/nanny_components/assets/images/no_user.jpg',
+                        fit: BoxFit.cover))));
   }
 }

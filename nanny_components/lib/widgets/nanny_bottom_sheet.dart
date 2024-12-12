@@ -19,20 +19,25 @@ class NannyBottomSheet extends StatelessWidget {
     return AdaptBuilder(
       builder: (context, size) {
         return Container(
-          width: double.infinity,
-          height: height,
-
-          decoration: BoxDecoration(
-            color: NannyTheme.surface,
-            borderRadius: roundBottom ? 
-                BorderRadius.circular(20) 
-                : const BorderRadius.vertical(top: Radius.circular(20)),
-            boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 10)]
-          ),
-          
-          child: child,
-        );
-      }
+            width: double.infinity,
+            height: height,
+            decoration: BoxDecoration(
+              color: NannyTheme.surface,
+              borderRadius: roundBottom
+                  ? BorderRadius.circular(20)
+                  : const BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+              boxShadow: [
+                BoxShadow(
+                  color: NannyTheme.shadow.withOpacity(.19),
+                  blurRadius: 32,
+                  offset: const Offset(0, -2),
+                )
+              ],
+            ),
+            child: child);
+      },
     );
   }
 }

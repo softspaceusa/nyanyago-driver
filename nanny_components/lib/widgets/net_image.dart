@@ -21,26 +21,35 @@ class NetImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return fitToShortest
-        ? AdaptBuilder(builder: (context, size) {
-            return ClipRRect(
+        ? AdaptBuilder(
+            builder: (context, size) {
+              return ClipRRect(
                 borderRadius: BorderRadius.circular(radius),
                 child: FadeInImage(
-                    width: size.shortestSide,
-                    height: size.shortestSide,
-                    fit: fit ?? BoxFit.cover,
-                    placeholder: AssetImage(placeholderPath),
-
-                    image: NetworkImage(url, headers: {
+                  width: size.shortestSide,
+                  height: size.shortestSide,
+                  fit: fit ?? BoxFit.cover,
+                  placeholder: AssetImage(placeholderPath),
+                  image: NetworkImage(
+                    url,
+                    headers: {
                       "Authorization": "Bearer ${DioRequest.authToken}"
-                    }), ));
-          })
+                    },
+                  ),
+                ),
+              );
+            },
+          )
         : ClipRRect(
             borderRadius: BorderRadius.circular(radius),
             child: FadeInImage(
-                fit: fit,
-                placeholder: AssetImage(placeholderPath),
-                image: NetworkImage(url, headers: {
-                  "Authorization": "Bearer ${DioRequest.authToken}"
-                })));
+              fit: fit ?? BoxFit.cover,
+              placeholder: AssetImage(placeholderPath),
+              image: NetworkImage(
+                url,
+                headers: {"Authorization": "Bearer ${DioRequest.authToken}"},
+              ),
+            ),
+          );
   }
 }

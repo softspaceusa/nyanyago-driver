@@ -5,11 +5,18 @@ import 'package:nanny_core/nanny_core.dart';
 
 class MyReferalsVM extends ViewModelBase {
   MyReferalsVM({
-    required super.context, 
+    required super.context,
     required super.update,
   }) {
     request = NannyFranchiseApi.getMyReferals();
   }
 
-  late Future< ApiResponse<MyReferalData> > request;
+  late Future<ApiResponse<MyReferalData>> request;
+
+  String formatCurrency(double balance) {
+    final formatter = NumberFormat("#,##0.00", "en_US");
+    String formatted =
+        formatter.format(balance).replaceAll(',', ' ').replaceAll('.', ', ');
+    return "$formatted Р";
+  }
 }

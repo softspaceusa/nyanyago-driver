@@ -7,14 +7,13 @@ class UserInfo<T> {
     required this.name,
     required this.phone,
     required this.role,
-    // required this.inn,
+    this.requestForPayment,
     required this.photoPath,
     required this.videoPath,
     this.chatToken = "",
     this.dateReg = "",
     this.jsonData = const {},
     this.roleData,
-
     this.id = 0,
     this.status = UserStatus.unrecognized,
     this.isActive = false,
@@ -28,7 +27,7 @@ class UserInfo<T> {
   final String name;
   final String phone;
   final List<UserType> role;
-  // final String inn;
+  final double? requestForPayment;
   final String photoPath;
   final String videoPath;
   final String dateReg;
@@ -41,11 +40,11 @@ class UserInfo<T> {
 
   final Map<String, dynamic> jsonData;
 
-  factory UserInfo.fromJson(Map<String, dynamic> json){ 
+  factory UserInfo.fromJson(Map<String, dynamic> json) {
     List<UserType> userTypes = [];
     List<String> roles = [];
     if (json['role'] != null) {
-      for(String role in json['role']) {
+      for (String role in json['role']) {
         roles.add(role);
       }
     }
@@ -53,8 +52,9 @@ class UserInfo<T> {
     userTypes = UserType.values.where((e) => roles.contains(e.name)).toList();
 
     String photo = json["photo_path"] ?? "";
-    photo = photo.replaceAll("https://77.232.137.74:5000/api/v1.0", NannyConsts.baseUrl);
-    
+    photo = photo.replaceAll(
+        "https://77.232.137.74:5000/api/v1.0", NannyConsts.baseUrl);
+
     return UserInfo(
       id: json["id"] ?? json["id_user_referal"] ?? 0,
       chatToken: json["token"] ?? "",
@@ -62,11 +62,14 @@ class UserInfo<T> {
       name: json["name"] ?? "",
       phone: (json["phone"] as String?)?.replaceAll("+", "") ?? "",
       role: userTypes,
-      // inn: json["inn"] ?? "",
+      requestForPayment: (json["request_for_payment"] is int)
+          ? (json["request_for_payment"] as int).toDouble()
+          : json["request_for_payment"] as double?,
       photoPath: photo,
       videoPath: json["video_path"] ?? "",
       dateReg: json["date_reg"] ?? json["datetime_create"] ?? "",
-      status: UserStatus.values.firstWhere((e) => e.name == json["status"], orElse: () => UserStatus.unrecognized),
+      status: UserStatus.values.firstWhere((e) => e.name == json["status"],
+          orElse: () => UserStatus.unrecognized),
       isActive: json['isActive'] ?? false,
       hasAuth: json["hasAuth"] ?? false,
       jsonData: json,
@@ -74,40 +77,39 @@ class UserInfo<T> {
   }
 
   factory UserInfo.createDriverRegForm() => UserInfo(
-    surname: "", 
-    name: "", 
-    phone: "", 
-    role: [UserType.driver], 
-    // inn: "", 
-    photoPath: "", 
-    videoPath: "", 
-  );
+        surname: "",
+        name: "",
+        phone: "",
+        role: [UserType.driver],
+        requestForPayment: 0.0,
+        photoPath: "",
+        videoPath: "",
+      );
 
   Map<String, dynamic> toJson() => {
-    "surname": surname,
-    "name": name,
-    "phone": phone,
-    // "inn": inn,
-    "photo_path": photoPath,
-    "video_path": videoPath,
-    "date_reg": dateReg,
-  };
+        "surname": surname,
+        "name": name,
+        "phone": phone,
+        "request_for_payment": requestForPayment,
+        "photo_path": photoPath,
+        "video_path": videoPath,
+        "date_reg": dateReg,
+      };
 
-  UserInfo<E> copyWith<E>({
-    int? id,
-    String? surname,
-    String? name,
-    String? phone,
-    List<UserType>? role,
-    // String? inn,
-    String? photoPath,
-    String? videoPath,
-    String? dateReg,
-    UserStatus? status,
-    bool? isActive,
-    E? roleData,
-    Map<String, dynamic>? getMeJson    
-  }) {
+  UserInfo<E> copyWith<E>(
+      {int? id,
+      String? surname,
+      String? name,
+      String? phone,
+      List<UserType>? role,
+      double? requestForPayment,
+      String? photoPath,
+      String? videoPath,
+      String? dateReg,
+      UserStatus? status,
+      bool? isActive,
+      E? roleData,
+      Map<String, dynamic>? getMeJson}) {
     return UserInfo<E>(
       id: id ?? this.id,
       chatToken: this.chatToken,
@@ -115,7 +117,7 @@ class UserInfo<T> {
       name: name ?? this.name,
       phone: phone ?? this.phone,
       role: role ?? this.role,
-      // inn: inn ?? this.inn,
+      requestForPayment: requestForPayment ?? this.requestForPayment,
       photoPath: photoPath ?? this.photoPath,
       videoPath: videoPath ?? this.videoPath,
       dateReg: dateReg ?? this.dateReg,
@@ -133,14 +135,10 @@ class UserInfo<T> {
   }
 
   UserInfo<Partner> asPartner() {
-    return copyWith<Partner>(
-      roleData: Partner.fromJson(jsonData)
-    );
+    return copyWith<Partner>(roleData: Partner.fromJson(jsonData));
   }
 
-  UserInfo<Referal> asReferal() {
-    return copyWith<Referal>(
-      roleData: Referal.fromJson(jsonData)
-    );
+  UserInfo<Referral> asReferal() {
+    return copyWith<Referral>(roleData: Referral.fromJson(jsonData));
   }
 }

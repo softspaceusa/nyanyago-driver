@@ -23,25 +23,27 @@ class AdminHomeView extends StatefulWidget {
 
 class _AdminHomeViewState extends State<AdminHomeView> {
   late AdminHomeVM vm;
-  
+
   @override
   void initState() {
     super.initState();
     vm = AdminHomeVM(
-      context: context, 
+      context: context,
       update: setState,
       regView: widget.regView,
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F7F7),
       appBar: NannyAppBar(
+        color: const Color(0xFFF7F7F7),
         title: "Панель управления",
         hasBackButton: false,
         leading: IconButton(
-          onPressed: vm.navigateToProfile, 
+          onPressed: vm.navigateToProfile,
           icon: const Icon(Icons.account_circle),
           iconSize: 25,
         ),
@@ -56,43 +58,39 @@ class _AdminHomeViewState extends State<AdminHomeView> {
           ),
           children: [
             AdminPanelButton(
-              onPressed: () => vm.navigateToView(const SystemSettingsView()), 
-              text: "Настройка параметров системы", 
-              imgPath: "rocket.png",
-              style: NannyButtonStyles.defaultButtonStyle
-            ),
+                onPressed: () => vm.navigateToView(const SystemSettingsView()),
+                text: "Настройка параметров системы",
+                imgPath: "rocket.png",
+                style: NannyButtonStyles.defaultButtonStyle),
             AdminPanelButton(
-              onPressed: () => vm.navigateToView(const UserManagementView()), 
-              text: "Управление пользователями", 
+              onPressed: () => vm.navigateToView(const UserManagementView()),
+              text: "Управление пользователями",
               imgPath: "connection.png",
             ),
             AdminPanelButton(
-              onPressed: () => vm.navigateToView(const OrderManagement()),
-              text: "Управление заказами", 
-              imgPath: "yo.png"
-            ),
+                onPressed: () => vm.navigateToView(const OrderManagement()),
+                text: "Управление заказами",
+                imgPath: "yo.png"),
             AdminPanelButton(
-              onPressed: () => vm.navigateToView(const FinanceManagementView()), 
-              text: "Управление финансами", 
-              imgPath: "money.png"
-            ),
+                onPressed: () =>
+                    vm.navigateToView(const FinanceManagementView()),
+                text: "Управление финансами",
+                imgPath: "money.png"),
             AdminPanelButton(
-              onPressed: () => vm.navigateToView(const ReportsManagementView()), 
-              text: "Управление отчетами", 
-              imgPath: "files.png"
-            ),
+                onPressed: () =>
+                    vm.navigateToView(const ReportsManagementView()),
+                text: "Управление отчетами",
+                imgPath: "files.png"),
             AdminPanelButton(
-              onPressed: () => vm.navigateToView(const ReferralProgramView()), 
-              text: "Реферальная программа с партнерами", 
+              onPressed: () => vm.navigateToView(const ReferralProgramView()),
+              text: "Реферальная программа с партнерами",
               imgPath: "avatar.png",
               bottomPadding: -20,
             ),
             AdminPanelButton(
-              onPressed: () => vm.navigateToView(const UserCreateView()),
-              text: "Создание пользователя", 
-              imgPath: "edit.png"
-            ),
-            
+                onPressed: () => vm.navigateToView(const UserCreateView()),
+                text: "Создание пользователя",
+                imgPath: "edit.png"),
           ],
         ),
       ),
@@ -110,15 +108,15 @@ class AdminPanelButton extends StatelessWidget {
   final String text;
   final String imgPath;
   final ButtonStyle style;
-  
+
   const AdminPanelButton({
     super.key,
-    required this.onPressed, 
-    required this.text, 
+    required this.onPressed,
+    required this.text,
     required this.imgPath,
     this.width,
-    this.height, 
-    this.style = NannyButtonStyles.whiteButton, 
+    this.height,
+    this.style = NannyButtonStyles.whiteButton,
     this.imgSize = 100,
     this.rightPadding = 0,
     this.bottomPadding = 0,
@@ -130,23 +128,23 @@ class AdminPanelButton extends StatelessWidget {
       width: width,
       height: height,
       child: ElevatedButton(
-        onPressed: onPressed,
-        style: style,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Text(text),
-            ),
-            Positioned(
-              right: rightPadding,
-              bottom: bottomPadding,
-              child: Image.asset('packages/nanny_components/assets/images/$imgPath', height: imgSize)
-            ),
-          ],
-        )
-      ),
+          onPressed: onPressed,
+          style: style,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(text),
+              ),
+              Positioned(
+                  right: rightPadding,
+                  bottom: bottomPadding,
+                  child: Image.asset(
+                      'packages/nanny_components/assets/images/$imgPath',
+                      height: imgSize)),
+            ],
+          )),
     );
   }
 }

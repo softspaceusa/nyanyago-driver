@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/franchise/view_models/franchise_home_vm.dart';
@@ -6,7 +7,6 @@ import 'package:nanny_driver/franchise/views/driver_management/driver_management
 import 'package:nanny_driver/franchise/views/driver_payments.dart';
 import 'package:nanny_driver/franchise/views/finances/franchise_finances.dart';
 import 'package:nanny_driver/franchise/views/settings/franchise_settings.dart';
-import 'package:nanny_driver/franchise/views/stats.dart';
 import 'package:nanny_driver/views/reg.dart';
 
 class FranchiseHomeView extends StatefulWidget {
@@ -20,34 +20,31 @@ class _FranchiseHomeViewState extends State<FranchiseHomeView> {
   late FranchiseHomeVM vm;
 
   final List<PanelButtonData> data = [
-    if(NannyUser.userInfo!.role.contains(UserType.franchiseAdmin)) PanelButtonData(
-      label: "Просмотр статистики и отчетов",
-      imgPath: "files.png",
-      nextView: const StatsView()
-    ),
+    //if (NannyUser.userInfo!.role.contains(UserType.franchiseAdmin))
+    //  PanelButtonData(
+    //      label: "Просмотр статистики и отчетов",
+    //      imgPath: "files.png",
+    //      nextView: const StatsView()),
     PanelButtonData(
-      label: "Управление выплатами водителям",
-      imgPath: "card.png",
-      nextView: const DriverPaymentsView()
-    ),
-    if(
-      NannyUser.userInfo!.role.contains(UserType.franchiseAdmin) ||
-      NannyUser.userInfo!.role.contains(UserType.manager)
-    )PanelButtonData(
-      label: "Панель управления водителями",
-      imgPath: "bike.png",
-      nextView: const DriverManagementView()
-    ),
-    if(NannyUser.userInfo!.role.contains(UserType.franchiseAdmin)) PanelButtonData(
-      label: "Панель управления финансами",
-      imgPath: "money.png",
-      nextView: const FranchiseFinancesView()
-    ),
-    if(NannyUser.userInfo!.role.contains(UserType.franchiseAdmin)) PanelButtonData(
-      label: "Панель управления настройками",
-      imgPath: "clipboard.png",
-      nextView: const FranchiseSettingsView()
-    ),
+        label: "Управление выплатами водителям",
+        imgPath: "card.png",
+        nextView: const DriverPaymentsView()),
+    if (NannyUser.userInfo!.role.contains(UserType.franchiseAdmin) ||
+        NannyUser.userInfo!.role.contains(UserType.manager))
+      PanelButtonData(
+          label: "Панель управления водителями",
+          imgPath: "bike.png",
+          nextView: const DriverManagementView()),
+    if (NannyUser.userInfo!.role.contains(UserType.franchiseAdmin))
+      PanelButtonData(
+          label: "Панель управления финансами",
+          imgPath: "money.png",
+          nextView: const FranchiseFinancesView()),
+    //if (NannyUser.userInfo!.role.contains(UserType.franchiseAdmin))
+    //  PanelButtonData(
+    //      label: "Панель управления настройками",
+    //      imgPath: "clipboard.png",
+    //      nextView: const FranchiseSettingsView()),
   ];
 
   @override
@@ -55,69 +52,38 @@ class _FranchiseHomeViewState extends State<FranchiseHomeView> {
     super.initState();
     vm = FranchiseHomeVM(context: context, update: setState);
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: NannyAppBar(
-          hasBackButton: false,
-          title: "Панель управления",
-          leading: ProfileIconButton(
-            logoutView: WelcomeView(
-              regView: const RegView(),
-              loginPaths: NannyConsts.availablePaths,
-            ),
+    return Scaffold(
+      backgroundColor: NannyTheme.secondary,
+      appBar: NannyAppBar(
+        title: "Панель управления",
+        color: NannyTheme.secondary,
+        hasBackButton: false,
+        leading: ProfileIconButton(
+          logoutView: WelcomeView(
+            regView: const RegView(),
+            loginPaths: NannyConsts.availablePaths,
           ),
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(10),
-          children: data.asMap().entries.map(
-            (e) => panelButton(
-              e.value, 
-              e.key.isEven ? NannyButtonStyles.lightGreen : NannyButtonStyles.whiteButton,
-            ),
-          ).toList(),
-        ),
       ),
+      body: ListView.separated(
+          shrinkWrap: true,
+          padding: const EdgeInsets.only(bottom: 15, right: 16, left: 16),
+          itemBuilder: (context, index) {
+            List<MapEntry<int, PanelButtonData>> entries =
+                data.asMap().entries.toList();
+            return PanelButton(
+              data: entries[index].value,
+              style: entries[index].key.isEven
+                  ? NannyButtonStyles.lightGreen
+                  : NannyButtonStyles.whiteButton,
+              onPressed: () => vm.navigateToView(data[index].nextView),
+            );
+          },
+          separatorBuilder: (context, index) => const SizedBox(height: 15),
+          itemCount: data.asMap().entries.length),
     );
   }
-
-  Widget panelButton(PanelButtonData data, ButtonStyle style) {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: SizedBox(
-        width: double.maxFinite,
-        child: ElevatedButton(
-          style: style,
-          onPressed: () => vm.navigateToView(data.nextView), 
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(child: Text(data.label)),
-                Image.asset(
-                  'packages/nanny_components/assets/images/${data.imgPath}',
-                  width: 100,
-                ),
-              ],
-            ),
-          )
-        ),
-      ),
-    );
-  }
-}
-
-class PanelButtonData {
-  PanelButtonData({
-    required this.label,
-    required this.imgPath,
-    required this.nextView
-  });
-
-  final String label;
-  final String imgPath;
-  final Widget nextView;
 }

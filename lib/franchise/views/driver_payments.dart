@@ -18,27 +18,25 @@ class _DriverPaymentsViewState extends State<DriverPaymentsView> {
     super.initState();
     vm = DriverPaymentsVM(context: context, update: setState);
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: const NannyAppBar(
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F7F7),
+      appBar: const NannyAppBar(
           isTransparent: false,
           title: "Выплаты водителям",
-        ),
-        body: FranchiseDriverList(
-          showNewDrivers: false,
-          
-          filterItems: const [], 
-          itemLabel: (item) => "", 
-          onItemChanged: (item) {}, 
-          onDriverTap: (user) => vm.navigateToView(
-            DriverInfoView(
-              id: user.id,
-              hasPaymentButtons: true,
-            )
-          ),
+          color: NannyTheme.secondary),
+      body: FranchiseDriverList(
+        excludeFilter: false,
+        queryParameters: const {'only_active_requests': true},
+        showRequestMoney: true,
+        showNewDrivers: false,
+        filterItems: const [],
+        itemLabel: (item) => "",
+        onItemChanged: (item) {},
+        onDriverTap: (user) => vm.navigateToView(
+          DriverInfoView(id: user.id, hasPaymentButtons: true),
         ),
       ),
     );

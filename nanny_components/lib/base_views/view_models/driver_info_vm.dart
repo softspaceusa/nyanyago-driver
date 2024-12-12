@@ -8,14 +8,13 @@ import 'package:nanny_core/models/from_api/drive_and_map/schedule_responses_data
 import 'package:nanny_core/nanny_core.dart';
 
 class DriverInfoVM extends ViewModelBase {
-  DriverInfoVM({
-    required super.context, 
-    required super.update,
-    required this.id,
-    required this.viewingOrder,
-    this.scheduleData
-  }) {
-    if(viewingOrder) {
+  DriverInfoVM(
+      {required super.context,
+      required super.update,
+      required this.id,
+      required this.viewingOrder,
+      this.scheduleData}) {
+    if (viewingOrder) {
       assert(scheduleData != null);
       request.idResponse = scheduleData!.id;
       request.idSchedule = scheduleData!.idSchedule;
@@ -31,7 +30,8 @@ class DriverInfoVM extends ViewModelBase {
   int bonusAmount = 0;
   int fineAmount = 0;
 
-  Future<ApiResponse<DriverUserTextData>> get getDriver => NannyOrdersApi.getDriver(id);
+  Future<ApiResponse<DriverUserTextData>> get getDriver =>
+      NannyOrdersApi.getDriver(id);
 
   void answerSchedule({required bool confirm}) async {
     LoadScreen.showLoad(context, true);
@@ -39,25 +39,28 @@ class DriverInfoVM extends ViewModelBase {
     request.flag = confirm;
     var result = await NannyOrdersApi.answerScheduleRequest(request);
 
-    if(!context.mounted) return;
-    if(!result.success) {
+    if (!context.mounted) return;
+    if (!result.success) {
       LoadScreen.showLoad(context, false);
-      NannyDialogs.showMessageBox(context, "Ошибка", "Не удалось подтвердить заявку!");
+      NannyDialogs.showMessageBox(
+          context, "Ошибка", "Не удалось подтвердить заявку!");
       return;
     }
 
     LoadScreen.showLoad(context, false);
-    await NannyDialogs.showMessageBox(context, "Успех", "Заявка ${confirm ? "одобрена" : "отклонена"}");
+    await NannyDialogs.showMessageBox(
+        context, "Успех", "Заявка ${confirm ? "одобрена" : "отклонена"}");
     popView();
   }
 
   void addBonus() async {
     LoadScreen.showLoad(context, true);
 
-    bool success = await DioRequest.handleRequest(context, NannyFranchiseApi.addBonusMoney(id: id, amount: bonusAmount));
+    bool success = await DioRequest.handleRequest(
+        context, NannyFranchiseApi.addBonusMoney(id: id, amount: bonusAmount));
 
-    if(!success) return;
-    if(!context.mounted) return;
+    if (!success) return;
+    if (!context.mounted) return;
 
     LoadScreen.showLoad(context, false);
   }
@@ -65,10 +68,11 @@ class DriverInfoVM extends ViewModelBase {
   void addFines() async {
     LoadScreen.showLoad(context, true);
 
-    bool success = await DioRequest.handleRequest(context, NannyFranchiseApi.addFinemoney(id: id, amount: fineAmount));
+    bool success = await DioRequest.handleRequest(
+        context, NannyFranchiseApi.addFinemoney(id: id, amount: fineAmount));
 
-    if(!success) return;
-    if(!context.mounted) return;
+    if (!success) return;
+    if (!context.mounted) return;
 
     LoadScreen.showLoad(context, false);
   }

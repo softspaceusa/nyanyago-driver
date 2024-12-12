@@ -2,33 +2,31 @@ import 'package:nanny_core/models/from_api/roles/referal_data.dart';
 import 'package:nanny_core/models/from_api/user_info.dart';
 
 class MyReferalData {
-    MyReferalData({
-        required this.allIncoming,
-        required this.getPercent,
-        required this.referals,
-    });
+  MyReferalData({
+    required this.allIncoming,
+    required this.getPercent,
+    required this.referrals,
+  });
 
-    final int allIncoming;
-    final double getPercent;
-    final List< UserInfo<Referal> > referals;
+  final int allIncoming;
+  final double getPercent;
+  final List<UserInfo<Referral>> referrals;
 
-    factory MyReferalData.fromJson(Map<String, dynamic> json){ 
-        return MyReferalData(
-            allIncoming: json["all_incoming"] ?? 0,
-            getPercent: json["get_percent"] ?? 0,
-            referals: json["referals"] == null ? [] 
-              : List< UserInfo<Referal> >.from(
-                json["referals"]!.map((x) => UserInfo.fromJson(x).asReferal())
-              )
-        );
-    }
+  factory MyReferalData.fromJson(Map<String, dynamic> json) {
+    return MyReferalData(
+        allIncoming: json["all_incoming"] ?? 0,
+        getPercent: double.tryParse(json["get_percent"].toString()) ?? 0.0,
+        referrals: json["referals"] == null
+            ? []
+            : List<UserInfo<Referral>>.from(json["referals"]!
+                .map((x) => UserInfo.fromJson(x).asReferal())));
+  }
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "all_incoming": allIncoming,
         "get_percent": getPercent,
-        "referals": referals.map((x) => x.toJson()).toList(),
-    };
-
+        "referals": referrals.map((x) => x.toJson()).toList(),
+      };
 }
 
 /*

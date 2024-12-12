@@ -17,12 +17,12 @@ class _ReferralProgramViewState extends State<ReferralProgramView> {
     super.initState();
     vm = ReferralProgramVm(context: context, update: setState);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const  NannyAppBar(
+        appBar: const NannyAppBar(
           title: "Реферальная программа",
         ),
         body: Column(
@@ -38,17 +38,15 @@ class _ReferralProgramViewState extends State<ReferralProgramView> {
             Expanded(
               child: RequestListLoader(
                 shrinkWrap: true,
-                request: vm.delayer.request, 
+                request: vm.delayer.request,
                 tileTemplate: (context, e) => ListTile(
                   onTap: () => vm.navigateToPartner(e.id),
-                  leading: ProfileImage(
-                    url: e.photoPath, 
-                    radius: 50,
-                  ),
+                  leading: ProfileImage(url: e.photoPath, radius: 50),
                   title: Text("${e.name} ${e.surname}", softWrap: true),
                   trailing: Text(e.dateReg),
                 ),
-                errorView: (context, error) => ErrorView(errorText: error.toString()),
+                errorView: (context, error) =>
+                    ErrorView(errorText: error.toString()),
               ),
             ),
           ],

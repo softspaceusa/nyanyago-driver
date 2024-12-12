@@ -1,16 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:nanny_components/dialogs/loading.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/api/api_models/get_users_request.dart';
 import 'package:nanny_core/nanny_core.dart';
 
 class UserManagementVM extends ViewModelBase {
-  UserManagementVM({
-    required super.context, 
-    required super.update
-  }) {
+  UserManagementVM({required super.context, required super.update}) {
     delayer = SearchDelayer<GetUsersData>(
       delay: const Duration(seconds: 1),
-      initRequest: NannyAdminApi.getUsers( GetUsersRequest() ),
+      initRequest: NannyAdminApi.getUsers(GetUsersRequest()),
       update: () => update(() {}),
     );
   }
@@ -20,8 +18,8 @@ class UserManagementVM extends ViewModelBase {
   final MaskTextInputFormatter phoneMask = TextMasks.phoneMask();
 
   void resendRequestWithDelay() => delayer.wait(
-    onCompleteRequest: NannyAdminApi.getUsers(query),
-  );
+        onCompleteRequest: NannyAdminApi.getUsers(query),
+      );
 
   void resendRequest() => delayer.updateRequest(NannyAdminApi.getUsers(query));
 
@@ -39,37 +37,48 @@ class UserManagementVM extends ViewModelBase {
     resendRequestWithDelay();
   }
 
-  void banUser(UserInfo user) async {
-    if(!await NannyDialogs.confirmAction(context, "${user.status == UserStatus.active ? "Заблокировать" : "Разблокировать"} ${user.name}?")) return;
-    if(!context.mounted) return;
-    
+  void banUser(UserInfo user,
+      {List<BuildContext>? previewDialogContexts}) async {
+    if (!await NannyDialogs.confirmAction(context,
+        "${user.status == UserStatus.active ? "Заблокировать" : "Разблокировать"} ${user.name}?"))
+      return;
+    if (!context.mounted) return;
+
     LoadScreen.showLoad(context, true);
 
     bool success = await DioRequest.handleRequest(
-      context, 
+      context,
       NannyAdminApi.banUser(user.id),
     );
 
-    if(!success) return;
-    if(!context.mounted) return;
+    if (!success) return;
+    if (!context.mounted) return;
+
+    // закрываем все предыдущие диалоги, если есть
+    if (previewDialogContexts != null) {
+      for (BuildContext element in previewDialogContexts) {
+        Navigator.pop(element);
+      }
+    }
 
     LoadScreen.showLoad(context, false);
     resendRequest();
   }
 
   void deleteUser(UserInfo user) async {
-    if(!await NannyDialogs.confirmAction(context, "Удалить ${user.name}?")) return;
-    if(!context.mounted) return;
+    if (!await NannyDialogs.confirmAction(context, "Удалить ${user.name}?"))
+      return;
+    if (!context.mounted) return;
 
     LoadScreen.showLoad(context, true);
 
     bool success = await DioRequest.handleRequest(
-      context, 
+      context,
       NannyAdminApi.deleteUser(user.id),
     );
 
-    if(!success) return;
-    if(!context.mounted) return;
+    if (!success) return;
+    if (!context.mounted) return;
 
     LoadScreen.showLoad(context, false);
     resendRequest();

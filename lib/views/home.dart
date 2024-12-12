@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/view_models/home_vm.dart';
@@ -30,15 +31,15 @@ class _HomeViewState extends State<HomeView> {
       ProfileView(
         persistState: true,
         logoutView: WelcomeView(
-          regView: const RegView(), 
-          loginPaths: NannyConsts.availablePaths
-        ),
+            regView: const RegView(), loginPaths: NannyConsts.availablePaths),
       ),
     ];
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Theme.of(context).scaffoldBackgroundColor));
     return SafeArea(
       child: DefaultTabController(
         initialIndex: 1,
@@ -49,39 +50,37 @@ class _HomeViewState extends State<HomeView> {
             children: pages,
           ),
           bottomNavigationBar: TabBar(
-            onTap: (index) => vm.indexChanged(index),
-      
-            labelColor: NannyTheme.primary,
-            unselectedLabelColor: NannyTheme.darkGrey,
-            indicatorColor: NannyTheme.primary,
-            tabs: const [
-              Tab(
-                icon: Icon(
-                  Icons.directions_car_filled_rounded,
+              onTap: (index) => vm.indexChanged(index),
+              labelColor: NannyTheme.primary,
+              unselectedLabelColor: NannyTheme.darkGrey,
+              indicatorColor: NannyTheme.primary,
+              tabs: const [
+                Tab(
+                  icon: Icon(
+                    Icons.directions_car_filled_rounded,
+                  ),
                 ),
-              ),
-              Tab(
-                icon: Icon(
-                  Icons.calendar_month_rounded,
+                Tab(
+                  icon: Icon(
+                    Icons.calendar_month_rounded,
+                  ),
                 ),
-              ),
-              Tab(
-                icon: Icon(
-                  Icons.wallet_rounded,
+                Tab(
+                  icon: Icon(
+                    Icons.wallet_rounded,
+                  ),
                 ),
-              ),
-              Tab(
-                icon: Icon(
-                  Icons.chat_rounded,
+                Tab(
+                  icon: Icon(
+                    Icons.chat_rounded,
+                  ),
                 ),
-              ),
-              Tab(
-                icon: Icon(
-                  Icons.account_circle_rounded,
+                Tab(
+                  icon: Icon(
+                    Icons.account_circle_rounded,
+                  ),
                 ),
-              ),
-            ]
-          ),
+              ]),
         ),
       ),
     );

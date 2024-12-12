@@ -9,33 +9,33 @@ class ReportsManagementView extends StatefulWidget {
   State<ReportsManagementView> createState() => _ReportsManagementViewState();
 }
 
-class _ReportsManagementViewState extends State<ReportsManagementView> { // TODO: Доделать!
+class _ReportsManagementViewState extends State<ReportsManagementView> {
+  // TODO: Доделать!
   @override
   Widget build(BuildContext context) {
     return const SafeArea(
       child: Scaffold(
-        appBar: NannyAppBar(
-          title: "Управление отчетами",
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                GraphStatsView(
-                  title: "Отчет о продажах",
-                  getUsersReport: false,
-                ),
-                SizedBox(height: 50),
-                GraphStatsView(
-                  title: "Отчет о пользователях",
-                  getUsersReport: true,
-                ),
-              ],
-            ),
+          appBar: NannyAppBar(
+            title: "Управление отчетами",
           ),
-        )
-      ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  GraphStatsView(
+                    title: "Отчет о продажах",
+                    getUsersReport: false,
+                  ),
+                  SizedBox(height: 50),
+                  GraphStatsView(
+                    title: "Отчет о пользователях",
+                    getUsersReport: true,
+                  ),
+                ],
+              ),
+            ),
+          )),
     );
   }
 }

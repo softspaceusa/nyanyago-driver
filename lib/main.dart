@@ -9,11 +9,29 @@ import 'package:nanny_driver/franchise/views/franchise_home.dart';
 import 'package:nanny_driver/franchise/views/partner/partner_home.dart';
 import 'package:nanny_driver/views/home.dart';
 import 'package:nanny_driver/views/reg.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Нужно для фикса бага с жестами
+  // Если включено управление жестами, то при попытке скрыть клавиатуру происходит выход из раздела
+  SystemChannels.navigation.setMethodCallHandler((call) async {
+    if (call.method == 'popRoute') {
+      // Получаем контекст через navigatorKey
+      final context = NannyGlobals.navKey.currentContext;
+
+      if (context != null && MediaQuery.of(context).viewInsets.bottom > 0) {
+        // Закрываем клавиатуру
+        FocusManager.instance.primaryFocus?.unfocus();
+        return; // Блокируем действие "назад"
+      }
+
+      SystemNavigator
+          .pop(); // Если клавиатура закрыта, разрешаем действие "назад"
+    }
+  });
 
   HttpOverrides.global = MyHttpOverrides();
 
@@ -23,7 +41,7 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
- await Firebase.initializeApp(
+  await Firebase.initializeApp(
       options:
           Platform.isAndroid ? DefaultFirebaseOptions.currentPlatform : null);
 
@@ -82,11 +100,19 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        navigatorKey: NannyGlobals.navKey,
-        theme: NannyTheme.appTheme,
-        home: firstScreen
-        // home: const TestView(),
-        );
+      navigatorKey: NannyGlobals.navKey,
+      theme: NannyTheme.appTheme,
+      home: firstScreen,
+      // home: const TestView(),
+      debugShowCheckedModeBanner: false,
+      supportedLocales: const [Locale('ru', 'RU')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
+      ],
+      locale: const Locale("ru", "RU"),
+    );
   }
 }
 

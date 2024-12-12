@@ -7,7 +7,7 @@ class PhoneConfirmView extends StatefulWidget {
   final String title;
   final String text;
   final bool isReg;
-  
+
   const PhoneConfirmView({
     super.key,
     required this.nextScreen,
@@ -21,15 +21,15 @@ class PhoneConfirmView extends StatefulWidget {
 }
 
 late PhoneConfirmVM _vm;
-class _PhoneConfirmViewState extends State<PhoneConfirmView> {
 
+class _PhoneConfirmViewState extends State<PhoneConfirmView> {
   @override
   void initState() {
     super.initState();
     _vm = PhoneConfirmVM(
       baseContext: context,
-      context: context, 
-      update: setState, 
+      context: context,
+      update: setState,
       nextScreen: widget.nextScreen,
       title: widget.title,
       text: widget.text,
@@ -69,26 +69,38 @@ class PhoneEnterView extends StatelessWidget {
           children: [
             Text(title, style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 10),
-            Text(text, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
+            Text(text,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 50),
             Form(
               key: _vm.phoneState,
               child: NannyTextForm(
+                isExpanded: true,
                 labelText: "Номер телефона*",
                 hintText: "+7 (777) 777-77-77",
                 keyType: TextInputType.number,
                 formatters: [_vm.phoneMask],
                 validator: (text) {
-                  if(_vm.phone.length < 11) return "Введите номер телефона!";
+                  if (_vm.phone.length < 11) return "Введите номер телефона!";
                   return null;
                 },
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _vm.toPhoneConfirmation, 
-              child: const Text("Отправить код подтверждения")
-            ),
+                onPressed: _vm.toPhoneConfirmation,
+                style: ButtonStyle(
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  minimumSize: const WidgetStatePropertyAll(
+                    Size(double.infinity, 60),
+                  ),
+                ),
+                child: const Text("Отправить код подтверждения")),
           ],
         ),
       ),
@@ -97,7 +109,6 @@ class PhoneEnterView extends StatelessWidget {
 }
 
 class PhoneEnterConfirmView extends StatefulWidget {
-
   const PhoneEnterConfirmView({super.key});
 
   @override
@@ -105,7 +116,6 @@ class PhoneEnterConfirmView extends StatefulWidget {
 }
 
 class _PhoneEnterConfirmViewState extends State<PhoneEnterConfirmView> {
-
   @override
   void initState() {
     super.initState();
@@ -120,8 +130,11 @@ class _PhoneEnterConfirmViewState extends State<PhoneEnterConfirmView> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 20, top: 50, right: 20, bottom: 20),
-            child: Text("Мы отправили вам СМС код", textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
+            padding:
+                const EdgeInsets.only(left: 20, top: 50, right: 20, bottom: 20),
+            child: Text("Мы отправили вам СМС код",
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleSmall),
           ),
           Expanded(
             child: FourDigitKeyboard(
@@ -130,20 +143,20 @@ class _PhoneEnterConfirmViewState extends State<PhoneEnterConfirmView> {
                   style: Theme.of(context).textTheme.bodyMedium,
                   children: [
                     const TextSpan(text: "На номер: "),
-                    TextSpan(text: _vm.phoneMask.getMaskedText(), style: const TextStyle(color: NannyTheme.primary)),
+                    TextSpan(
+                        text: _vm.phoneMask.getMaskedText(),
+                        style: const TextStyle(color: NannyTheme.primary)),
                   ],
                 ),
               ),
-              bottomChild: _vm.timerEnded ? TextButton(
-                onPressed: _vm.resendSms, 
-                child: const Text("Отправить СМС заново")
-              ) : SmsTimer(
-                secFrom: _vm.timeLeft, 
-                onEnd: _vm.onTimerEnd
-              ),
+              bottomChild: _vm.timerEnded
+                  ? TextButton(
+                      onPressed: _vm.resendSms,
+                      child: const Text("Отправить СМС заново"))
+                  : SmsTimer(secFrom: _vm.timeLeft, onEnd: _vm.onTimerEnd),
               onCodeChanged: (code) {
                 _vm.code = code;
-                if(code.length > 3) _vm.checkPhone();
+                if (code.length > 3) _vm.checkPhone();
               },
             ),
           ),

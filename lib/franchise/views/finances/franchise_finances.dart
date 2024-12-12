@@ -19,59 +19,62 @@ class _FranchiseFinancesViewState extends State<FranchiseFinancesView> {
     super.initState();
     vm = FranchiseFinancesVM(context: context, update: setState);
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: NannyAppBar(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF7F7F7),
+        appBar: const NannyAppBar(
             isTransparent: false,
             title: "Управление финансами",
-            bottom: TabBar(
-              indicatorColor: NannyTheme.primary,
-              labelColor: NannyTheme.primary,
-              unselectedLabelColor: NannyTheme.onSecondary,
-              splashBorderRadius: BorderRadius.circular(30),
-              indicator: BoxDecoration(
-                border: const Border(
-                  bottom: BorderSide(
-                    width: 4,
-                    color: NannyTheme.primary
-                  )
-                ),
-                borderRadius: BorderRadius.circular(30)
-              ),
-              tabs: const [
-                Tab(
-                  text: "Список водителей",
-                ),
-                Tab(
-                  text: "Статистика",
-                ),
-              ]
-            ),
-          ),
-          body: TabBarView(
+            color: NannyTheme.secondary),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 15),
+          child: Column(
             children: [
-
-              FranchiseDriverList<String>(
-                showNewDrivers: false,
-                
-                filterItems: [],
-                itemLabel: (item) => item, 
-                onItemChanged: (item) {}, 
-                onDriverTap: (user) => vm.navigateToView(
-                  DriverInfoView(
-                    id: user.id,
-                    franchiseView: true,
-                  )
+              TabBar(
+                indicatorColor: NannyTheme.primary,
+                labelColor: NannyTheme.primary,
+                unselectedLabelColor: const Color(0xFF6D6D6D),
+                splashBorderRadius: BorderRadius.circular(0),
+                indicatorPadding:
+                    const EdgeInsets.only(top: 20, left: 16, right: 16),
+                labelStyle:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                tabs: const [
+                  Tab(
+                    text: "Список водителей",
+                  ),
+                  Tab(
+                    text: "Статистика",
+                  ),
+                ],
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    FranchiseDriverList<String>(
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, bottom: 37),
+                      showNewDrivers: false,
+                      excludeFilter: false,
+                      filterItems: const ['По статусу', 'По дате'],
+                      itemLabel: (item) => item,
+                      onItemChanged: (item) {},
+                      onDriverTap: (user) => vm.navigateToView(
+                        DriverInfoView(
+                          id: user.id,
+                          franchiseView: true,
+                        ),
+                      ),
+                    ),
+                    const FinanceStatsView(),
+                  ],
                 ),
               ),
-              const FinanceStatsView(),
-
-            ]
+            ],
           ),
         ),
       ),

@@ -5,6 +5,7 @@ import 'package:nanny_core/models/from_api/drive_and_map/drive_tariff.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/one_time_drive_socket.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule_responses_data.dart';
+import 'package:nanny_core/models/from_api/franchise/order_model.dart';
 import 'package:nanny_core/nanny_core.dart';
 
 import '../models/from_api/drive_and_map/current_order_response.dart';
@@ -35,6 +36,14 @@ class NannyOrdersApi {
       dioRequest: DioRequest.dio.get("/orders/schedules"),
       onSuccess: (response) => List<Schedule>.from(
           response.data["schedules"].map((x) => Schedule.fromJson(x))),
+    );
+  }
+
+  static Future<ApiResponse<List<OrderModel>>> getFranchiseDriverOrders() {
+    return RequestBuilder<List<OrderModel>>().create(
+      dioRequest: DioRequest.dio.get("/franchises/franchise_driver_orders"),
+      onSuccess: (response) => List<OrderModel>.from(
+          response.data["orders"].map((x) => OrderModel.fromJson(x))),
     );
   }
 
@@ -84,14 +93,12 @@ class NannyOrdersApi {
 
   static Future<ApiResponse<CurrentOrderInfo>> getCurrentOrder() =>
       RequestBuilder<CurrentOrderInfo>().create(
-        dioRequest: DioRequest.dio.get("/orders/get_current_order"),
-        onSuccess: (response) => CurrentOrderInfo.fromJson(response.data)
-      );
+          dioRequest: DioRequest.dio.get("/orders/get_current_order"),
+          onSuccess: (response) => CurrentOrderInfo.fromJson(response.data));
   static Future<ApiResponse<bool>> getClientToken() =>
       RequestBuilder<bool>().create(
           dioRequest: DioRequest.dio.get("/orders/get_client_token"),
-          onSuccess: (response) => false
-      );
+          onSuccess: (response) => false);
   static Future<ApiResponse<void>> startCurrentDrive() =>
       throw UnimplementedError(); // TODO: Доделать
 
@@ -105,6 +112,15 @@ class NannyOrdersApi {
     );
   }
 
+  static Future<ApiResponse<DriverUserTextData>> getUser(int id) async {
+    return RequestBuilder<DriverUserTextData>().create(
+      dioRequest: DioRequest.dio
+          .get('/users/get_user', queryParameters: {'user_id': id}),
+      onSuccess: (response) =>
+          DriverUserTextData.fromJson(response.data["user"]),
+    );
+  }
+
   static Future<ApiResponse> declineOrder(int orderId) =>
       RequestBuilder().create(
           dioRequest: DioRequest.dio
@@ -112,7 +128,6 @@ class NannyOrdersApi {
 
   static Future<ApiResponse> acceptOrder(int orderId) =>
       RequestBuilder().create(
-
           dioRequest:
               DioRequest.dio.post('/orders/accept_order?id_order=$orderId'));
 

@@ -22,6 +22,7 @@ export 'widgets/profile_icon_button.dart';
 export 'widgets/franchise_driver_list.dart';
 export 'widgets/month_selector.dart';
 export 'widgets/weeks_selector.dart';
+export 'widgets/panel_button.dart';
 
 export 'widgets/map/address_picker.dart';
 
@@ -59,3 +60,5 @@ export 'package:better_player/better_player.dart';
 export 'package:google_maps_flutter/google_maps_flutter.dart';
 export 'package:d_chart/d_chart.dart';
 export 'package:sliding_up_panel/sliding_up_panel.dart';
+export 'package:flutter_svg/flutter_svg.dart';
+export 'package:smooth_page_indicator/smooth_page_indicator.dart';
