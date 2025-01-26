@@ -18,6 +18,8 @@ dependencies:
 
   nanny_core:
     path: ./nanny_core
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
