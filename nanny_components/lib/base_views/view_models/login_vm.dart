@@ -46,7 +46,7 @@ class LoginVM extends ViewModelBase {
     }
 
     String passHash = Md5Converter.convert(password);
-    var token = await FirebaseMessaging.instance.getToken();
+    var token = "";
     if(token==null){
       update(() => isLoading = false);
       return;

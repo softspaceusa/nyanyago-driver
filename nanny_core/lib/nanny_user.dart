@@ -71,7 +71,7 @@ class NannyUser {
       LoginRequest(
         login: data.login, 
         password: data.password,
-        fbid: await FirebaseMessaging.instance.getToken() ?? "Пятисотый"
+        fbid: "Пятисотый"
       ),
     );
 

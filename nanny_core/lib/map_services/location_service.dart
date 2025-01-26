@@ -21,13 +21,13 @@ class LocationService {
   static Future<GeocodeFormatResult?> getLocationInfo(LatLng latLng) async {
     var data = await GoogleMapApi.reverseGeocode(loc: latLng);
 
-    if(!data.success) return null;
+    if (!data.success) return null;
     return NannyMapUtils.filterGeocodeData(data.response!);
   }
 
-  static Future<void> initLocInfo() async => lastLocationInfo = await getLocationInfo(
-    NannyMapUtils.locData2LatLng( await location.getLocation() )
-  );
+  static Future<void> initLocInfo() async =>
+      lastLocationInfo = await getLocationInfo(
+          NannyMapUtils.locData2LatLng(await location.getLocation()));
 
   static void dispose() {
     _locSub?.cancel();
