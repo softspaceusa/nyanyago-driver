@@ -1,14 +1,11 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/driver_schedule_response.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule.dart';
 import 'package:nanny_core/models/from_api/other_parametr.dart';
 import 'package:nanny_core/nanny_core.dart';
-import 'package:nanny_driver/test/map_drive.dart';
 import 'package:nanny_driver/view_models/pages/offers_vm.dart';
 import 'package:nanny_driver/views/schedule_checker.dart';
 
@@ -31,10 +28,7 @@ class _OffersViewState extends State<OffersView>
   @override
   void initState() {
     super.initState();
-    vm = OffersVM(context: context, update: setState)
-      ..loadOneTimeDrives().then((v) {
-        setState(() {});
-      });
+    vm = OffersVM(context: context, update: setState)..load();
   }
 
   @override
@@ -58,17 +52,20 @@ class _OffersViewState extends State<OffersView>
                 SizedBox(
                     height: 88,
                     width: double.infinity,
-                    child: ListView(
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.all(20),
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          switchButton(offerType: OfferType.route),
-                          const SizedBox(width: 20),
-                          switchButton(offerType: OfferType.oneTime),
-                          const SizedBox(width: 20),
-                          switchButton(offerType: OfferType.replacement)
-                        ])),
+                    child: RefreshIndicator(
+                      onRefresh: vm.loadOneTimeDrives,
+                      child: ListView(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.all(20),
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            switchButton(offerType: OfferType.route),
+                            const SizedBox(width: 20),
+                            switchButton(offerType: OfferType.oneTime),
+                            const SizedBox(width: 20),
+                            switchButton(offerType: OfferType.replacement)
+                          ]),
+                    )),
                 Expanded(
                     child: FutureLoader(
                         future: vm.loadRequest,
@@ -97,7 +94,6 @@ class _OffersViewState extends State<OffersView>
                         },
                         errorView: (context, error) =>
                             ErrorView(errorText: error.toString()))),
-
               ]),
               Visibility(
                   visible: vm.selectedId != 0,

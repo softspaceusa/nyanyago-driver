@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
-
 import 'package:nanny_core/api/web_sockets/nanny_web_socket.dart';
 import 'package:nanny_core/map_services/drive_manager.dart';
 import 'package:nanny_core/nanny_core.dart';
@@ -11,7 +11,7 @@ import 'package:nanny_core/nanny_core.dart';
 class MapViewOrderVm extends ViewModelBase {
   final String driveToken;
   final OneTimeDriveModel oneTimeDriveModel;
-  late NannyWebSocket searchSocket;
+  NannyWebSocket? searchSocket;
   var currentState = StatusValue.driverSearch;
   int currentTimeWait = 0;
   DriveManager? driveManager;
@@ -59,13 +59,13 @@ class MapViewOrderVm extends ViewModelBase {
 
   Future<void> initSocket() async {
     searchSocket = await OrdersSearchSocket(driveToken).connect();
-    onStatusChange(StatusValue.driverFound);
+    await onStatusChange(StatusValue.driverFound);
     await calculatePolylinesArrive();
     initListen();
   }
 
   void initListen() {
-    searchSocket.stream.listen((v) {
+    searchSocket?.stream.listen((v) {
       print('incoming value driver $v');
     });
   }
@@ -130,7 +130,7 @@ class MapViewOrderVm extends ViewModelBase {
     var lat = loc.latitude;
     var lon = loc.longitude;
     if (timeToArrive == 0) timeToArrive = 1;
-    searchSocket.sinkValue({'lat': lat, 'lon': lon, 'duration': timeToArrive});
+    searchSocket?.sinkValue({'lat': lat, 'lon': lon, 'duration': timeToArrive});
     var destination = oneTimeDriveModel.addresses;
     if (destination.isNotEmpty) {
       var firstDestination = destination.first;
@@ -150,69 +150,122 @@ class MapViewOrderVm extends ViewModelBase {
   }
 
   Future<void> onStatusChange(StatusValue status) async {
+    Logger().i(
+        "🔄 [onStatusChange] Изменение статуса: ${status.value} (${status.id})");
+
     if (context.mounted) {
       update(() {
         currentState = status;
       });
     }
-    if (!searchSocket.connected) {
+
+    if (!(searchSocket?.connected ?? true)) {
+      Logger().w("🔌 [WebSocket] Переподключение к серверу поиска заказов...");
       searchSocket = await OrdersSearchSocket(driveToken).connect();
     }
-    searchSocket.sinkValue(
-        {'id_order': oneTimeDriveModel.orderId, 'status': status.id});
+
+    if (![StatusValue.canceledByDriver, StatusValue.driverFound]
+        .contains(status)) {
+      Logger().i(
+          "📤 [WebSocket] Отправка статуса ${status.value} (${status.id}) в сокет...");
+      await searchSocket?.sinkValue({
+        'id_order': oneTimeDriveModel.orderId,
+        "force": "true",
+        'status': status.id
+      });
+    }
+
     switch (status) {
       case StatusValue.canceledByDriver:
+        Logger().w("🚫 [Status] Заказ отменен водителем. Отправка отмены...");
+        await searchSocket?.sinkValue({
+          'id_order': oneTimeDriveModel.orderId,
+          "cancel": "true",
+          "type": "order",
+          "force": "true",
+          'status': status.id
+        });
         break;
+
       case StatusValue.onWay:
+        Logger().i("🚗 [Status] Водитель в пути...");
         break;
+
       case StatusValue.awaiting:
+        Logger().i("⏳ [Status] Ожидание пассажира...");
         timerAwait?.cancel();
         timerAwait = null;
         checkAtLocationTimer?.cancel();
         checkAtLocationTimer = null;
+
+        Logger().i("📍 [Geo] Рассчитываем маршрут...");
         await calculatePolylinesDrive();
+
         timerAwait = Timer.periodic(const Duration(seconds: 1), (timer) async {
           currentTimeWait++;
           if (context.mounted) {
             update(() {});
           }
+          Logger().i("⏳ [Timer] Ожидание: $currentTimeWait секунд");
         });
         break;
+
       case StatusValue.complete:
+        Logger().i("✅ [Status] Поездка завершена.");
         checkAtLocationTimer?.cancel();
         checkAtLocationTimer = null;
         timerAwait?.cancel();
         timerAwait = null;
-        if (status.id == 11) popView();
+        if (status.id == 11) {
+          Logger().i("🔙 [Navigation] Закрытие экрана...");
+          popView();
+        }
         break;
+
       case StatusValue.driveStarted:
+        Logger().i("🚘 [Status] Водитель начал поездку.");
         checkAtLocationTimer?.cancel();
         checkAtLocationTimer = null;
+
         checkAtLocationTimer =
             Timer.periodic(const Duration(seconds: 5), (timer) async {
           var loc = await LocationService.location.getLocation();
           var lat = loc.latitude ?? 0.0;
           var lon = loc.longitude ?? 0.0;
+
+          Logger().i("📍 [Geo] Отправка координат водителя: ($lat, $lon)");
           if (context.mounted) {
             sendLocationDuration(LatLng(lat, lon));
           }
         });
         break;
+
       case StatusValue.arrived:
+        Logger().i("📍 [Status] Водитель прибыл.");
         checkAtLocationTimer?.cancel();
         checkAtLocationTimer = null;
+
         var loc = await LocationService.location.getLocation();
         var lat = loc.latitude ?? 0.0;
         var lon = loc.longitude ?? 0.0;
+
+        Logger().i("📤 [WebSocket] Отправка текущих координат: ($lat, $lon)");
         sendLocationDuration(LatLng(lat, lon));
         break;
+
       case StatusValue.driverFound:
+        Logger().i("🚖 [Status] Водитель найден.");
         var location = await LocationService.location.getLocation();
         var lat = location.latitude ?? 0.0;
         var lon = location.longitude ?? 0.0;
-        searchSocket.sinkValue({'lat': lat, 'lon': lon});
+
+        Logger().i("📤 [WebSocket] Отправка координат клиента: ($lat, $lon)");
+        await searchSocket?.sinkValue({'lat': lat, 'lon': lon});
         break;
+
       default:
+        Logger().w(
+            "⚠️ [Status] Неизвестный статус: ${status.value} (${status.id})");
         timerAwait?.cancel();
         timerAwait = null;
         break;
@@ -258,12 +311,12 @@ class MapViewOrderVm extends ViewModelBase {
           pointsToArrive.map((e) => LatLng(e.latitude, e.longitude)).toList());
       distanceToEnd = (polyline.distanceValue ?? 0).toDouble();
       currentDistance = 1 - (distanceToArrive / distance);
-      print('distance to end ${distanceToEnd}');
+      print('distance to end $distanceToEnd');
       getPolylines(
           polyline.points.map((e) => LatLng(e.latitude, e.longitude)).toList());
       timeToArrive = polyline.durationValue ?? 0;
       searchSocket
-          .sinkValue({'lat': lat, 'lon': lon, 'duration': timeToArrive});
+          ?.sinkValue({'lat': lat, 'lon': lon, 'duration': timeToArrive});
     });
     update(() {});
   }
@@ -280,9 +333,9 @@ class MapViewOrderVm extends ViewModelBase {
 
   // 9262713209 клиент
   Future<void> onRideStart() async {
-    await onStatusChange(StatusValue.onWay);
-    if (!searchSocket.connected) {
-      await searchSocket.sink.close();
+    await onStatusChange(StatusValue.driveStarted);
+    if (!(searchSocket?.connected ?? true)) {
+      await searchSocket?.sink.close();
       searchSocket = await OrdersSearchSocket(driveToken).connect();
     }
     checkAtLocationTimer =

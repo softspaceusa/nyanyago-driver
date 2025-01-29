@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:nanny_components/nanny_components.dart';
+import 'package:nanny_components/widgets/one_time_drive_widget.dart';
 import 'package:nanny_core/api/api_models/search_query_request.dart';
 import 'package:nanny_core/api/nanny_orders_api.dart';
 import 'package:nanny_core/api/web_sockets/nanny_web_socket.dart';
@@ -8,16 +10,17 @@ import 'package:nanny_core/models/from_api/drive_and_map/driver_schedule_respons
 import 'package:nanny_core/models/from_api/drive_and_map/one_time_drive_socket.dart';
 import 'package:nanny_core/models/from_api/other_parametr.dart';
 import 'package:nanny_core/nanny_core.dart';
-import 'package:nanny_components/widgets/one_time_drive_widget.dart';
 import 'package:nanny_driver/views/pages/map/map_view_order.dart';
 
 class OffersVM extends ViewModelBase {
   OffersVM({
     required super.context,
     required super.update,
-  }) {
-    loadOneTimeDrives();
-    initDriveMode();
+  });
+
+  Future load() async {
+    await loadOneTimeDrives();
+    await initDriveMode();
   }
 
   List<Order> orders = [];
@@ -84,9 +87,10 @@ class OffersVM extends ViewModelBase {
       selectedId = 0;
     });
     if (order.orderId == selected) {
-      await NannyOrdersApi.acceptOrder(selected).then((v) {
-        searchSocket.sinkValue(
-            {"id_order": selected, "cancel": "True", "type": "order"});
+      searchSocket.sinkValue({
+        "id_order": selected,
+        "cancel": "true",
+        "type": "order"
       }).then((v) async {
         await loadOneTimeDrives();
       });
@@ -101,13 +105,12 @@ class OffersVM extends ViewModelBase {
             model: oneTimeDrive.firstWhere((e) => e.orderId == selectedId),
             driveToken: driveToken,
             orderId: selectedId))
-        .then((v) {
-
-    update(() {
+        .then((v) async {
+      update(() {
         selectedId = 0;
       });
-      loadOneTimeDrives();
-      initDriveMode();
+      await loadOneTimeDrives();
+      await initDriveMode();
     });
     NannyOrdersApi.acceptOrder(selectedId);
     // if (oneTimeDrive.any((e) => e.isFromSocket)) {
@@ -124,7 +127,8 @@ class OffersVM extends ViewModelBase {
   Future<void> initDriveMode() async {
     var loc = LocationService.curLoc ??
         (await LocationService.location.getLocation());
-    NannyDriverApi.startDriveMode(LatLng(loc.latitude ?? 0, loc.longitude ?? 0))
+    await NannyDriverApi.startDriveMode(
+            LatLng(loc.latitude ?? 0, loc.longitude ?? 0))
         .then((v) async {
       if (v.success) {
         driveToken = v.response ?? '';

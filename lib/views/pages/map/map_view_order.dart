@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/circular_button.dart';
-import 'package:nanny_components/widgets/order_action_button.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
+import 'package:nanny_components/widgets/order_action_button.dart';
 import 'package:nanny_core/map_services/location_service.dart';
 import 'package:nanny_core/map_services/nanny_map_globals.dart';
 import 'package:nanny_driver/view_models/map_view_order_vm.dart';
@@ -181,8 +179,8 @@ class _MapViewOrderState extends State<MapViewOrder> {
         var distance = vm.currentDistance.isNaN
             ? 0.0
             : vm.currentDistance > 0
-            ? vm.currentDistance
-            : 0.0;
+                ? vm.currentDistance
+                : 0.0;
 
         return Column(children: [
           Text('Осталось ехать ${vm.timeToArriveMinutes} мин',
@@ -198,7 +196,8 @@ class _MapViewOrderState extends State<MapViewOrder> {
                     Text('0 км',
                         style: NannyTextStyles.defaultTextStyle
                             .copyWith(color: Colors.grey[400])),
-                    Text('${((vm.distanceToEnd / 2) / 1000).toStringAsFixed(1)} км',
+                    Text(
+                        '${((vm.distanceToEnd / 2) / 1000).toStringAsFixed(1)} км',
                         style: NannyTextStyles.defaultTextStyle
                             .copyWith(color: Colors.grey[400])),
                     Text('${((vm.distanceToEnd) / 1000).toStringAsFixed(1)} км',
@@ -355,7 +354,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
                     onPressed: () {
                       vm.onStatusChange(StatusValue.driveStarted);
                     },
-                    child: Text('Начать поездку')))
+                    child: const Text('Начать поездку')))
           ]))
     ]);
   }
@@ -410,7 +409,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
                     onPressed: () {
                       vm.onStatusChange(StatusValue.driveStarted);
                     },
-                    child: Text('Начать поездку')))
+                    child: const Text('Начать поездку')))
           ]))
     ]);
   }
@@ -485,8 +484,8 @@ class _MapViewOrderState extends State<MapViewOrder> {
                                         const WidgetStatePropertyAll(
                                             Colors.white)))),
                     child: ElevatedButton(
-                        onPressed: () {
-                          vm.onStatusChange(StatusValue.canceledByDriver);
+                        onPressed: () async {
+                          await vm.onStatusChange(StatusValue.canceledByDriver);
                           Navigator.of(context).pop();
                         },
                         child: Text('Отклонить',
@@ -552,8 +551,8 @@ class _MapViewOrderState extends State<MapViewOrder> {
                                         const WidgetStatePropertyAll(
                                             Colors.white)))),
                     child: ElevatedButton(
-                        onPressed: () {
-                          vm.onStatusChange(StatusValue.canceledByDriver);
+                        onPressed: () async {
+                          await vm.onStatusChange(StatusValue.canceledByDriver);
                           Navigator.of(context).pop();
                         },
                         child: Text('Отклонить',
