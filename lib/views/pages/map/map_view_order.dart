@@ -3,6 +3,7 @@ import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/circular_button.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
 import 'package:nanny_components/widgets/order_action_button.dart';
+import 'package:nanny_core/api/web_sockets/nanny_web_socket.dart';
 import 'package:nanny_core/map_services/location_service.dart';
 import 'package:nanny_core/map_services/nanny_map_globals.dart';
 import 'package:nanny_driver/view_models/map_view_order_vm.dart';
@@ -13,12 +14,13 @@ class MapViewOrder extends StatefulWidget {
       required this.myLocation,
       required this.model,
       required this.orderId,
-      required this.driveToken});
+      required this.searchSocket});
 
   final LatLng myLocation;
-  final String driveToken;
+
   final int orderId;
   final OneTimeDriveModel model;
+  final NannyWebSocket searchSocket;
 
   @override
   State<MapViewOrder> createState() => _MapViewOrderState();
@@ -37,7 +39,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
     vm = MapViewOrderVm(
         context: context,
         update: setState,
-        driveToken: widget.driveToken,
+        searchSocket: widget.searchSocket,
         oneTimeDriveModel: widget.model);
     loadMarkersMap();
   }
@@ -593,5 +595,11 @@ class _MapViewOrderState extends State<MapViewOrder> {
               title: 'Детали',
               asset: 'packages/nanny_components/assets/order/hamburger.png')
         ]));
+  }
+
+  @override
+  void dispose() {
+    vm.searchDriversStream?.cancel();
+    super.dispose();
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
 import 'package:nanny_core/api/api_models/search_query_request.dart';
@@ -19,7 +20,7 @@ class OffersVM extends ViewModelBase {
   });
 
   Future load() async {
-    await loadOneTimeDrives();
+    //await loadOneTimeDrives();
     await initDriveMode();
   }
 
@@ -39,7 +40,7 @@ class OffersVM extends ViewModelBase {
     });
   }
 
-  void setSelected(int orderId) {
+  Future setSelected(int orderId) async {
     selectedId = orderId;
     update(() {});
   }
@@ -81,36 +82,39 @@ class OffersVM extends ViewModelBase {
   Future<void> onCancel() async {
     if (selectedId == 0) return;
     var selected = selectedId;
-    var order = oneTimeDrive.firstWhere((e) => e.orderId == selected);
-    update(() {
-      oneTimeDrive.removeWhere((e) => e.orderId == selectedId);
-      selectedId = 0;
-    });
-    if (order.orderId == selected) {
-      searchSocket.sinkValue({
-        "id_order": selected,
-        "cancel": "true",
-        "type": "order"
-      }).then((v) async {
-        await loadOneTimeDrives();
+    var order = oneTimeDrive.firstWhereOrNull((e) => e.orderId == selected);
+    if (order != null) {
+      update(() {
+        oneTimeDrive.removeWhere((e) => e.orderId == selectedId);
+        selectedId = 0;
       });
     }
+
+    //if (order.orderId == selected) {
+    //  searchSocket.sinkValue({
+    //    "id_order": selected,
+    //    "cancel": "true",
+    //    "type": "order"
+    //  }).then((v) async {
+    //    //await loadOneTimeDrives();
+    //  });
+    //}
   }
 
   void onAccept() async {
     if (selectedId == 0) return;
     var loc = await LocationService.location.getLocation();
-    navigateToView(MapViewOrder(
-            myLocation: LatLng(loc.latitude ?? 0, loc.longitude ?? 0),
-            model: oneTimeDrive.firstWhere((e) => e.orderId == selectedId),
-            driveToken: driveToken,
-            orderId: selectedId))
-        .then((v) async {
-      update(() {
-        selectedId = 0;
-      });
-      await loadOneTimeDrives();
-      await initDriveMode();
+    navigateToView(
+      MapViewOrder(
+          myLocation: LatLng(loc.latitude ?? 0, loc.longitude ?? 0),
+          model: oneTimeDrive.firstWhere((e) => e.orderId == selectedId),
+          searchSocket: searchSocket,
+          orderId: selectedId),
+    ).then((v) async {
+      await setSelected(0);
+
+      //await loadOneTimeDrives();
+      //await initDriveMode();
     });
     NannyOrdersApi.acceptOrder(selectedId);
     // if (oneTimeDrive.any((e) => e.isFromSocket)) {
@@ -133,12 +137,12 @@ class OffersVM extends ViewModelBase {
       if (v.success) {
         driveToken = v.response ?? '';
         searchSocket = await OrdersSearchSocket(v.response ?? '').connect();
-        initListen();
+        await initListen();
       }
     });
   }
 
-  void initListen() {
+  Future initListen() async {
     searchSocket.stream.listen((v) {
       if (v is Map<String, dynamic>) {
         if (v['id_order'] == null && v['order_id'] == null) return;
@@ -153,9 +157,17 @@ class OffersVM extends ViewModelBase {
         if (value['id_order'] == null && value['order_id'] == null) return;
         var result = OneTimeDriveResponse.fromJson(value);
         update(() {
-          if (oneTimeDrive.any((e) => e.orderId == result.idOrder)) return;
-          oneTimeDrive.add(result.toUi());
-          oneTimeDrive.sort((a, b) => a.isFromSocket ? 0 : 1);
+          if (result.idStatus == 3) {
+            oneTimeDrive.removeWhere((e) => e.orderId == result.idOrder);
+          } else {
+            final order = oneTimeDrive
+                .firstWhereOrNull((e) => e.orderId == result.idOrder);
+            if (order != null) {
+              oneTimeDrive.removeWhere((e) => e.orderId == order.orderId);
+            }
+            oneTimeDrive.add(result.toUi());
+            oneTimeDrive.sort((a, b) => a.isFromSocket ? 0 : 1);
+          }
         });
       }
     });

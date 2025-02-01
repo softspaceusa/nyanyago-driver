@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
@@ -9,9 +10,8 @@ import 'package:nanny_core/map_services/drive_manager.dart';
 import 'package:nanny_core/nanny_core.dart';
 
 class MapViewOrderVm extends ViewModelBase {
-  final String driveToken;
+  NannyWebSocket searchSocket;
   final OneTimeDriveModel oneTimeDriveModel;
-  NannyWebSocket? searchSocket;
   var currentState = StatusValue.driverSearch;
   int currentTimeWait = 0;
   DriveManager? driveManager;
@@ -25,11 +25,12 @@ class MapViewOrderVm extends ViewModelBase {
   late GoogleMapController controller;
   bool calculating = false;
 
-  MapViewOrderVm(
-      {required super.context,
-      required super.update,
-      required this.oneTimeDriveModel,
-      required this.driveToken}) {
+  MapViewOrderVm({
+    required super.context,
+    required super.update,
+    required this.oneTimeDriveModel,
+    required this.searchSocket,
+  }) {
     setChangeLocation();
     initSocket();
     NannyDriverApi.getClientToken().then((value) {
@@ -38,6 +39,7 @@ class MapViewOrderVm extends ViewModelBase {
   }
 
   late Marker curPos;
+  StreamSubscription<dynamic>? searchDriversStream;
   List<Polyline> polylines = [];
   Marker? posMarker = LocationService.curLoc != null
       ? Marker(
@@ -58,15 +60,31 @@ class MapViewOrderVm extends ViewModelBase {
       CameraUpdate.newCameraPosition(CameraPosition(target: target, zoom: 15)));
 
   Future<void> initSocket() async {
-    searchSocket = await OrdersSearchSocket(driveToken).connect();
+    if (!(searchSocket.connected)) {
+      Logger().w("🔌 [WebSocket] Переподключение к серверу поиска заказов...");
+
+      searchSocket = await OrdersSearchSocket(searchSocket.address).connect();
+    }
+    await initListen();
     await onStatusChange(StatusValue.driverFound);
     await calculatePolylinesArrive();
-    initListen();
   }
 
-  void initListen() {
-    searchSocket?.stream.listen((v) {
-      print('incoming value driver $v');
+  Future initListen() async {
+    searchDriversStream = searchSocket.stream.listen((v) {
+      if (v is String) {
+        var value = jsonDecode(v);
+        if (value['status'] == 3 || value['id_status'] == 3) {
+          Logger().w("🚫 [Status] Заказ отменен клиентом.");
+          checkAtLocationTimer?.cancel();
+          checkAtLocationTimer = null;
+          timerAwait?.cancel();
+          timerAwait = null;
+
+          Logger().i("🔙 [Navigation] Закрытие экрана...");
+          popView();
+        }
+      }
     });
   }
 
@@ -130,7 +148,7 @@ class MapViewOrderVm extends ViewModelBase {
     var lat = loc.latitude;
     var lon = loc.longitude;
     if (timeToArrive == 0) timeToArrive = 1;
-    searchSocket?.sinkValue({'lat': lat, 'lon': lon, 'duration': timeToArrive});
+    searchSocket.sinkValue({'lat': lat, 'lon': lon, 'duration': timeToArrive});
     var destination = oneTimeDriveModel.addresses;
     if (destination.isNotEmpty) {
       var firstDestination = destination.first;
@@ -159,16 +177,17 @@ class MapViewOrderVm extends ViewModelBase {
       });
     }
 
-    if (!(searchSocket?.connected ?? true)) {
+    if (!(searchSocket.connected)) {
       Logger().w("🔌 [WebSocket] Переподключение к серверу поиска заказов...");
-      searchSocket = await OrdersSearchSocket(driveToken).connect();
+
+      searchSocket = await OrdersSearchSocket(searchSocket.address).connect();
     }
 
     if (![StatusValue.canceledByDriver, StatusValue.driverFound]
         .contains(status)) {
       Logger().i(
           "📤 [WebSocket] Отправка статуса ${status.value} (${status.id}) в сокет...");
-      await searchSocket?.sinkValue({
+      await searchSocket.sinkValue({
         'id_order': oneTimeDriveModel.orderId,
         "force": "true",
         'status': status.id
@@ -178,13 +197,22 @@ class MapViewOrderVm extends ViewModelBase {
     switch (status) {
       case StatusValue.canceledByDriver:
         Logger().w("🚫 [Status] Заказ отменен водителем. Отправка отмены...");
-        await searchSocket?.sinkValue({
+        await searchSocket.sinkValue({
           'id_order': oneTimeDriveModel.orderId,
           "cancel": "true",
-          "type": "order",
-          "force": "true",
-          'status': status.id
+          "type": "order"
         });
+        break;
+      case StatusValue.canceledByUser:
+        Logger().w("🚫 [Status] Заказ отменен клиентом.");
+        checkAtLocationTimer?.cancel();
+        checkAtLocationTimer = null;
+        timerAwait?.cancel();
+        timerAwait = null;
+
+        Logger().i("🔙 [Navigation] Закрытие экрана...");
+        popView();
+
         break;
 
       case StatusValue.onWay:
@@ -260,7 +288,7 @@ class MapViewOrderVm extends ViewModelBase {
         var lon = location.longitude ?? 0.0;
 
         Logger().i("📤 [WebSocket] Отправка координат клиента: ($lat, $lon)");
-        await searchSocket?.sinkValue({'lat': lat, 'lon': lon});
+        await searchSocket.sinkValue({'lat': lat, 'lon': lon});
         break;
 
       default:
@@ -334,9 +362,9 @@ class MapViewOrderVm extends ViewModelBase {
   // 9262713209 клиент
   Future<void> onRideStart() async {
     await onStatusChange(StatusValue.driveStarted);
-    if (!(searchSocket?.connected ?? true)) {
-      await searchSocket?.sink.close();
-      searchSocket = await OrdersSearchSocket(driveToken).connect();
+    if (!(searchSocket.connected)) {
+      await searchSocket.sink.close();
+      searchSocket = await OrdersSearchSocket(searchSocket.address).connect();
     }
     checkAtLocationTimer =
         Timer.periodic(const Duration(seconds: 5), (timer) async {
