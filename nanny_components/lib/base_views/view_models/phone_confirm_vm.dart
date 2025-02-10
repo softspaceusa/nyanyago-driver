@@ -7,9 +7,9 @@ import 'package:nanny_components/view_model_base.dart';
 import 'package:nanny_core/api/api_models/check_code_request.dart';
 import 'package:nanny_core/nanny_core.dart';
 
-class PhoneConfirmVM extends ViewModelBase{
+class PhoneConfirmVM extends ViewModelBase {
   PhoneConfirmVM({
-    required super.context, 
+    required super.context,
     required super.update,
     required this.baseContext,
     required this.nextScreen,
@@ -26,7 +26,7 @@ class PhoneConfirmVM extends ViewModelBase{
   final bool isReg;
 
   final Widget nextScreen;
-  
+
   late Widget currentView;
   bool extendBehindAppBar = false;
 
@@ -43,16 +43,18 @@ class PhoneConfirmVM extends ViewModelBase{
   void initTimer() {
     timerEnded = false;
 
-    if(NannyGlobals.lastSmsSend == null) {
+    if (NannyGlobals.lastSmsSend == null) {
       NannyGlobals.lastSmsSend = DateTime.now();
       sendSms();
     }
 
-    timeLeft = 60 - (DateTime.now().difference(NannyGlobals.lastSmsSend!).inSeconds);
+    timeLeft =
+        60 - (DateTime.now().difference(NannyGlobals.lastSmsSend!).inSeconds);
 
-    if(timeLeft < 0) {
+    if (timeLeft < 0) {
       NannyGlobals.lastSmsSend = DateTime.now();
-      timeLeft = 60 - (DateTime.now().difference(NannyGlobals.lastSmsSend!).inSeconds);
+      timeLeft =
+          60 - (DateTime.now().difference(NannyGlobals.lastSmsSend!).inSeconds);
       sendSms();
     }
   }
@@ -60,16 +62,19 @@ class PhoneConfirmVM extends ViewModelBase{
   void sendSms() {
     Logger().d("Sent SMS");
     late Future<ApiResponse> request;
-    if(isReg) { request = NannyAuthApi.getRegCode(phone); }
-    else { request = NannyAuthApi.getResetCode(phone); }
+    if (isReg) {
+      request = NannyAuthApi.getRegCode(phone);
+    } else {
+      request = NannyAuthApi.getResetCode(phone);
+    }
 
     DioRequest.handleRequest(context, request);
   }
 
   void onTimerEnd() => update(() {
-    timerEnded = true;
-    Logger().d("SMS timer ended");
-  });
+        timerEnded = true;
+        Logger().d("SMS timer ended");
+      });
 
   void resendSms() {
     Logger().d("Resending SMS...");
@@ -85,29 +90,26 @@ class PhoneConfirmVM extends ViewModelBase{
     LoadScreen.showLoad(context, true);
 
     bool success = await DioRequest.handleRequest(
-      context, 
-      isReg ? NannyAuthApi.checkRegCode(
-        CheckCodeRequest(
-          phone: phone, 
-          code: code
-        ),
-      ) : NannyAuthApi.checkResetCode(
-        CheckCodeRequest(
-          phone: phone, 
-          code: code
-        ),
-      ),
+      context,
+      isReg
+          ? NannyAuthApi.checkRegCode(
+              CheckCodeRequest(phone: phone, code: code),
+            )
+          : NannyAuthApi.checkResetCode(
+              CheckCodeRequest(phone: phone, code: code),
+            ),
     );
 
-    if(!success) return;
-    if(!context.mounted) return;
+    if (!success) return;
+    if (!context.mounted) return;
     NannyGlobals.phone = phone;
     LoadScreen.showLoad(context, false);
-    Navigator.pushReplacement(baseContext, MaterialPageRoute(builder: (context) => nextScreen));
+    Navigator.pushReplacement(
+        baseContext, MaterialPageRoute(builder: (context) => nextScreen));
   }
 
   void toPhoneConfirmation() {
-    if(!phoneState.currentState!.validate()) return;
+    if (!phoneState.currentState!.validate()) return;
     update(() {
       currentView = const PhoneEnterConfirmView();
       extendBehindAppBar = true;

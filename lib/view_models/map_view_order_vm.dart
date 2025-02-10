@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
@@ -33,9 +34,9 @@ class MapViewOrderVm extends ViewModelBase {
   }) {
     setChangeLocation();
     initSocket();
-    NannyDriverApi.getClientToken().then((value) {
-      print('token of client ${value.response}');
-    });
+    // NannyDriverApi.getClientToken().then((value) {
+    //  print('token of client ${value.response}');
+    //});
   }
 
   late Marker curPos;
@@ -66,7 +67,9 @@ class MapViewOrderVm extends ViewModelBase {
       searchSocket = await OrdersSearchSocket(searchSocket.address).connect();
     }
     await initListen();
-    await onStatusChange(StatusValue.driverFound);
+    await onStatusChange(StatusValue.values
+            .firstWhereOrNull((e) => e.id == oneTimeDriveModel.orderStatus) ??
+        StatusValue.driverFound);
     await calculatePolylinesArrive();
   }
 
@@ -344,7 +347,7 @@ class MapViewOrderVm extends ViewModelBase {
           polyline.points.map((e) => LatLng(e.latitude, e.longitude)).toList());
       timeToArrive = polyline.durationValue ?? 0;
       searchSocket
-          ?.sinkValue({'lat': lat, 'lon': lon, 'duration': timeToArrive});
+          .sinkValue({'lat': lat, 'lon': lon, 'duration': timeToArrive});
     });
     update(() {});
   }

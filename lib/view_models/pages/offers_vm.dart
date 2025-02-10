@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
-import 'package:nanny_core/api/api_models/search_query_request.dart';
 import 'package:nanny_core/api/nanny_orders_api.dart';
 import 'package:nanny_core/api/web_sockets/nanny_web_socket.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/current_order_response.dart';
@@ -116,7 +115,7 @@ class OffersVM extends ViewModelBase {
       //await loadOneTimeDrives();
       //await initDriveMode();
     });
-    NannyOrdersApi.acceptOrder(selectedId);
+    await NannyOrdersApi.acceptOrder(selectedId);
     // if (oneTimeDrive.any((e) => e.isFromSocket)) {
     //   var order = oneTimeDrive.firstWhere((e) => e.isFromSocket);
     //   if (order.orderId == selectedId) {
@@ -145,30 +144,57 @@ class OffersVM extends ViewModelBase {
   Future initListen() async {
     searchSocket.stream.listen((v) {
       if (v is Map<String, dynamic>) {
-        if (v['id_order'] == null && v['order_id'] == null) return;
-        var result = OneTimeDriveResponse.fromJson(v);
-        update(() {
-          if (oneTimeDrive.any((e) => e.orderId == result.idOrder)) return;
-          oneTimeDrive.add(result.toUi());
-          oneTimeDrive.sort((a, b) => a.isFromSocket ? 0 : 1);
-        });
+        if (v.containsKey('active_orders')) {
+          _handleActiveOrders(v['active_orders']);
+        } else {
+          _handleOneTimeDrive(v);
+        }
       } else if (v is String) {
         var value = jsonDecode(v);
-        if (value['id_order'] == null && value['order_id'] == null) return;
-        var result = OneTimeDriveResponse.fromJson(value);
-        update(() {
-          if (result.idStatus == 3) {
-            oneTimeDrive.removeWhere((e) => e.orderId == result.idOrder);
-          } else {
-            final order = oneTimeDrive
-                .firstWhereOrNull((e) => e.orderId == result.idOrder);
-            if (order != null) {
-              oneTimeDrive.removeWhere((e) => e.orderId == order.orderId);
-            }
-            oneTimeDrive.add(result.toUi());
-            oneTimeDrive.sort((a, b) => a.isFromSocket ? 0 : 1);
-          }
-        });
+        if (value.containsKey('active_orders')) {
+          _handleActiveOrders(value['active_orders']);
+        } else {
+          _handleOneTimeDrive(value);
+        }
+      }
+    });
+  }
+
+  void _handleActiveOrders(List<dynamic> activeOrders) {
+    if (activeOrders.isNotEmpty) {
+      final activeOrder = OneTimeDriveResponse.fromJson(activeOrders.first);
+      navigateToMap(activeOrder);
+    }
+  }
+
+  void navigateToMap(OneTimeDriveResponse order) async {
+    var loc = await LocationService.location.getLocation();
+
+    await navigateToView(
+      MapViewOrder(
+        myLocation: LatLng(loc.latitude ?? 0, loc.longitude ?? 0),
+        model: order.toUi(),
+        searchSocket: searchSocket,
+        orderId: order.idOrder ?? 0,
+      ),
+    );
+  }
+
+  void _handleOneTimeDrive(Map<String, dynamic> v) {
+    if (v['id_order'] == null && v['order_id'] == null) return;
+    var result = OneTimeDriveResponse.fromJson(v);
+
+    update(() {
+      if (result.idStatus == 3) {
+        oneTimeDrive.removeWhere((e) => e.orderId == result.idOrder);
+      } else {
+        final order =
+            oneTimeDrive.firstWhereOrNull((e) => e.orderId == result.idOrder);
+        if (order != null) {
+          oneTimeDrive.removeWhere((e) => e.orderId == order.orderId);
+        }
+        oneTimeDrive.add(result.toUi());
+        oneTimeDrive.sort((a, b) => a.isFromSocket ? 0 : 1);
       }
     });
   }
@@ -183,10 +209,10 @@ class OffersVM extends ViewModelBase {
       }
     }
 
-    var offerRes =
-        await NannyDriverApi.getScheduleRequests(SearchQueryRequest());
-    if (!offerRes.success) return false;
-    offers = offerRes.response!;
+    //var offerRes =
+    //    await NannyDriverApi.getScheduleRequests(SearchQueryRequest());
+    //if (!offerRes.success) return false;
+    //offers = offerRes.response!;
     return true;
   }
 

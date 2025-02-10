@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
+import 'package:nanny_core/models/from_api/drive_and_map/address_data.dart';
+import 'package:nanny_core/models/from_api/drive_and_map/drive_tariff.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/driver_schedule_response.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule.dart';
 import 'package:nanny_core/models/from_api/other_parametr.dart';
@@ -67,43 +69,88 @@ class _OffersViewState extends State<OffersView>
                           ]),
                     )),
                 Expanded(
-                    child: FutureLoader(
-                        future: vm.loadRequest,
-                        completeView: (context, data) {
-                          // if(!data) {
-                          //   return const ErrorView(errorText: "Не удалось загрузить даные!");
-                          // }
+                  child: FutureLoader(
+                    future: vm.loadRequest,
+                    completeView: (context, data) {
+                      // if(!data) {
+                      //   return const ErrorView(errorText: "Не удалось загрузить даные!");
+                      // }
 
-                          return ListView(
-                              // TODO: Доделать предложения!
-                              padding: const EdgeInsets.only(bottom: 140),
-                              shrinkWrap: true,
-                              children: vm.selectedOfferType ==
-                                          OfferType.oneTime ||
-                                      vm.selectedOfferType ==
-                                          OfferType.replacement
-                                  ? vm.oneTimeDrive
-                                      .map((e) => OneTimeDriveWidget(
-                                          e,
-                                          vm.setSelected,
-                                          vm.selectedId == e.orderId))
-                                      .toList()
-                                  : vm.offers
-                                      .map((e) => listItemWidget(e))
-                                      .toList());
-                        },
-                        errorView: (context, error) =>
-                            ErrorView(errorText: error.toString()))),
+                      return ListView(
+                          // TODO: Доделать предложения!
+                          padding: const EdgeInsets.only(bottom: 140),
+                          shrinkWrap: true,
+                          children: vm.selectedOfferType == OfferType.oneTime ||
+                                  vm.selectedOfferType == OfferType.replacement
+                              ? vm.oneTimeDrive
+                                  .map((e) => OneTimeDriveWidget(
+                                      e,
+                                      vm.setSelected,
+                                      vm.selectedId == e.orderId))
+                                  .toList()
+                              : List.generate(
+                                      5,
+                                      (index) => DriverScheduleResponse(
+                                          title: '123',
+                                          duration: 400,
+                                          childrenCount: 4,
+                                          weekdays: [
+                                            NannyWeekday.friday,
+                                            NannyWeekday.saturday
+                                          ],
+                                          tariff: DriveTariff(id: 1),
+                                          otherParametrs: [],
+                                          roads: [
+                                            Road(
+                                              weekDay: NannyWeekday.friday,
+                                              startTime: const TimeOfDay(
+                                                  hour: 5, minute: 20),
+                                              endTime: const TimeOfDay(
+                                                  hour: 5, minute: 20),
+                                              addresses: [
+                                                DriveAddress(
+                                                  fromAddress: AddressData(
+                                                    address: '12312',
+                                                    location:
+                                                        const LatLng(0, 0),
+                                                  ),
+                                                  toAddress: AddressData(
+                                                    address: '12312',
+                                                    location:
+                                                        const LatLng(0, 0),
+                                                  ),
+                                                )
+                                              ],
+                                              title: '1231',
+                                              typeDrive: [DriveType.oneWay],
+                                            )
+                                          ],
+                                          user: ScheduleUser(
+                                              idUser: 5,
+                                              name: '234234',
+                                              photoPath: ''),
+                                          allSalary: 5000))
+                                  .map((e) => listItemWidget(e))
+                                  .toList());
+                    },
+                    errorView: (context, error) => ErrorView(
+                      errorText: error.toString(),
+                    ),
+                  ),
+                ),
               ]),
               Visibility(
-                  visible: vm.selectedId != 0,
-                  child: Positioned(
-                      bottom: 80,
-                      left: 20,
-                      right: 20,
-                      child: ElevatedButton(
-                          onPressed: vm.onAccept,
-                          child: const Text('Начать поездку')))),
+                visible: vm.selectedId != 0,
+                child: Positioned(
+                  bottom: 80,
+                  left: 20,
+                  right: 20,
+                  child: ElevatedButton(
+                    onPressed: vm.onAccept,
+                    child: const Text('Начать поездку'),
+                  ),
+                ),
+              ),
               Visibility(
                   visible: vm.selectedId != 0,
                   child: Positioned(

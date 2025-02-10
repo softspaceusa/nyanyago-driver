@@ -9,32 +9,31 @@ class BalanceVM extends ViewModelBase {
   });
 
   Future<ApiResponse<UserMoney>> get getMoney => _moneyRequest;
-  Future<ApiResponse<UserMoney>> _moneyRequest = NannyUsersApi.getMoney();
-  void updateState() => update( () { _moneyRequest = NannyUsersApi.getMoney(); });
+  Future<ApiResponse<UserMoney>> _moneyRequest =
+      NannyUsersApi.getMoney(period: 'current_year');
+  void updateState() => update(() {
+        _moneyRequest = NannyUsersApi.getMoney(period: 'current_year');
+      });
 
   void toPay() {
     Navigator.push(
-      context, 
-      MaterialPageRoute(
-        builder: (context) => const WalletView(
-          title: "Вывод средств", 
-          subtitle: "Выберите карту для вывода средств",
-          hasReplenishButtons: true,
-        )
-      )
-    );
+        context,
+        MaterialPageRoute(
+            builder: (context) => const WalletView(
+                  title: "Вывод средств",
+                  subtitle: "Выберите карту для вывода средств",
+                  hasReplenishButtons: true,
+                )));
   }
 
   void toCashback() {
     Navigator.push(
-      context, 
-      MaterialPageRoute(
-        builder: (context) => const WalletView(
-          title: "Получение кэшбека", 
-          subtitle: "Выберите карту, на которую запросится кэшбек",
-          hasReplenishButtons: true,
-        )
-      )
-    );
+        context,
+        MaterialPageRoute(
+            builder: (context) => const WalletView(
+                  title: "Получение кэшбека",
+                  subtitle: "Выберите карту, на которую запросится кэшбек",
+                  hasReplenishButtons: true,
+                )));
   }
 }

@@ -43,9 +43,9 @@ class NannyUsersApi {
     );
   }
 
-  static Future<ApiResponse<UserMoney>> getMoney() async {
+  static Future<ApiResponse<UserMoney>> getMoney({String? period}) async {
     return RequestBuilder<UserMoney>().create(
-      dioRequest: DioRequest.dio.post("/users/money"),
+      dioRequest: DioRequest.dio.post("/users/money?period=$period"),
       onSuccess: (response) => UserMoney.fromJson(response.data),
     );
   }

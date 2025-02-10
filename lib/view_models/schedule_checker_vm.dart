@@ -1,7 +1,6 @@
 import 'package:nanny_components/dialogs/loading.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/api/api_models/want_schedule_request.dart';
-import 'package:nanny_core/api/web_sockets/nanny_web_socket.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule.dart';
 import 'package:nanny_core/nanny_core.dart';
 
@@ -11,12 +10,8 @@ class ScheduleCheckerVm extends ViewModelBase {
     required super.update,
     required this.schedule,
   }) {
-
-    request = WantScheduleRequest()..idSchedule = schedule.id!;
+    request = WantScheduleRequest()..idSchedule = 5;
   }
-
-
-
 
   Schedule schedule;
   NannyWeekday selectedWeekday =
@@ -31,7 +26,6 @@ class ScheduleCheckerVm extends ViewModelBase {
   }
 
   void selectAllChanged(bool? value) => update(() => selectAll = value!);
-
 
   void roadSelected(int id, bool selected) {
     if (selected) {
@@ -69,9 +63,10 @@ class ScheduleCheckerVm extends ViewModelBase {
         context, NannyDriverApi.wantScheduleRequest(request));
 
     if (!success) {
-      if (context.mounted)
+      if (context.mounted) {
         NannyDialogs.showMessageBox(context, "Ошибка!",
             "Не удалось отправить запрос на подтверждение!");
+      }
       return;
     }
 

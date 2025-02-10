@@ -95,10 +95,12 @@ class NannyOrdersApi {
       RequestBuilder<CurrentOrderInfo>().create(
           dioRequest: DioRequest.dio.get("/orders/get_current_order"),
           onSuccess: (response) => CurrentOrderInfo.fromJson(response.data));
+
   static Future<ApiResponse<bool>> getClientToken() =>
       RequestBuilder<bool>().create(
           dioRequest: DioRequest.dio.get("/orders/get_client_token"),
           onSuccess: (response) => false);
+
   static Future<ApiResponse<void>> startCurrentDrive() =>
       throw UnimplementedError(); // TODO: Доделать
 
