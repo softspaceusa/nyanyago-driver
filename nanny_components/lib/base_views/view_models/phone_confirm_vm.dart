@@ -26,7 +26,6 @@ class PhoneConfirmVM extends ViewModelBase {
   final bool isReg;
 
   final Widget nextScreen;
-
   late Widget currentView;
   bool extendBehindAppBar = false;
 
@@ -43,15 +42,18 @@ class PhoneConfirmVM extends ViewModelBase {
   void initTimer() {
     timerEnded = false;
 
+    // Если отправка SMS еще не была инициирована, инициируем ее
     if (NannyGlobals.lastSmsSend == null) {
       NannyGlobals.lastSmsSend = DateTime.now();
       sendSms();
     }
 
+    // Рассчитываем оставшееся время до конца таймера
     timeLeft =
         60 - (DateTime.now().difference(NannyGlobals.lastSmsSend!).inSeconds);
 
-    if (timeLeft < 0) {
+    if (timeLeft <= 0) {
+      // Если время истекло, отправляем SMS снова
       NannyGlobals.lastSmsSend = DateTime.now();
       timeLeft =
           60 - (DateTime.now().difference(NannyGlobals.lastSmsSend!).inSeconds);
@@ -79,8 +81,10 @@ class PhoneConfirmVM extends ViewModelBase {
   void resendSms() {
     Logger().d("Resending SMS...");
 
+    // Обнуляем последнее время отправки и повторно инициализируем таймер
     NannyGlobals.lastSmsSend = null;
     initTimer();
+
     update(() {
       timerEnded = false;
     });
@@ -109,7 +113,15 @@ class PhoneConfirmVM extends ViewModelBase {
   }
 
   void toPhoneConfirmation() {
-    if (!phoneState.currentState!.validate()) return;
+    if (!phoneState.currentState!.validate() || phone.length < 11) {
+      update(() {});
+      return;
+    }
+
+    // Сбрасываем состояние таймера и отправляем новый код для нового номера
+    NannyGlobals.lastSmsSend = null;
+    initTimer();
+
     update(() {
       currentView = const PhoneEnterConfirmView();
       extendBehindAppBar = true;

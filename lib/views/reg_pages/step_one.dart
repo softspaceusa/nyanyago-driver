@@ -24,24 +24,26 @@ class _RegStepOneViewState extends State<RegStepOneView> {
 
   @override
   Widget build(BuildContext context) {
-    return RegPageBaseView(isFirstPage: true, children: [
-      Form(
+    return RegPageBaseView(
+      isFirstPage: true,
+      children: [
+        Form(
           key: vm.passState,
           child: NannyPasswordForm(
-              onChanged: (text) => vm.password = text,
-              labelText: "Пароль*",
-              hintText: "Придумайте пароль",
-              validator: (text) {
-                if (text!.length < 8) {
-                  return "Пароль должен быть не меньше 8 символов!";
-                }
-
-                return null;
-              })),
-      const SizedBox(height: 20),
-      Form(
+            isExpanded: true,
+            onChanged: (text) => vm.password = text,
+            labelText: "Пароль*",
+            hintText: "Придумайте пароль",
+            validator: (text) {
+              return validatePassword(text);
+            },
+          ),
+        ),
+        const SizedBox(height: 20),
+        Form(
           key: vm.cityState,
           child: NannyTextForm(
+              isExpanded: true,
               readOnly: true,
               labelText: "Город*",
               hintText: "Выберите город",
@@ -51,26 +53,84 @@ class _RegStepOneViewState extends State<RegStepOneView> {
 
                 return null;
               },
-              onTap: vm.searchForCity)),
-      const SizedBox(height: 20),
-      NannyTextForm(
-          labelText: "Реферальный код",
-          hintText: "Введите реферальный код",
-          onChanged: (text) => vm.refCode = text),
-      const SizedBox(height: 20),
-      Form(
+              onTap: vm.searchForCity),
+        ),
+        const SizedBox(height: 20),
+        NannyTextForm(
+            isExpanded: true,
+            labelText: "Реферальный код",
+            hintText: "Введите реферальный код",
+            onChanged: (text) => vm.refCode = text),
+        const SizedBox(height: 20),
+        Form(
           key: vm.innState,
           child: NannyTextForm(
-              labelText: "ИНН*",
-              hintText: "Введите ИНН",
-              onChanged: (text) => vm.inn = text,
-              validator: (text) {
-                if (vm.inn.isEmpty) return "Введите ИНН!";
+            isExpanded: true,
+            labelText: "ИНН*",
+            hintText: "Введите ИНН",
+            onChanged: (text) => vm.inn = text,
+            validator: (text) {
+              if (vm.inn.isEmpty) return "Введите ИНН!";
 
-                return null;
-              })),
-      const Spacer(),
-      ElevatedButton(onPressed: vm.nextStep, child: const Text("Далее")),
-    ]);
+              return null;
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: vm.nextStep,
+          style: ButtonStyle(
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            minimumSize: const WidgetStatePropertyAll(
+              Size(double.infinity, 60),
+            ),
+          ),
+          child: const Text("Далее"),
+        ),
+      ],
+    );
+  }
+
+  String? validatePassword(String? password) {
+    if (password == null) return null;
+    if (password.length < 8) {
+      return 'Пароль не меньше 8 символов';
+    }
+    if (!containsUpperCase(password)) {
+      return 'Пароль должен содержать заглавные буквы';
+    }
+    if (!containsSpecialCharacter(password)) {
+      return 'Пароль должен содержать специальные символы';
+    }
+    if (!containsDigit(password)) {
+      return 'Пароль должен содержать цифры';
+    }
+
+    return null;
+  }
+
+  bool containsDigit(String input) {
+    final RegExp digitRegExp = RegExp(
+      r'^(?=.*\d).+$',
+    );
+    return digitRegExp.hasMatch(input);
+  }
+
+  bool containsSpecialCharacter(String input) {
+    final RegExp specialCharRegExp = RegExp(
+      r'^(?=.*[\W_]).+$',
+    );
+    return specialCharRegExp.hasMatch(input);
+  }
+
+  bool containsUpperCase(String input) {
+    final RegExp upperCaseRegExp = RegExp(
+      r'^(?=.*[A-Z]).+$',
+    );
+    return upperCaseRegExp.hasMatch(input);
   }
 }

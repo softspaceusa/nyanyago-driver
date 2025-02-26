@@ -3,7 +3,6 @@ import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/api/api_models/static_data.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/globals.dart';
-import 'package:nanny_driver/views/reg_pages/step_two.dart';
 
 class RegStepOneVM extends ViewModelBase {
   RegStepOneVM({

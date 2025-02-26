@@ -63,9 +63,9 @@ class AddressOneTimeDrive {
 
   factory AddressOneTimeDrive.fromJson(Map<String, dynamic> json) {
     return AddressOneTimeDrive(
-        from: json['from'],
+        from: json['from_address'],
         isFinish: json['is_finish'],
-        to: json['to'],
+        to: json['to_address'],
         fromLat: json['from_lat'],
         fromLon: json['from_lon'],
         toLat: json['to_lat'],

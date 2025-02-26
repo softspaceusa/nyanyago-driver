@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nanny_components/nanny_components.dart';
-import 'package:nanny_components/styles/text_styles.dart';
 
 class NannyTextForm extends StatefulWidget {
   final InputDecoration? style;
@@ -17,6 +16,7 @@ class NannyTextForm extends StatefulWidget {
   final bool readOnly;
   final bool enabled;
   final TextEditingController? controller;
+  final int? minLines;
   final int? maxLines;
   final int? maxLength;
   final bool isExpanded;
@@ -37,6 +37,7 @@ class NannyTextForm extends StatefulWidget {
     this.enabled = true,
     this.style,
     this.controller,
+    this.minLines,
     this.maxLines,
     this.maxLength,
     this.isExpanded = false,
@@ -71,7 +72,7 @@ class _NannyTextFormState extends State<NannyTextForm> {
               ),
               child: TextFormField(
                 expands: widget.isExpanded,
-                minLines: null,
+                minLines: widget.isExpanded ? null : widget.maxLines,
                 style:
                     NannyTextStyles.textTheme.bodyMedium?.copyWith(height: 1.5),
                 textAlignVertical: TextAlignVertical.center,

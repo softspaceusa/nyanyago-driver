@@ -25,6 +25,7 @@ class _RegStepThreeViewState extends State<RegStepThreeView> {
       Form(
         key: vm.markState,
         child: NannyTextForm(
+          isExpanded: true,
           controller: vm.markController,
           readOnly: true,
           labelText: "Марка авто*",
@@ -39,6 +40,7 @@ class _RegStepThreeViewState extends State<RegStepThreeView> {
       Form(
         key: vm.modelState,
         child: NannyTextForm(
+          isExpanded: true,
           controller: vm.modelController,
           readOnly: true,
           enabled: vm.isMarkSelected,
@@ -54,6 +56,7 @@ class _RegStepThreeViewState extends State<RegStepThreeView> {
       Form(
         key: vm.colorState,
         child: NannyTextForm(
+          isExpanded: true,
           controller: vm.colorController,
           readOnly: true,
           labelText: "Цвет*",
@@ -68,6 +71,7 @@ class _RegStepThreeViewState extends State<RegStepThreeView> {
       Form(
         key: vm.yearState,
         child: NannyTextForm(
+          isExpanded: true,
           controller: vm.yearController,
           enabled: vm.isMarkSelected,
           onChanged: (s) {
@@ -87,6 +91,7 @@ class _RegStepThreeViewState extends State<RegStepThreeView> {
       Form(
         key: vm.stateNumState,
         child: NannyTextForm(
+          isExpanded: true,
           labelText: "Госномер*",
           hintText: "А 000 АА 000",
           formatters: [NannyUpperFormatter(), vm.stateNumMask],
@@ -101,19 +106,30 @@ class _RegStepThreeViewState extends State<RegStepThreeView> {
       Form(
         key: vm.stsState,
         child: NannyTextForm(
-          labelText: "СТС*",
-          hintText: "00 АА 000000",
-          formatters: [NannyUpperFormatter(), vm.stsMask],
-          validator: (text) {
-            if (!vm.stsMask.isFill()) return "Заполните СТС!";
-            return null;
-          }
-          // onChanged: (text) {},
-        ),
+            isExpanded: true,
+            labelText: "СТС*",
+            hintText: "00 АА 000000",
+            formatters: [NannyUpperFormatter(), vm.stsMask],
+            validator: (text) {
+              if (!vm.stsMask.isFill()) return "Заполните СТС!";
+              return null;
+            }
+            // onChanged: (text) {},
+            ),
       ),
-      const Spacer(),
+      const SizedBox(height: 10),
       ElevatedButton(
         onPressed: vm.nextStep,
+        style: ButtonStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          minimumSize: const WidgetStatePropertyAll(
+            Size(double.infinity, 60),
+          ),
+        ),
         child: const Text("Далее"),
       ),
     ]);

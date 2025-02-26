@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
+import 'package:nanny_core/api/api_models/search_query_request.dart';
 import 'package:nanny_core/api/nanny_orders_api.dart';
 import 'package:nanny_core/api/web_sockets/nanny_web_socket.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/current_order_response.dart';
@@ -41,6 +42,7 @@ class OffersVM extends ViewModelBase {
 
   Future setSelected(int orderId) async {
     selectedId = orderId;
+    await getOffers();
     update(() {});
   }
 
@@ -209,11 +211,16 @@ class OffersVM extends ViewModelBase {
       }
     }
 
-    //var offerRes =
-    //    await NannyDriverApi.getScheduleRequests(SearchQueryRequest());
-    //if (!offerRes.success) return false;
-    //offers = offerRes.response!;
+    await getOffers();
+
     return true;
+  }
+
+  Future getOffers() async {
+    var offerRes =
+        await NannyDriverApi.getScheduleRequests(SearchQueryRequest());
+    if (!offerRes.success) return false;
+    offers = offerRes.response!;
   }
 
   void changeOfferType(OfferType type) => update(() {

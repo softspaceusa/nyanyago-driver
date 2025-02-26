@@ -48,7 +48,8 @@ class NannyConsts {
     var bytes = await getBytesFromAsset(
         'packages/nanny_components/assets/images/map/client_location.png', 350);
     if (bytes != null) {
-      curPosIcon = BitmapDescriptor.fromBytes(bytes, size: const Size(350, 350));
+      curPosIcon =
+          BitmapDescriptor.fromBytes(bytes, size: const Size(350, 350));
     } else {
       curPosIcon = await BitmapDescriptor.fromAssetImage(
           ImageConfiguration.empty,

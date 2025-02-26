@@ -18,56 +18,65 @@ class _RegStepSixViewState extends State<RegStepSixView> {
     super.initState();
     vm = RegStepSixVM(context: context, update: setState);
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return RegPageBaseView(
-      height: .8,
-      children: [
+    return RegPageBaseView(height: .8, children: [
+      Text(
+          "Ребенок мешает вам во время движения (громко разговаривает и отвлекает вас от управления автомобилем). ",
+          style: Theme.of(context).textTheme.labelLarge),
+      const SizedBox(height: 10),
+      Form(
+        key: vm.answer3State,
+        child: NannyTextForm(
+          hintText: "Ваши действия?",
+          minLines: 5,
+          maxLines: 5,
+          maxLength: 500,
+          onChanged: (text) => vm.answer3 = text,
+          validator: (text) {
+            if (text!.isEmpty) return "Введите ответ!";
 
-        Text("Ребенок мешает вам во время движения (громко разговаривает и отвлекает вас от управления автомобилем). ", style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 10),
-        Form(
-          key: vm.answer3State,
-          child: NannyTextForm(
-            hintText: "Ваши действия?",
-            maxLines: 5,
-            maxLength: 500,
-            onChanged: (text) => vm.answer3 = text,
-            validator: (text) {
-              if(text!.isEmpty) return "Введите ответ!";
-              
-              return null;
-            },
-          ),
+            return null;
+          },
         ),
-        const SizedBox(height: 20),
-        Align(
+      ),
+      const SizedBox(height: 20),
+      Align(
           alignment: Alignment.centerLeft,
-          child: Text("При поездке, ребенка укачало.", style: Theme.of(context).textTheme.labelLarge)
+          child: Text("При поездке, ребенка укачало.",
+              style: Theme.of(context).textTheme.labelLarge)),
+      const SizedBox(height: 10),
+      Form(
+        key: vm.answer4State,
+        child: NannyTextForm(
+          hintText: "Ваши действия?",
+          minLines: 5,
+          maxLines: 5,
+          maxLength: 500,
+          onChanged: (text) => vm.answer4 = text,
+          validator: (text) {
+            if (text!.isEmpty) return "Введите ответ!";
+
+            return null;
+          },
         ),
-        const SizedBox(height: 10),
-        Form(
-          key: vm.answer4State,
-          child: NannyTextForm(
-            hintText: "Ваши действия?",
-            maxLines: 5,
-            maxLength: 500,
-            onChanged: (text) => vm.answer4 = text,
-            validator: (text) {
-              if(text!.isEmpty) return "Введите ответ!";
-              
-              return null;
-            },
+      ),
+      const SizedBox(height: 10),
+      ElevatedButton(
+        onPressed: vm.nextStep,
+        style: ButtonStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          minimumSize: const WidgetStatePropertyAll(
+            Size(double.infinity, 60),
           ),
         ),
-        const Spacer(),
-        ElevatedButton(
-          onPressed: vm.nextStep, 
-          child: const Text("Далее"),
-        ),
-        
-      ]
-    );
+        child: const Text("Далее"),
+      ),
+    ]);
   }
 }

@@ -1,12 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nanny_components/base_views/view_models/phone_confirm_vm.dart';
 import 'package:nanny_components/nanny_components.dart';
+import 'package:nanny_core/models/login_path.dart';
 
 class PhoneConfirmView extends StatefulWidget {
   final Widget nextScreen;
   final String title;
   final String text;
   final bool isReg;
+  final List<LoginPath> loginPaths;
 
   const PhoneConfirmView({
     super.key,
@@ -14,6 +17,7 @@ class PhoneConfirmView extends StatefulWidget {
     required this.title,
     required this.text,
     required this.isReg,
+    required this.loginPaths,
   });
 
   @override
@@ -39,13 +43,34 @@ class _PhoneConfirmViewState extends State<PhoneConfirmView> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: const NannyAppBar(),
-        extendBodyBehindAppBar: _vm.extendBehindAppBar,
-        resizeToAvoidBottomInset: false,
-        body: _vm.currentView,
+    return Scaffold(
+      backgroundColor: NannyTheme.lightPink,
+      appBar: NannyAppBar(
+        color: NannyTheme.lightPink,
+        actions: [
+          if (_vm.currentView is PhoneEnterView)
+            CupertinoButton(
+              child: Text(
+                'Войти',
+                style: NannyTextStyles.defaultTextStyle.copyWith(
+                  color: const Color(0xFF212121).withOpacity(.2),
+                ),
+              ),
+              onPressed: () => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginView(
+                      imgPath:
+                          "packages/nanny_components/assets/images/Saly-10.png",
+                      paths: widget.loginPaths),
+                ),
+              ),
+            )
+        ],
       ),
+      extendBodyBehindAppBar: _vm.extendBehindAppBar,
+      resizeToAvoidBottomInset: false,
+      body: _vm.currentView,
     );
   }
 }
@@ -62,33 +87,54 @@ class PhoneEnterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Center(
-        child: Column(
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 10),
-            Text(text,
+    return Form(
+      key: _vm.phoneState,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Center(
+          child: Column(
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                    color: NannyTheme.onSecondary,
+                    fontSize: 25,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Nunito'),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                text,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 50),
-            Form(
-              key: _vm.phoneState,
-              child: NannyTextForm(
+                style: const TextStyle(
+                    color: Color(0xFF212121),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Nunito'),
+              ),
+              const SizedBox(height: 27),
+              NannyTextForm(
                 isExpanded: true,
                 labelText: "Номер телефона*",
                 hintText: "+7 (777) 777-77-77",
                 keyType: TextInputType.number,
                 formatters: [_vm.phoneMask],
                 validator: (text) {
-                  if (_vm.phone.length < 11) return "Введите номер телефона!";
-                  return null;
+                  // Проверяем, что пользователь ввел данные
+                  if (text == null || text.isEmpty) {
+                    return "Введите номер телефона!";
+                  }
+
+                  // Проверяем длину номера (без маски)
+                  if (_vm.phoneMask.getUnmaskedText().length < 11) {
+                    return "Введите полный номер телефона!";
+                  }
+
+                  return null; // Все ок, ошибок нет
                 },
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
+              const SizedBox(height: 20),
+              ElevatedButton(
                 onPressed: _vm.toPhoneConfirmation,
                 style: ButtonStyle(
                   shape: WidgetStatePropertyAll(
@@ -100,8 +146,10 @@ class PhoneEnterView extends StatelessWidget {
                     Size(double.infinity, 60),
                   ),
                 ),
-                child: const Text("Отправить код подтверждения")),
-          ],
+                child: const Text("Отправить код подтверждения"),
+              ),
+            ],
+          ),
         ),
       ),
     );

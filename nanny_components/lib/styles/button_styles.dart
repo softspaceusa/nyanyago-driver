@@ -45,4 +45,46 @@ class NannyButtonStyles {
       foregroundColor: WidgetStatePropertyAll(NannyTheme.onSecondary),
       overlayColor: WidgetStatePropertyAll(NannyTheme.grey),
       elevation: WidgetStatePropertyAll(0));
+
+  static ButtonStyle main = ButtonStyle(
+    elevation: const WidgetStatePropertyAll(2),
+    backgroundColor: const WidgetStatePropertyAll(NannyTheme.primary),
+    foregroundColor: const WidgetStatePropertyAll(NannyTheme.secondary),
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+    minimumSize: const WidgetStatePropertyAll(
+      Size(double.infinity, 60),
+    ),
+  );
+
+  static ButtonStyle noActive = ButtonStyle(
+    elevation: const WidgetStatePropertyAll(2),
+    backgroundColor: const WidgetStatePropertyAll(Color(0xFFF7F7F7)),
+    foregroundColor: const WidgetStatePropertyAll(NannyTheme.darkGrey),
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+    minimumSize: const WidgetStatePropertyAll(
+      Size(double.infinity, 60),
+    ),
+  );
+
+  static ButtonStyle secondary = ButtonStyle(
+    elevation: const WidgetStatePropertyAll(2),
+    backgroundColor: const WidgetStatePropertyAll(NannyTheme.secondary),
+    foregroundColor: const WidgetStatePropertyAll(NannyTheme.onSecondary),
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+    minimumSize: const WidgetStatePropertyAll(
+      Size(double.infinity, 60),
+    ),
+  );
 }

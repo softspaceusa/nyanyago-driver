@@ -37,12 +37,11 @@ class _ProfileViewState extends State<ProfileView>
     if (wantKeepAlive) super.build(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
       appBar: NannyAppBar(
         title: "Профиль",
+        color: NannyTheme.secondary,
         isTransparent: false,
         hasBackButton: false,
-        color: NannyTheme.secondary,
         leading: IconButton(
           onPressed: vm.navigateToAppSettings,
           icon: const Icon(Icons.settings),
@@ -168,6 +167,16 @@ class _ProfileViewState extends State<ProfileView>
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: vm.saveChanges,
+                            style: ButtonStyle(
+                              shape: WidgetStatePropertyAll(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              minimumSize: const WidgetStatePropertyAll(
+                                Size(double.infinity, 60),
+                              ),
+                            ),
                             child: const Text("Сохранить"),
                           ),
                           const SizedBox(height: 20),

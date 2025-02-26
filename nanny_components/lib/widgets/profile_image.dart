@@ -18,20 +18,23 @@ class ProfileImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        width: radius,
-        height: radius,
-        child: IconButton(
-            padding: padding,
-            onPressed: onTap,
-            splashRadius: radius * .5,
-            icon: ClipOval(
-                child: url.isNotEmpty
-                    ? NetImage(
-                        url: url,
-                        placeholderPath:
-                            "packages/nanny_components/assets/images/no_user.jpg")
-                    : Image.asset(
-                        'packages/nanny_components/assets/images/no_user.jpg',
-                        fit: BoxFit.cover))));
+      width: radius,
+      height: radius,
+      child: IconButton(
+        padding: padding,
+        onPressed: onTap,
+        splashRadius: radius * .5,
+        icon: ClipOval(
+          child: url.isNotEmpty
+              ? NetImage(
+                  url: url,
+                  placeholderPath:
+                      "packages/nanny_components/assets/images/no_user.jpg")
+              : Image.asset(
+                  'packages/nanny_components/assets/images/no_user.jpg',
+                  fit: BoxFit.cover),
+        ),
+      ),
+    );
   }
 }

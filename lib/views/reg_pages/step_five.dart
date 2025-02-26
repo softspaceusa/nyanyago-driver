@@ -18,52 +18,65 @@ class _RegStepFiveViewState extends State<RegStepFiveView> {
     super.initState();
     vm = RegStepFiveVM(context: context, update: setState);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return RegPageBaseView(
       height: .8,
       children: [
-
-        Text("Вы встретили ребенка, и он отказывается идти с вами за руку.", style: Theme.of(context).textTheme.labelLarge),
+        Text("Вы встретили ребенка, и он отказывается идти с вами за руку.",
+            style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 10),
         Form(
           key: vm.answer1State,
           child: NannyTextForm(
             hintText: "Ваши действия?",
+            minLines: 5,
             maxLines: 5,
             maxLength: 500,
             onChanged: (text) => vm.answer1 = text,
             validator: (text) {
-              if(text!.isEmpty) return "Введите ответ!";
-              
+              if (text!.isEmpty) return "Введите ответ!";
+
               return null;
             },
           ),
         ),
         const SizedBox(height: 20),
-        Text("Ребенок отказывается пристегивать ремень безопасности в автомобиле.", style: Theme.of(context).textTheme.labelLarge),
+        Text(
+            "Ребенок отказывается пристегивать ремень безопасности в автомобиле.",
+            style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 10),
         Form(
           key: vm.answer2State,
           child: NannyTextForm(
             hintText: "Ваши действия?",
+            minLines: 5,
             maxLines: 5,
             maxLength: 500,
             onChanged: (text) => vm.answer2 = text,
             validator: (text) {
-              if(text!.isEmpty) return "Введите ответ!";
-              
+              if (text!.isEmpty) return "Введите ответ!";
+
               return null;
             },
           ),
         ),
-        const Spacer(),
+        const SizedBox(height: 10),
         ElevatedButton(
-          onPressed: vm.nextStep, 
+          onPressed: vm.nextStep,
+          style: ButtonStyle(
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            minimumSize: const WidgetStatePropertyAll(
+              Size(double.infinity, 60),
+            ),
+          ),
           child: const Text("Далее"),
         ),
-
       ],
     );
   }

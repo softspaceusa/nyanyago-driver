@@ -34,6 +34,8 @@
     <string>Мы используем вашу геопозицию для отображения карты</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Ваше приложение запрашивает доступ к библиотеке фотографий для загрузки изображений в профиль.</string>
+    <key>NSContactsUsageDescription</key>
+    <string>Приложению нужен доступ к вашим контактам для корректной работы.</string>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
     <key>UIBackgroundModes</key>

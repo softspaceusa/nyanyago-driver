@@ -36,6 +36,7 @@ class _LoginViewState extends State<LoginView> {
       context: context,
       update: setState,
       availableRoleLogin: widget.paths,
+      paths: widget.paths,
     );
   }
 
@@ -89,8 +90,9 @@ class _LoginViewState extends State<LoginView> {
                                 formatters: [vm.phoneMask],
                                 keyType: TextInputType.number,
                                 validator: (text) {
-                                  if (vm.phone.length < 11)
+                                  if (vm.phone.length < 11) {
                                     return "Введите номер телефона!";
+                                  }
                                   return null;
                                 })),
                         const SizedBox(height: 10),
@@ -101,8 +103,9 @@ class _LoginViewState extends State<LoginView> {
                             labelText: "Пароль",
                             hintText: "••••••••",
                             validator: (text) {
-                              if (vm.password.length < 8)
+                              if (vm.password.length < 8) {
                                 return "Пароль не менее 8 символов!";
+                              }
                               return null;
                             },
                             onChanged: (v) => vm.password = v,
@@ -110,18 +113,19 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         const SizedBox(height: 30),
                         ElevatedButton(
-                            onPressed: vm.isLoading ? null : vm.tryLogin,
-                            style: ButtonStyle(
-                              shape: WidgetStatePropertyAll(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              minimumSize: const WidgetStatePropertyAll(
-                                Size(double.infinity, 60),
+                          onPressed: vm.isLoading ? null : vm.tryLogin,
+                          style: ButtonStyle(
+                            shape: WidgetStatePropertyAll(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            child: const Text("Войти")),
+                            minimumSize: const WidgetStatePropertyAll(
+                              Size(double.infinity, 60),
+                            ),
+                          ),
+                          child: const Text("Войти"),
+                        ),
                         const SizedBox(height: 20),
                         TextButton(
                             onPressed: vm.toPasswordReset,

@@ -7,12 +7,15 @@ class LoginVM extends ViewModelBase {
     required super.context,
     required super.update,
     required this.availableRoleLogin,
+    required this.paths,
   });
 
   String password = "";
   List<LoginPath> availableRoleLogin;
 
   bool isLoading = false;
+
+  final List<LoginPath> paths;
 
   final GlobalKey<FormState> phoneState = GlobalKey();
   final MaskTextInputFormatter phoneMask = TextMasks.phoneMask();
@@ -28,12 +31,13 @@ class LoginVM extends ViewModelBase {
   void toPasswordReset() => Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => const PhoneConfirmView(
-                nextScreen: PasswordResetView(),
+          builder: (context) => PhoneConfirmView(
+                nextScreen: const PasswordResetView(),
                 title: "Забыли пароль?",
                 text:
                     "Введите номер телефона на который зарегистрирован аккаунт и мы отправим вам СМС с кодом.",
                 isReg: false,
+                loginPaths: paths,
               )));
 
   void tryLogin() async {
@@ -47,10 +51,6 @@ class LoginVM extends ViewModelBase {
 
     String passHash = Md5Converter.convert(password);
     var token = "";
-    if(token==null){
-      update(() => isLoading = false);
-      return;
-    }
     var request = NannyUser.login(LoginRequest(
         login: phone, password: passHash, fbid: token ?? "Пятисотый"));
 
