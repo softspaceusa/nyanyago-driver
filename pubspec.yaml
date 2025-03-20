@@ -22,6 +22,9 @@ dependencies:
     sdk: flutter
   collection: ^1.18.0
   webview_flutter: ^4.8.0
+  provider: ^6.1.2
+  bloc: ^9.0.0
+  flutter_bloc: ^9.1.0
 
 dev_dependencies:
   flutter_test:
@@ -39,12 +42,21 @@ flutter:
     - family: Nunito
       fonts:
         - asset: ./nanny_components/assets/fonts/nunito/Nunito-Regular.ttf
-
-        - asset: ./nanny_components/assets/fonts/nunito/Nunito-Light.ttf
-          weight: 300
-
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-Black.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-BlackItalic.ttf
         - asset: ./nanny_components/assets/fonts/nunito/Nunito-Bold.ttf
-          weight: 700
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-BoldItalic.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-ExtraBold.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-ExtraBoldItalic.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-ExtraLight.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-ExtraLightItalic.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-Italic.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-Light.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-LightItalic.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-Medium.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-MediumItalic.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-SemiBold.ttf
+        - asset: ./nanny_components/assets/fonts/nunito/Nunito-SemiBoldItalic.ttf
 
     - family: Fregat
       fonts:

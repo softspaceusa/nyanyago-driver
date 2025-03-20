@@ -89,12 +89,15 @@ class OneTimeDriveWidget extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            addressesList[index],
-                            maxLines: null,
-                            style: NannyTextStyles.defaultTextStyle.copyWith(
-                                fontWeight: index == 0 ? FontWeight.w600 : null,
-                                fontSize: 18),
+                          Expanded(
+                            child: Text(
+                              addressesList[index],
+                              maxLines: null,
+                              style: NannyTextStyles.defaultTextStyle.copyWith(
+                                  fontWeight:
+                                      index == 0 ? FontWeight.w600 : null,
+                                  fontSize: 18),
+                            ),
                           ),
                           if (index != 0)
                             Text(
@@ -162,6 +165,7 @@ class OneTimeDriveModel {
   final dynamic orderStatus;
   final List<OneTimeDriveAddress> addresses;
   final bool isFromSocket;
+  final String? phone;
 
   OneTimeDriveModel(
       {required this.avatar,
@@ -170,7 +174,8 @@ class OneTimeDriveModel {
       required this.price,
       required this.orderId,
       required this.orderStatus,
-      required this.addresses});
+      required this.addresses,
+      this.phone});
 }
 
 typedef OneTimeDriveCallback = void Function(int id);

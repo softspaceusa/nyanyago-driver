@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
@@ -11,7 +12,9 @@ import 'package:nanny_core/models/from_api/drive_and_map/driver_schedule_respons
 import 'package:nanny_core/models/from_api/drive_and_map/one_time_drive_socket.dart';
 import 'package:nanny_core/models/from_api/other_parametr.dart';
 import 'package:nanny_core/nanny_core.dart';
+import 'package:nanny_driver/providers/bloc/socket_bloc.dart';
 import 'package:nanny_driver/views/pages/map/map_view_order.dart';
+import 'package:provider/provider.dart';
 
 class OffersVM extends ViewModelBase {
   OffersVM({
@@ -19,11 +22,14 @@ class OffersVM extends ViewModelBase {
     required super.update,
   });
 
+  NannyWebSocket? searchSocket;
+
   Future load() async {
-    //await loadOneTimeDrives();
+    searchSocket = context.read<SocketBloc>().searchSocket;
     await initDriveMode();
   }
 
+  StreamSubscription<dynamic>? socketStream;
   List<Order> orders = [];
   var driveToken = '';
   var selectedId = 0;
@@ -31,7 +37,6 @@ class OffersVM extends ViewModelBase {
   List<OneTimeDriveModel> oneTimeDrive = [];
   List<DriverScheduleResponse> offers = [];
   List<OtherParametr> params = [];
-  late NannyWebSocket searchSocket;
 
   Future<void> loadOneTimeDrives() async {
     final response = await NannyOrdersApi.getOnetimeOrder();
@@ -57,25 +62,25 @@ class OffersVM extends ViewModelBase {
     if (orders.isEmpty) return;
     for (var item in orders) {
       if (item.idStatus == 4) {
-        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 2});
+        searchSocket?.sinkValue({'id_order': item.idOrder, 'status': 2});
 
         // NannyOrdersApi.acceptOrder(item.idOrder ?? 0);
         // return;
       }
       if (item.idStatus == 13) {
-        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 5});
+        searchSocket?.sinkValue({'id_order': item.idOrder, 'status': 5});
       }
       if (item.idStatus == 5) {
-        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 7});
+        searchSocket?.sinkValue({'id_order': item.idOrder, 'status': 7});
       }
       if (item.idStatus == 7) {
-        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 14});
+        searchSocket?.sinkValue({'id_order': item.idOrder, 'status': 14});
       }
       if (item.idStatus == 14) {
-        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 15});
+        searchSocket?.sinkValue({'id_order': item.idOrder, 'status': 15});
       }
       if (item.idStatus == 15) {
-        searchSocket.sinkValue({'id_order': item.idOrder, 'status': 11});
+        searchSocket?.sinkValue({'id_order': item.idOrder, 'status': 11});
       }
     }
   }
@@ -92,7 +97,7 @@ class OffersVM extends ViewModelBase {
     }
 
     //if (order.orderId == selected) {
-    //  searchSocket.sinkValue({
+    //  searchSocket?.sinkValue({
     //    "id_order": selected,
     //    "cancel": "true",
     //    "type": "order"
@@ -109,7 +114,7 @@ class OffersVM extends ViewModelBase {
       MapViewOrder(
           myLocation: LatLng(loc.latitude ?? 0, loc.longitude ?? 0),
           model: oneTimeDrive.firstWhere((e) => e.orderId == selectedId),
-          searchSocket: searchSocket,
+          searchSocket: context.read<SocketBloc>().searchSocket,
           orderId: selectedId),
     ).then((v) async {
       await setSelected(0);
@@ -121,7 +126,7 @@ class OffersVM extends ViewModelBase {
     // if (oneTimeDrive.any((e) => e.isFromSocket)) {
     //   var order = oneTimeDrive.firstWhere((e) => e.isFromSocket);
     //   if (order.orderId == selectedId) {
-    //     searchSocket.channel.sink
+    //     searchSocket?.channel.sink
     //         .add('{"id_order": $selectedId, "accept": True, "type": "order"}');
     //   }
     // } else {
@@ -144,41 +149,20 @@ class OffersVM extends ViewModelBase {
   }
 
   Future initListen() async {
-    searchSocket.stream.listen((v) {
-      if (v is Map<String, dynamic>) {
-        if (v.containsKey('active_orders')) {
-          _handleActiveOrders(v['active_orders']);
-        } else {
-          _handleOneTimeDrive(v);
+    searchSocket?.stream.listen(
+      (v) {
+        try {
+          var json = jsonDecode(v) as Map<String, dynamic>;
+          if (!json.containsKey('active_orders')) {
+            _handleOneTimeDrive(json);
+          }
+        } catch (e) {
+          var value = jsonDecode(v);
+          if (!value.containsKey('active_orders')) {
+            _handleOneTimeDrive(value);
+          }
         }
-      } else if (v is String) {
-        var value = jsonDecode(v);
-        if (value.containsKey('active_orders')) {
-          _handleActiveOrders(value['active_orders']);
-        } else {
-          _handleOneTimeDrive(value);
-        }
-      }
-    });
-  }
-
-  void _handleActiveOrders(List<dynamic> activeOrders) {
-    if (activeOrders.isNotEmpty) {
-      final activeOrder = OneTimeDriveResponse.fromJson(activeOrders.first);
-      navigateToMap(activeOrder);
-    }
-  }
-
-  void navigateToMap(OneTimeDriveResponse order) async {
-    var loc = await LocationService.location.getLocation();
-
-    await navigateToView(
-      MapViewOrder(
-        myLocation: LatLng(loc.latitude ?? 0, loc.longitude ?? 0),
-        model: order.toUi(),
-        searchSocket: searchSocket,
-        orderId: order.idOrder ?? 0,
-      ),
+      },
     );
   }
 
@@ -205,9 +189,9 @@ class OffersVM extends ViewModelBase {
   Future<bool> loadPage() async {
     var paramRes = await NannyStaticDataApi.getOtherParams();
     if (!paramRes.success) return false;
-    for (var e in paramRes.response!) {
-      if (!params.any((e) => e.id == e.id)) {
-        params.add(e);
+    for (var param in paramRes.response!) {
+      if (!params.any((e) => e.id == param.id)) {
+        params.add(param);
       }
     }
 

@@ -3,6 +3,7 @@ import 'package:nanny_core/api/api_models/onetime_drive_request.dart';
 import 'package:nanny_core/api/request_builder.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/drive_tariff.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/one_time_drive_socket.dart';
+import 'package:nanny_core/models/from_api/drive_and_map/onetime_order_response_model.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule_responses_data.dart';
 import 'package:nanny_core/models/from_api/franchise/order_model.dart';
@@ -167,12 +168,13 @@ class NannyOrdersApi {
     ));
   }
 
-  static Future<ApiResponse<String>> startOnetimeOrder(
+  static Future<ApiResponse<OnetimeOrderResponseModel>> startOnetimeOrder(
       OnetimeDriveRequest request) async {
-    return RequestBuilder<String>().create(
+    return RequestBuilder<OnetimeOrderResponseModel>().create(
       dioRequest: DioRequest.dio
           .post("/orders/start_onetime_drive", data: request.toJson()),
-      onSuccess: (response) => response.data["token"],
+      onSuccess: (response) =>
+          OnetimeOrderResponseModel.fromJson(response.data),
     );
   }
 }

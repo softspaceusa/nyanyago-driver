@@ -38,6 +38,7 @@ class OneTimeDriveResponse {
       price: (amount ?? 0).toString(),
       orderId: idOrder ?? 0,
       orderStatus: idStatus,
+      phone: phone,
       addresses: addresses?.map((e) => e.toUI()).toList() ?? []);
 }
 

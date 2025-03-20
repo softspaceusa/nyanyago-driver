@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/base_views/view_models/route_sheet_vm.dart';
-import 'package:nanny_components/widgets/nanny_text_forms.dart';
+import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
 
 class RouteSheetView extends StatefulWidget {
   final NannyWeekday weekday;
-  
+
   const RouteSheetView({
     super.key,
     required this.weekday,
@@ -22,19 +22,15 @@ class _RouteSheetViewState extends State<RouteSheetView> {
   void initState() {
     super.initState();
     vm = RouteSheetVM(
-      context: context, 
-      update: setState,
-      weekday: widget.weekday
-    );
+        context: context, update: setState, weekday: widget.weekday);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return BottomSheet(
-      onClosing: () {}, 
+      onClosing: () {},
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20))
-      ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       enableDrag: false,
       builder: (context) => SingleChildScrollView(
         child: Column(
@@ -45,12 +41,13 @@ class _RouteSheetViewState extends State<RouteSheetView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                    onPressed: vm.cancel, 
+                    onPressed: vm.cancel,
                     child: const Text("Отменить"),
                   ),
-                  const Text("Новый маршрут", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text("Новый маршрут",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   TextButton(
-                    onPressed: vm.confirm, 
+                    onPressed: vm.confirm,
                     child: const Text("Готово"),
                   ),
                 ],
@@ -62,7 +59,6 @@ class _RouteSheetViewState extends State<RouteSheetView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  
                   NannyTextForm(
                     labelText: "Название маршрута",
                     onChanged: (text) => vm.roadName = text,
@@ -77,23 +73,26 @@ class _RouteSheetViewState extends State<RouteSheetView> {
                   const SizedBox(height: 10),
                   ListView(
                     shrinkWrap: true,
-                    children: vm.addresses.map(
-                      (e) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: NannyTextForm(
-                          controller: e.controller,
-                          labelText: "Промежуточный адрес",
-                          style: InputDecoration(
-                            suffixIcon: IconButton(
-                              splashRadius: 20,
-                              onPressed: () => vm.removeAddress(e),
-                              icon: const Icon(Icons.delete, color: Colors.black),
+                    children: vm.addresses
+                        .map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: NannyTextForm(
+                              controller: e.controller,
+                              labelText: "Промежуточный адрес",
+                              style: InputDecoration(
+                                suffixIcon: IconButton(
+                                  splashRadius: 20,
+                                  onPressed: () => vm.removeAddress(e),
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.black),
+                                ),
+                              ),
+                              onTap: () => vm.chooseAddtionAddress(e),
                             ),
                           ),
-                          onTap: () => vm.chooseAddtionAddress(e),
-                        ),
-                      ),
-                    ).toList(),
+                        )
+                        .toList(),
                   ),
                   NannyTextForm(
                     controller: vm.toController,
@@ -103,9 +102,7 @@ class _RouteSheetViewState extends State<RouteSheetView> {
                   ),
                   const SizedBox(height: 20),
                   IconButton(
-                    onPressed: vm.addAddress, 
-                    icon: const Icon(Icons.add)
-                  ),
+                      onPressed: vm.addAddress, icon: const Icon(Icons.add)),
                   const SizedBox(height: 20),
                   // Row(
                   //   children: [
@@ -128,13 +125,15 @@ class _RouteSheetViewState extends State<RouteSheetView> {
                   //     ),
                   //   ],
                   // ),
-                  const Text("Время от и до:", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text("Время от и до:",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                    onPressed: vm.chooseTime, 
-                    child: Text(vm.timeRange == null ? "Выберите временной промежуток" : vm.timeRange!.toLocalTimeString())
-                  )
-
+                      style: NannyButtonStyles.main,
+                      onPressed: vm.chooseTime,
+                      child: Text(vm.timeRange == null
+                          ? "Выберите временной промежуток"
+                          : vm.timeRange!.toLocalTimeString()))
                 ],
               ),
             ),

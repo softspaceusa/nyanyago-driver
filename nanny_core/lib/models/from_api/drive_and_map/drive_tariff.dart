@@ -24,5 +24,5 @@ class DriveTariff {
         photoPath = json["photo_path"],
         isAvailable = json["isAvailable"] ?? false,
         amount = json["amount"],
-        oneTime = json["one_time"];
+        oneTime = json["one_time"] ?? true;
 }

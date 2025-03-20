@@ -2,14 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_core/nanny_local_auth.dart';
 import 'package:nanny_driver/franchise/views/franchise_home.dart';
 import 'package:nanny_driver/franchise/views/partner/partner_home.dart';
+import 'package:nanny_driver/providers/bloc/socket_bloc.dart';
 import 'package:nanny_driver/views/home.dart';
 import 'package:nanny_driver/views/reg.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'firebase_options.dart';
 
 void main() async {
@@ -55,7 +58,16 @@ void main() async {
   LocationService.initLocInfo();
 
   NannyConsts.setLoginPaths([
-    LoginPath(userType: UserType.driver, path: const HomeView()),
+    LoginPath(
+        userType: UserType.driver,
+        path: BlocProvider(
+          create: (context) => SocketBloc(context: context)..add(StartSocket()),
+          child: BlocBuilder<SocketBloc, SocketState>(
+            builder: (context, state) {
+              return const HomeView();
+            },
+          ),
+        )),
     LoginPath(
         userType: UserType.franchiseAdmin, path: const FranchiseHomeView()),
     LoginPath(userType: UserType.manager, path: const FranchiseHomeView()),

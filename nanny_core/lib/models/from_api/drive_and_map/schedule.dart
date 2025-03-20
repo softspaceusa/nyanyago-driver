@@ -10,6 +10,7 @@ class Schedule {
     required this.title,
     required this.duration,
     required this.childrenCount,
+    required this.datetimeCreate,
     required this.weekdays,
     required this.tariff,
     required this.otherParametrs,
@@ -25,6 +26,7 @@ class Schedule {
   final String description;
   final int duration;
   final int childrenCount;
+  final DateTime datetimeCreate;
   final List<NannyWeekday> weekdays;
   final DriveTariff tariff;
   final List<OtherParametr> otherParametrs;
@@ -40,6 +42,8 @@ class Schedule {
         description: json["description"] ?? "",
         duration: json["duration"] ?? 0,
         childrenCount: json["children_count"] ?? 0,
+        datetimeCreate:
+            DateTime.tryParse(json["datetime_create"] ?? "") ?? DateTime.now(),
         weekdays: json["week_days"] == null
             ? []
             : List<NannyWeekday>.from(
@@ -59,6 +63,7 @@ class Schedule {
         "description": description,
         "duration": duration,
         "children_count": childrenCount,
+        "datetime_create": datetimeCreate.toIso8601String(),
         "week_days": weekdays.map((x) => x.index).toList(),
         "id_tariff": tariff.id,
         "other_parametrs":
@@ -129,47 +134,75 @@ extension TimeParse on TimeOfDay {
       ":${minute < 10 ? "0$minute" : minute}";
 }
 
+extension RoadEquality on Road {
+  bool isIdenticalTo(Road other) {
+    return startTime == other.startTime &&
+        endTime == other.endTime &&
+        _areAddressesEqual(addresses, other.addresses) &&
+        title == other.title &&
+        _areTypesEqual(typeDrive, other.typeDrive);
+  }
+
+  // Вспомогательный метод для сравнения списков адресов
+  bool _areAddressesEqual(List<DriveAddress> list1, List<DriveAddress> list2) {
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i] != list2[i]) return false;
+    }
+    return true;
+  }
+
+  // Вспомогательный метод для сравнения списков типов
+  bool _areTypesEqual(List<DriveType> list1, List<DriveType> list2) {
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i] != list2[i]) return false;
+    }
+    return true;
+  }
+}
+
 /*
 {
-	"duration": 0,
-	"children_count": 0,
-	"week_days": [
-		0
-	],
-	"id_tariff": 0,
-	"other_parametrs": [
-		{
-			"parameter": 0,
-			"count": 1
-		}
-	],
-	"roads": [
-		{
-			"week_day": 0,
-			"start_time": "string",
-			"end_time": "string",
-			"addresses": [
-				{
-					"from_address": {
-						"address": "string",
-						"location": {
-							"latitude": 0,
-							"longitude": 0
-						}
-					},
-					"to_address": {
-						"address": "string",
-						"location": {
-							"latitude": 0,
-							"longitude": 0
-						}
-					}
-				}
-			],
-			"title": "string",
-			"type_drive": [
-				0
-			]
-		}
-	]
+  "duration": 0,
+  "children_count": 0,
+  "week_days": [
+    0
+  ],
+  "id_tariff": 0,
+  "other_parametrs": [
+    {
+      "parameter": 0,
+      "count": 1
+    }
+  ],
+  "roads": [
+    {
+      "week_day": 0,
+      "start_time": "string",
+      "end_time": "string",
+      "addresses": [
+        {
+          "from_address": {
+            "address": "string",
+            "location": {
+              "latitude": 0,
+              "longitude": 0
+            }
+          },
+          "to_address": {
+            "address": "string",
+            "location": {
+              "latitude": 0,
+              "longitude": 0
+            }
+          }
+        }
+      ],
+      "title": "string",
+      "type_drive": [
+        0
+      ]
+    }
+  ]
 }*/

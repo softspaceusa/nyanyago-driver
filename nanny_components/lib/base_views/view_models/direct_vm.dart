@@ -13,95 +13,150 @@ import 'package:nanny_core/nanny_core.dart';
 
 class DirectVM extends ViewModelBase {
   DirectVM({
-    required super.context, 
+    required super.context,
     required super.update,
     required this.idChat,
   }) {
     messagesRequest = _initDirect();
   }
 
+  // Chat Info
   final int idChat;
   NannyWebSocket get chat => NannyGlobals.chatsSocket;
 
-  late final StreamSubscription sub;
-
+  // Controllers
   final TextEditingController textController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
 
+  // State Variables
   bool loading = false;
+  bool isLoadingMore = false;
+  bool hasMoreMessages = true;
+  bool isEditingMode = false;
+  int offset = 0;
+  int? editingMessageId; // ID редактируемого сообщения
+  static const int limit = 15;
+
   late Future<ApiResponse<DirectChat>> messagesRequest;
   List<ChatMessage>? messages;
 
+  // Stream Subscription
+  late final StreamSubscription sub;
+
+  // Инициализация
   Future<ApiResponse<DirectChat>> _initDirect() async {
     sub = chat.stream.listen(chatStreamCallback);
+    return loadMessages();
+  }
 
-    return NannyChatsApi.getMessages(
-      MessagesRequest(
-        idChat: idChat, 
-        offset: 0, 
-        limit: 50
-      ),
+  // Загрузка сообщений
+  Future<ApiResponse<DirectChat>> loadMessages() async {
+    if (isLoadingMore || !hasMoreMessages) return ApiResponse.empty();
+
+    isLoadingMore = true;
+    update(() {});
+
+    final response = await NannyChatsApi.getMessages(
+      MessagesRequest(idChat: idChat, offset: offset, limit: limit),
     );
+
+    if (response.success) {
+      final newMessages = response.response?.messages ?? [];
+      if (newMessages.isEmpty) {
+        hasMoreMessages = false;
+      } else {
+        messages ??= [];
+        messages!.addAll(newMessages);
+        offset += newMessages.length;
+      }
+    }
+
+    isLoadingMore = false;
+    update(() {});
+    return response;
   }
 
-  void dispose() {
-    sub.cancel();
-  }
-
-  void chatStreamCallback(dynamic data) {
-    Map<String, dynamic> json = jsonDecode(data);
-    ChatMessage msg = ChatMessage.fromJson(json);
-
-    messages?.insert(0, msg);
+  // Переключение режима редактирования
+  void toggleEditingMode() {
+    isEditingMode = !isEditingMode;
     update(() {});
   }
 
-  void sendTextMessage() async {
-    if(textController.text.trim().isEmpty) return;
-
-    _sendMessage(
-      ChatMessage(
-        idChat: idChat,
-        msg: textController.text, 
-        msgType: 1, 
-        // timestampSend: _getCurrentTimeInSeconds(), 
-        timestampSend: 0, 
-        isMe: true
-      ),
-    );
-
-    textController.clear();
+  // Начать редактирование сообщения
+  void startEditingMessage(ChatMessage message) {
+    textController.text = message.msg;
+    editingMessageId = message.id;
+    update(() {});
   }
 
-  void attachImage() async {
-    XFile? file = await ImagePicker().pickMedia();
+  // Отправка текстового сообщения
+  void sendTextMessage() {
+    if (textController.text.trim().isEmpty) return;
 
-    if(file == null) return;
-    if(!context.mounted) return;
+    final message = ChatMessage(
+        id: editingMessageId,
+        idChat: idChat,
+        msg: textController.text,
+        msgType: 1,
+        timestampSend: 0,
+        isMe: true);
+
+    _sendMessage(message);
+
+    textController.clear();
+    editingMessageId = null;
+    isEditingMode = false;
+  }
+
+  // Отправка сообщения
+  void _sendMessage(ChatMessage msg) {
+    print(jsonEncode(msg));
+    chat.sink?.add(jsonEncode(msg));
+  }
+
+  // Прикрепление изображения
+  void attachImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? file = await picker.pickMedia();
+
+    if (file == null || !context.mounted) return;
 
     LoadScreen.showLoad(context, true);
     var fileUpload = await NannyFilesApi.uploadFiles([file]);
 
-    if(!context.mounted) return;
-    if(!fileUpload.success) {
-      LoadScreen.showLoad(context, false);
-      return;
-    }
+    if (!context.mounted) return;
+    LoadScreen.showLoad(context, false);
 
-    _sendMessage(
-      ChatMessage(
-        idChat: idChat, 
+    if (!fileUpload.success) return;
+
+    _sendMessage(ChatMessage(
+        idChat: idChat,
         msg: fileUpload.response!.paths.first,
         msgType: fileUpload.response!.types.first,
-        // timestampSend: _getCurrentTimeInSeconds(), 
-        timestampSend: 0, 
-        isMe: true
-      )
-    );
-
-    LoadScreen.showLoad(context, false);
+        timestampSend: 0));
   }
 
-  void _sendMessage(ChatMessage msg) {
-    chat.sink.add( jsonEncode(msg) );
+  // Обработка входящих сообщений
+  void chatStreamCallback(dynamic data) {
+    Map<String, dynamic> json = jsonDecode(data);
+    ChatMessage msg = ChatMessage.fromJson(json);
+
+    final existingMessageIndex = messages?.indexWhere((m) => m.id == msg.id);
+    if (existingMessageIndex != null && existingMessageIndex != -1) {
+      // Обновить существующее сообщение
+      messages?[existingMessageIndex] = msg;
+    } else {
+      // Добавить новое сообщение
+      messages?.insert(0, msg);
+    }
+
+    update(() {});
+  }
+
+  // Очистка ресурсов
+  void dispose() {
+    sub.cancel();
+    scrollController.dispose();
+    textController.dispose();
   }
 }

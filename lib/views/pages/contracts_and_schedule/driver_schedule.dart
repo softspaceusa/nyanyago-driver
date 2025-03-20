@@ -24,8 +24,10 @@ class _DriverScheduleViewState extends State<DriverScheduleView> {
     return FutureLoader(
       future: vm.loadRequest,
       completeView: (context, data) {
-        if (!data)
-          return const ErrorView(errorText: "Не удалось загрузить данные!");
+        if (!data) {
+          return const Center(
+              child: ErrorView(errorText: "Не удалось загрузить данные!"));
+        }
 
         if (vm.schedules.isEmpty) {
           return const Center(
@@ -33,22 +35,35 @@ class _DriverScheduleViewState extends State<DriverScheduleView> {
           );
         }
 
-        return Column(
+        return Stack(
           children: [
-            const SizedBox(height: 10),
-            Text("На сегодня:",
-                style: Theme.of(context).textTheme.displayLarge),
-            Expanded(
-                child: ListView(
-                    shrinkWrap: true,
-                    children: vm.schedules
-                        .map((e) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 5),
-                            child: TodayScheduleView(
-                                schedule: e,
-                                onPressed: () => vm.viewSchedule(e.id))))
-                        .toList())),
+            ListView.separated(
+                padding: const EdgeInsets.only(
+                    top: 24, bottom: 100, left: 16, right: 16),
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  final road = vm.schedules[index];
+                  return TodayScheduleView(
+                      schedule: road,
+                      onPressed: () => vm.selectRoad(road.id),
+                      isSelected: vm.selectedId == road.id);
+                },
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
+                itemCount: vm.schedules.length),
+            Visibility(
+              visible: vm.selectedId != null,
+              child: Positioned(
+                bottom: 20,
+                left: 20,
+                right: 20,
+                child: ElevatedButton(
+                  onPressed: () => vm.startOrder(vm.selectedId!),
+                  style: NannyButtonStyles.main,
+                  child: const Text('Начать поездку'),
+                ),
+              ),
+            ),
           ],
         );
       },

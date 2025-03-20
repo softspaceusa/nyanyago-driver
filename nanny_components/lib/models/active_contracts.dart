@@ -3,7 +3,7 @@ class ActiveContractsModel {
   final String title;
   final List<String> actions;
   final List<DateTime> schedules;
-  final num price;
+  final double price;
   final num wholePrice;
   final int childrenCount;
   final String name;

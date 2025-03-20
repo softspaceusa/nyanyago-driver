@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB6k672X3XMABcOmQU24Wp6Qj63tT0EDrY',
-    appId: '1:913522907537:android:05a81e8ea1ae002ecd6230',
-    messagingSenderId: '913522907537',
-    projectId: 'autonyanya-5c939',
-    storageBucket: 'autonyanya-5c939.appspot.com',
+    apiKey: 'AIzaSyBgOPRn5TbBkKPh2rBikOCr7WhDRlN8794',
+    appId: '1:144707416882:android:d1cc86294458003c939d2b',
+    messagingSenderId: '144707416882',
+    projectId: 'nannya-driver',
+    storageBucket: 'nannya-driver.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB2lR0sq4Z0Jz3dGAsE0fPxvGwL2yGGxrM',
-    appId: '1:913522907537:ios:8685bf53b1afca32cd6230',
-    messagingSenderId: '913522907537',
-    projectId: 'autonyanya-5c939',
-    storageBucket: 'autonyanya-5c939.appspot.com',
-    iosBundleId: 'com.nyanya-go.nanny-driver',
+    apiKey: 'AIzaSyBh_xnoxhOlShVyWxBo2a8iNVqYgvaNTLw',
+    appId: '1:144707416882:ios:0419eef9d408384d939d2b',
+    messagingSenderId: '144707416882',
+    projectId: 'nannya-driver',
+    storageBucket: 'nannya-driver.firebasestorage.app',
+    iosBundleId: 'com.example.nannyDriver.RunnerTests',
   );
+
 }

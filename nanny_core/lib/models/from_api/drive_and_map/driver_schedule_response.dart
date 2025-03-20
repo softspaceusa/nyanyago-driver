@@ -14,6 +14,7 @@ class DriverScheduleResponse extends Schedule {
     required super.roads,
     required this.user,
     required this.allSalary,
+    required super.datetimeCreate,
   });
 
   ScheduleUser user;
@@ -23,30 +24,33 @@ class DriverScheduleResponse extends Schedule {
       : user = ScheduleUser.fromJson(json["user"]),
         allSalary = json["all_salary"]?.toDouble() ?? 0.0,
         super(
-            id: json["id"],
-            title: json["title"] ?? "",
-            description: json["description"] ?? "",
-            duration: json["duration"] ?? 0,
-            childrenCount: json["children_count"] ?? 0,
-            weekdays: json["week_days"] == null
-                ? []
-                : List<NannyWeekday>.from(
-                    json["week_days"].map((x) => NannyWeekday.values[x])),
-            tariff: DriveTariff(id: json["id_tariff"]),
-            otherParametrs: json["other_parametrs"] == null
-                ? []
-                : List<OtherParametr>.from(json["other_parametrs"]!
-                    .map((x) => OtherParametr.fromJson(x))),
-            roads: json["roads"] == null
-                ? []
-                : List<Road>.from(json["roads"]!.map((x) => Road.fromJson(x))),
-            salary: json["all_salary"]?.toDouble() ?? 0,
-            salaryRoad: json["roads"] == null
-                ? 0.0
-                : List<Road>.from((json["roads"] as List<dynamic>).map((x) {
-                    var item = Road.fromJson(x);
-                    return item;
-                  })).getFoldedSalary());
+          id: json["id"],
+          title: json["title"] ?? "",
+          description: json["description"] ?? "",
+          duration: json["duration"] ?? 0,
+          childrenCount: json["children_count"] ?? 0,
+          weekdays: json["week_days"] == null
+              ? []
+              : List<NannyWeekday>.from(
+                  json["week_days"].map((x) => NannyWeekday.values[x])),
+          tariff: DriveTariff(id: json["id_tariff"]),
+          otherParametrs: json["other_parametrs"] == null
+              ? []
+              : List<OtherParametr>.from(json["other_parametrs"]!
+                  .map((x) => OtherParametr.fromJson(x))),
+          roads: json["roads"] == null
+              ? []
+              : List<Road>.from(json["roads"]!.map((x) => Road.fromJson(x))),
+          salary: json["all_salary"]?.toDouble() ?? 0,
+          salaryRoad: json["roads"] == null
+              ? 0.0
+              : List<Road>.from((json["roads"] as List<dynamic>).map((x) {
+                  var item = Road.fromJson(x);
+                  return item;
+                })).getFoldedSalary(),
+          datetimeCreate: DateTime.tryParse(json["datetime_create"] ?? '') ??
+              DateTime.now(),
+        );
 }
 
 extension ListRoadExt on List<Road> {

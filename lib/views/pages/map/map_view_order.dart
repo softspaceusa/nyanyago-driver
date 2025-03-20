@@ -4,8 +4,7 @@ import 'package:nanny_components/widgets/circular_button.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
 import 'package:nanny_components/widgets/order_action_button.dart';
 import 'package:nanny_core/api/web_sockets/nanny_web_socket.dart';
-import 'package:nanny_core/map_services/location_service.dart';
-import 'package:nanny_core/map_services/nanny_map_globals.dart';
+import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/view_models/map_view_order_vm.dart';
 
 class MapViewOrder extends StatefulWidget {
@@ -20,7 +19,7 @@ class MapViewOrder extends StatefulWidget {
 
   final int orderId;
   final OneTimeDriveModel model;
-  final NannyWebSocket searchSocket;
+  final NannyWebSocket? searchSocket;
 
   @override
   State<MapViewOrder> createState() => _MapViewOrderState();
@@ -39,7 +38,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
     vm = MapViewOrderVm(
         context: context,
         update: setState,
-        searchSocket: widget.searchSocket,
+        searchSocket: widget.searchSocket!,
         oneTimeDriveModel: widget.model);
     loadMarkersMap();
   }
@@ -225,6 +224,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
       Text(vm.oneTimeDriveModel.addresses.first.to),
       const SizedBox(height: 20),
       ElevatedButton(
+          style: NannyButtonStyles.main,
           onPressed: () {
             vm.onStatusChange(StatusValue.arrived);
           },
@@ -282,6 +282,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
               child: Row(children: [
                 Expanded(
                     child: ElevatedButton(
+                        style: NannyButtonStyles.main,
                         onPressed: () {
                           vm.onStatusChange(StatusValue.complete);
                         },
@@ -329,6 +330,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
           child: Row(children: [
             Expanded(
                 child: ElevatedButton(
+                    style: NannyButtonStyles.main,
                     onPressed: () {
                       vm.onStatusChange(StatusValue.awaiting);
                     },
@@ -353,6 +355,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
           child: Row(children: [
             Expanded(
                 child: ElevatedButton(
+                    style: NannyButtonStyles.main,
                     onPressed: () {
                       vm.onStatusChange(StatusValue.driveStarted);
                     },
@@ -408,6 +411,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
           child: Row(children: [
             Expanded(
                 child: ElevatedButton(
+                    style: NannyButtonStyles.main,
                     onPressed: () {
                       vm.onStatusChange(StatusValue.driveStarted);
                     },
@@ -468,6 +472,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
           child: Row(children: [
             Expanded(
                 child: ElevatedButton(
+                    style: NannyButtonStyles.main,
                     onPressed: vm.onRideStart,
                     child: const Text('Начать поездку')))
           ])),
@@ -486,6 +491,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
                                         const WidgetStatePropertyAll(
                                             Colors.white)))),
                     child: ElevatedButton(
+                        style: NannyButtonStyles.main,
                         onPressed: () async {
                           await vm.onStatusChange(StatusValue.canceledByDriver);
                           Navigator.of(context).pop();
@@ -535,6 +541,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
           child: Row(children: [
             Expanded(
                 child: ElevatedButton(
+                    style: NannyButtonStyles.main,
                     onPressed: vm.onRideStart,
                     child: const Text('Начать поездку')))
           ])),
@@ -553,6 +560,7 @@ class _MapViewOrderState extends State<MapViewOrder> {
                                         const WidgetStatePropertyAll(
                                             Colors.white)))),
                     child: ElevatedButton(
+                        style: NannyButtonStyles.secondary,
                         onPressed: () async {
                           await vm.onStatusChange(StatusValue.canceledByDriver);
                           Navigator.of(context).pop();
@@ -566,9 +574,10 @@ class _MapViewOrderState extends State<MapViewOrder> {
 
   Widget actionsWidget() {
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
           Column(children: [
             SizedBox(
                 height: 51,
@@ -583,7 +592,21 @@ class _MapViewOrderState extends State<MapViewOrder> {
                     .copyWith(color: Colors.black54, fontSize: 13))
           ]),
           OrderActionButton(
-              callback: () {},
+              callback: () async {
+                // Получаем номер телефона
+                String? phoneNumber = vm.oneTimeDriveModel.phone;
+
+                // Формируем URL для звонка
+                final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+
+                // Проверяем, может ли устройство открыть телефонное приложение
+                if (await canLaunch(phoneUri.toString())) {
+                  await launch(phoneUri.toString());
+                } else {
+                  // Если не может, показываем ошибку
+                  print("Невозможно открыть телефонную книгу");
+                }
+              },
               title: 'Связаться',
               asset: 'packages/nanny_components/assets/order/call.png'),
           OrderActionButton(
@@ -591,15 +614,43 @@ class _MapViewOrderState extends State<MapViewOrder> {
               title: 'Чат',
               asset: 'packages/nanny_components/assets/order/message.png'),
           OrderActionButton(
-              callback: () {},
+              callback: () {
+                /*Order order =
+                    vm.orders.firstWhere((e) => e.idOrder == vm.currentOrder);
+                BaseBottomSheet.showDetails([
+                  order.addresses.first.from ?? '',
+                  order.addresses.last.to ?? ''
+                ],
+                        vm.otherParametrs,
+                        vm.params,
+                        vm.idTypeOrder ?? DriveType.oneWay.id,
+                        vm.totalPrice ?? order.amount ?? 0,
+                        vm.tariffs.firstWhere((e) => e.id == vm.tariffId),
+                        (Map<String, dynamic> params) async {
+                  if (params['cancelOrder'] == true) {
+                    await vm.cancelOrder(order.idOrder!);
+                  }
+                }, duration: vm.durationMinutes)
+                    .then((v) {
+                  if (v) {
+                    vm.cancelOrder(vm.currentOrder);
+                    Navigator.of(context).pop();
+                  }
+                });
+                */
+              },
               title: 'Детали',
               asset: 'packages/nanny_components/assets/order/hamburger.png')
-        ]));
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
-    vm.searchDriversStream?.cancel();
+    vm.locChange.cancel();
+    vm.controller.dispose();
+    vm.socketStream?.cancel();
     super.dispose();
   }
 }

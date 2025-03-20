@@ -42,17 +42,17 @@ class _InfoPageViewState extends State<InfoPageView> {
                         child: ElevatedButton(
                             onPressed: () => vm.changeShowContract(true),
                             style: vm.showContracts
-                                ? null
-                                : NannyButtonStyles.whiteButton,
+                                ? NannyButtonStyles.main
+                                : NannyButtonStyles.secondary,
                             child: const Text("Активные контракты",
                                 textAlign: TextAlign.center))),
                     const SizedBox(width: 10),
                     Expanded(
                         child: ElevatedButton(
                             onPressed: () => vm.changeShowContract(false),
-                            style: vm.showContracts
-                                ? NannyButtonStyles.whiteButton
-                                : null,
+                            style: !vm.showContracts
+                                ? NannyButtonStyles.main
+                                : NannyButtonStyles.secondary,
                             child: const Text("Расписание на сегодня",
                                 textAlign: TextAlign.center))),
                     const SizedBox(width: 10)

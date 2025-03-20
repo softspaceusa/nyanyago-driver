@@ -68,7 +68,7 @@ class DioRequest {
         var login = await NannyAuthApi.login(LoginRequest(
             login: loginData.login,
             password: loginData.password,
-            fbid: "Пятисотый"));
+            fbid: (await FirebaseMessaging.instance.getToken()) ?? ''));
         token = login.response!;
       }
 

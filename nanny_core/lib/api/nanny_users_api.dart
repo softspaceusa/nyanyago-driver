@@ -50,18 +50,18 @@ class NannyUsersApi {
     );
   }
 
-  static Future<ApiResponse<int>> addDebitCard(
+  static Future<ApiResponse<void>> addDebitCard(
       AddDebitCardRequest request) async {
     return RequestBuilder<int>().create(
-        dioRequest: DioRequest.dio
-            .post("/users/add_debit_card", data: request.toJson()),
-        onSuccess: (response) => response.data['card_id'],
+        dioRequest:
+            DioRequest.dio.post("/users/add-my-card", data: request.toJson()),
         errorCodeMsgs: {
           404: "Некорректный номер карты!",
           405: "Недопустимый банк карты!",
           406: "Карта уже добавлена!",
           407: "Некорректная дата сгорания карты!",
           408: "Некорректное имя носителя карты!",
+          422: "Некорректное данные карты!",
         });
   }
 

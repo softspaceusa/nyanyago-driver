@@ -40,7 +40,7 @@ class MapViewOrderVm extends ViewModelBase {
   }
 
   late Marker curPos;
-  StreamSubscription<dynamic>? searchDriversStream;
+  StreamSubscription<dynamic>? socketStream;
   List<Polyline> polylines = [];
   Marker? posMarker = LocationService.curLoc != null
       ? Marker(
@@ -74,19 +74,17 @@ class MapViewOrderVm extends ViewModelBase {
   }
 
   Future initListen() async {
-    searchDriversStream = searchSocket.stream.listen((v) {
-      if (v is String) {
-        var value = jsonDecode(v);
-        if (value['status'] == 3 || value['id_status'] == 3) {
-          Logger().w("🚫 [Status] Заказ отменен клиентом.");
-          checkAtLocationTimer?.cancel();
-          checkAtLocationTimer = null;
-          timerAwait?.cancel();
-          timerAwait = null;
+    socketStream = searchSocket.stream.listen((v) {
+      var value = jsonDecode(v);
+      if (value['status'] == 3 || value['id_status'] == 3) {
+        Logger().w("🚫 [Status] Заказ отменен клиентом.");
+        checkAtLocationTimer?.cancel();
+        checkAtLocationTimer = null;
+        timerAwait?.cancel();
+        timerAwait = null;
 
-          Logger().i("🔙 [Navigation] Закрытие экрана...");
-          popView();
-        }
+        Logger().i("🔙 [Navigation] Закрытие экрана...");
+        popView();
       }
     });
   }
@@ -366,7 +364,7 @@ class MapViewOrderVm extends ViewModelBase {
   Future<void> onRideStart() async {
     await onStatusChange(StatusValue.driveStarted);
     if (!(searchSocket.connected)) {
-      await searchSocket.sink.close();
+      await searchSocket.sink?.close();
       searchSocket = await OrdersSearchSocket(searchSocket.address).connect();
     }
     checkAtLocationTimer =

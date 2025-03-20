@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_core/constants.dart';
+import 'package:nanny_core/models/from_api/drive_and_map/address_data.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/schedule.dart';
 
 class ScheduleViewer extends StatelessWidget {
-  final NannyWeekday selectedWeedkay;
+  final List<NannyWeekday> selectedWeedkays;
   final Schedule? schedule;
   final bool hasCheckBox;
   final List<int> selectedRoads;
@@ -14,77 +15,189 @@ class ScheduleViewer extends StatelessWidget {
   const ScheduleViewer({
     super.key,
     required this.schedule,
-    required this.selectedWeedkay,
-    this.onRoadLongPress,
-
+    required this.selectedWeedkays,
     this.hasCheckBox = false,
+    this.onRoadLongPress,
     this.selectedRoads = const [],
     this.roadSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    return schedule == null ? const SizedBox() : Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(schedule!.title, style: Theme.of(context).textTheme.headlineSmall),
-        const Divider(color: NannyTheme.primary, indent: 10, endIndent: 10, thickness: 2),
-        const SizedBox(height: 20),
-        ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(10),
-          children: buildRoadTiles(),
-        ),
-      ],
-    );
+    return schedule == null
+        ? const SizedBox()
+        : Builder(
+            builder: (context) {
+              List<Road> roads = schedule!.roads
+                  .where(
+                    (road) => selectedWeedkays.contains(road.weekDay),
+                  )
+                  .toList();
+
+              // Убираем лишние дубликаты, оставляя по одному экземпляру
+              List<Road> uniqueRoads = [];
+              for (var road in roads) {
+                if (!uniqueRoads
+                    .any((uniqueRoad) => uniqueRoad.isIdenticalTo(road))) {
+                  uniqueRoads.add(road);
+                }
+              }
+
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ListView.separated(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final road = uniqueRoads[index];
+
+                        return ScheduleWidget(
+                            onRoadLongPress: onRoadLongPress,
+                            road: road,
+                            hasCheckBox: hasCheckBox,
+                            selectedRoads: selectedRoads,
+                            roadSelected: roadSelected);
+                      },
+                      separatorBuilder: (context, index) => const Divider(
+                          color: NannyTheme.grey, height: 1, thickness: 1),
+                      itemCount: uniqueRoads.length),
+                ],
+              );
+            },
+          );
   }
+}
 
-  List<Widget> buildRoadTiles() {
-    List<Widget> roadTiles = [];
+class ScheduleWidget extends StatefulWidget {
+  const ScheduleWidget({
+    super.key,
+    required this.road,
+    required this.hasCheckBox,
+    required this.selectedRoads,
+    required this.roadSelected,
+    this.onRoadLongPress,
+  });
 
-    for(var road in schedule!.roads) {
-      if(road.weekDay != selectedWeedkay) continue;
+  final Road road;
+  final void Function(Road road)? onRoadLongPress;
+  final bool hasCheckBox;
+  final List<int> selectedRoads;
+  final void Function(int id, bool selected)? roadSelected;
 
-      roadTiles.add(
-        Card(
-          clipBehavior: Clip.antiAlias,
-          child: GestureDetector(
-            onLongPress: () => onRoadLongPress?.call(road),
-            child: ExpansionTile(
-              shape: NannyTheme.roundBorder,
-              title: Text("${road.startTime.formatTime()} - ${road.endTime.formatTime()}"),
-              trailing: hasCheckBox ? Checkbox(
-                activeColor: NannyTheme.primary,
-          
-                value: selectedRoads.contains(road.id), 
-                onChanged: (value) => roadSelected?.call(road.id!, value!),
-              ) : Text(road.title),
-              children: road.addresses.map(
-                (e) => Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      Text(e.fromAddress.address),
-                      Container(
-                        width: 2,
-                        height: 15,
-                        decoration: BoxDecoration(
-                          color: NannyTheme.primary,
-                          borderRadius: BorderRadius.circular(20)
-                        ),
-                      ),
-                      Text(e.toAddress.address),
-                      const Divider(color: NannyTheme.primary, indent: 10, endIndent: 10)
-                    ],
+  @override
+  State<ScheduleWidget> createState() => _ScheduleWidgetState();
+}
+
+class _ScheduleWidgetState extends State<ScheduleWidget> {
+  bool isExpanded = false;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => widget.roadSelected?.call(
+          widget.road.id!, !widget.selectedRoads.contains(widget.road.id)),
+      onLongPress: () => widget.onRoadLongPress?.call(widget.road),
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        clipBehavior: Clip.antiAlias,
+        child: ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: EdgeInsets.zero,
+          onExpansionChanged: (value) => setState(() => isExpanded = value),
+          shape: NannyTheme.roundBorder,
+          title: Text(
+            "${widget.road.startTime.formatTime()} - ${widget.road.endTime.formatTime()}",
+            style: TextStyle(
+                color: widget.selectedRoads.contains(widget.road.id)
+                    ? NannyTheme.primary
+                    : const Color(0xFF2B2B2B),
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                fontFamily: 'Nunito'),
+          ),
+          trailing: SizedBox(
+            width: 250,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: Text(
+                    widget.road.title,
+                    style: TextStyle(
+                        color: widget.selectedRoads.contains(widget.road.id)
+                            ? NannyTheme.primary
+                            : const Color(0xFF2B2B2B),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Nunito'),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                )
-              ).toList(),
+                ),
+                if (widget.hasCheckBox)
+                  Checkbox(
+                    activeColor: NannyTheme.primary,
+                    value: widget.selectedRoads.contains(widget.road.id),
+                    onChanged: (value) =>
+                        widget.roadSelected?.call(widget.road.id!, value!),
+                  )
+              ],
             ),
           ),
-        )
-      );
-    }
-
-    return roadTiles;
+          children: [
+            ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  DriveAddress addresses = widget.road.addresses[index];
+                  String startAddress = addresses.fromAddress.address;
+                  String endAddress = addresses.toAddress.address;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        if (index == 0) Text(startAddress),
+                        Container(
+                          width: 2,
+                          height: 15,
+                          decoration: BoxDecoration(
+                            color: NannyTheme.primary,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        Text(endAddress),
+                      ],
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) => const SizedBox(),
+                itemCount: widget.road.addresses.length),
+            const SizedBox(height: 10),
+            //ElevatedButton(
+            //  style: NannyButtonStyles.main.copyWith(
+            //    minimumSize: const WidgetStatePropertyAll(
+            //      Size(double.infinity, 50),
+            //    ),
+            //  ),
+            //  onPressed: () => widget.onEditRoad?.call(widget.road),
+            //  child: const Text("Изменить маршрут"),
+            //),
+            //const SizedBox(height: 10),
+            //ElevatedButton(
+            //  style: NannyButtonStyles.secondary.copyWith(
+            //    elevation: const WidgetStatePropertyAll(0),
+            //    minimumSize: const WidgetStatePropertyAll(
+            //      Size(double.infinity, 50),
+            //    ),
+            //  ),
+            //  onPressed: () => widget.onDeleteRoad?.call(widget.road),
+            //  child: const Text("Удалить маршрут"),
+            //),
+          ],
+        ),
+      ),
+    );
   }
 }

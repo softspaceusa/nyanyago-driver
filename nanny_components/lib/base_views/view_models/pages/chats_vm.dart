@@ -10,31 +10,34 @@ import 'package:nanny_core/nanny_core.dart';
 
 class ChatsVM extends ViewModelBase {
   ChatsVM({
-    required super.context, 
+    required super.context,
     required super.update,
     this.updateList,
   }) {
     sub = NannyGlobals.chatsSocket.stream.listen((msg) => updateList?.call());
   }
 
+  FocusNode node = FocusNode();
   VoidCallback? updateList;
   bool chatsSelected = false;
   String query = "";
 
-  late StreamSubscription sub;
+  StreamSubscription? sub;
 
-  void chatsSwitch({required bool switchToChats}) => update(() => chatsSelected = switchToChats);
+  void chatsSwitch({required bool switchToChats}) =>
+      update(() => chatsSelected = switchToChats);
 
-  Future<ApiResponse<ChatsData>> get getChats async => NannyChatsApi.getChats(SearchQueryRequest(
-    search: query,
-  ));
+  Future<ApiResponse<ChatsData>> get getChats async =>
+      NannyChatsApi.getChats(SearchQueryRequest(
+        search: query,
+      ));
 
-  Future< ApiResponse<List<ScheduleResponsesData>> > get getRequests async {
+  Future<ApiResponse<List<ScheduleResponsesData>>> get getRequests async {
     var result = await NannyOrdersApi.getScheduleResponses();
 
-    if(!result.success) return result;
+    if (!result.success) return result;
 
-    for(var data in result.response!) {
+    for (var data in result.response!) {
       var sched = await NannyOrdersApi.getScheduleById(data.idSchedule);
       data.schedule = sched.response;
     }
@@ -53,13 +56,13 @@ class ChatsVM extends ViewModelBase {
   }
 
   void dispose() {
-    sub.cancel();
+    sub?.cancel();
   }
 
   void checkScheduleRequest(ScheduleResponsesData data) async {
     await navigateToView(DriverInfoView(
-      id: data.idDriver, 
-      viewingOrder: true, 
+      id: data.idDriver,
+      viewingOrder: true,
       scheduleData: data,
     ));
 

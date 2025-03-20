@@ -1,4 +1,5 @@
 import 'package:nanny_components/nanny_components.dart';
+import 'package:nanny_core/api/api_models/decline_roads_request.dart';
 import 'package:nanny_core/api/api_models/driver_payment_request.dart';
 import 'package:nanny_core/api/api_models/search_query_request.dart';
 import 'package:nanny_core/api/api_models/want_schedule_request.dart';
@@ -74,8 +75,26 @@ class NannyDriverApi {
 
   static Future<ApiResponse<dynamic>> getMySchedules() async {
     return RequestBuilder<dynamic>().create(
-        dioRequest: DioRequest.dio.get("/drivers/get_my_schedules"),
+        dioRequest: DioRequest.dio.get("/drivers/get_driver_roads"),
         onSuccess: (data) => data.data);
+  }
+
+  static Future<ApiResponse<List<int>>> getDriverRoads() async {
+    return RequestBuilder<List<int>>().create(
+        dioRequest: DioRequest.dio.get("/drivers/get_driver_roads"),
+        onSuccess: (response) =>
+            List<int>.from(response.data["roads_id"].map((x) => x)));
+  }
+
+  static Future<ApiResponse<List<DriverScheduleResponse>>> getFullRoadsInfo(
+      String roadsString) async {
+    return RequestBuilder<List<DriverScheduleResponse>>().create(
+      dioRequest: DioRequest.dio
+          .get("/drivers/get_full_roads_info?road_ids=$roadsString"),
+      onSuccess: (response) => List<DriverScheduleResponse>.from(response
+          .data["schedules"]
+          .map((x) => DriverScheduleResponse.fromJson(x))),
+    );
   }
 
   static Future<ApiResponse<List<TodayScheduleData>>>
@@ -92,6 +111,13 @@ class NannyDriverApi {
     return RequestBuilder<void>().create(
         dioRequest: DioRequest.dio
             .post("/drivers/want_schedule_requests", data: request.toJson()));
+  }
+
+  static Future<ApiResponse<void>> declineRoadsRequests(
+      DeclineRoadsRequests request) async {
+    return RequestBuilder<void>().create(
+        dioRequest: DioRequest.dio
+            .post("/drivers/decline_roads_requests", data: request.toJson()));
   }
 }
 

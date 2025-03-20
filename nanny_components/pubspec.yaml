@@ -52,12 +52,21 @@ flutter:
     - family: Nunito
       fonts:
         - asset: ./assets/fonts/nunito/Nunito-Regular.ttf
-
-        - asset: ./assets/fonts/nunito/Nunito-Light.ttf
-          weight: 300
-
+        - asset: ./assets/fonts/nunito/Nunito-Black.ttf
+        - asset: ./assets/fonts/nunito/Nunito-BlackItalic.ttf
         - asset: ./assets/fonts/nunito/Nunito-Bold.ttf
-          weight: 700
+        - asset: ./assets/fonts/nunito/Nunito-BoldItalic.ttf
+        - asset: ./assets/fonts/nunito/Nunito-ExtraBold.ttf
+        - asset: ./assets/fonts/nunito/Nunito-ExtraBoldItalic.ttf
+        - asset: ./assets/fonts/nunito/Nunito-ExtraLight.ttf
+        - asset: ./assets/fonts/nunito/Nunito-ExtraLightItalic.ttf
+        - asset: ./assets/fonts/nunito/Nunito-Italic.ttf
+        - asset: ./assets/fonts/nunito/Nunito-Light.ttf
+        - asset: ./assets/fonts/nunito/Nunito-LightItalic.ttf
+        - asset: ./assets/fonts/nunito/Nunito-Medium.ttf
+        - asset: ./assets/fonts/nunito/Nunito-MediumItalic.ttf
+        - asset: ./assets/fonts/nunito/Nunito-SemiBold.ttf
+        - asset: ./assets/fonts/nunito/Nunito-SemiBoldItalic.ttf
 
     - family: Fregat
       fonts:

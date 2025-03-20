@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nanny_components/nanny_components.dart';
-import 'package:nanny_components/styles/nanny_theme.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/drive_tariff.dart';
 import 'package:nanny_core/nanny_core.dart';
 

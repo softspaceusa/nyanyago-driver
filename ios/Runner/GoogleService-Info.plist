@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyBi9DCLBEoyncN416W0v2ghu6tneP-e3lY</string>
+	<string>AIzaSyBh_xnoxhOlShVyWxBo2a8iNVqYgvaNTLw</string>
 	<key>GCM_SENDER_ID</key>
-	<string>477442562518</string>
+	<string>144707416882</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.nannyDriver</string>
+	<string>com.example.nannyDriver.RunnerTests</string>
 	<key>PROJECT_ID</key>
-	<string>autonanny-41178</string>
+	<string>nannya-driver</string>
 	<key>STORAGE_BUCKET</key>
-	<string>autonanny-41178.appspot.com</string>
+	<string>nannya-driver.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:477442562518:ios:895ca86646145b86186c77</string>
+	<string>1:144707416882:ios:0419eef9d408384d939d2b</string>
 </dict>
 </plist>

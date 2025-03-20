@@ -11,9 +11,9 @@ class ScheduleEditor {
   }) {
     tariff = initTariff;
   }
-  
+
   final int maxChild;
-  
+
   String title = "";
   GraphType type = GraphType.week;
   int _childCount = 0;
@@ -22,17 +22,18 @@ class ScheduleEditor {
   final List<Road> _roads = [];
 
   Schedule createSchedule() => Schedule(
-    title: title, 
-    duration: type.duration, 
-    childrenCount: _childCount, 
-    weekdays: _roads.map((e) => e.weekDay).toSet().toList(), 
-    tariff: tariff, 
-    otherParametrs: _otherParams, 
-    roads: _roads
-  );
+      title: title,
+      duration: type.duration,
+      childrenCount: _childCount,
+      datetimeCreate: DateTime.now(),
+      weekdays: _roads.map((e) => e.weekDay).toSet().toList(),
+      tariff: tariff,
+      otherParametrs: _otherParams,
+      roads: _roads);
 
   int get childCount => _childCount;
-  set childCount(int count) => _childCount = count > maxChild ? maxChild : count;
+  set childCount(int count) =>
+      _childCount = count > maxChild ? maxChild : count;
 
   List<OtherParametr> get params => _otherParams;
 
@@ -46,7 +47,7 @@ class ScheduleEditor {
   }
 
   bool addParam(OtherParametr param) {
-    if(_otherParams.where((e) => e.id == param.id).isNotEmpty) return false;
+    if (_otherParams.where((e) => e.id == param.id).isNotEmpty) return false;
 
     _otherParams.add(param);
     return true;
@@ -57,9 +58,7 @@ class ScheduleEditor {
   }
 
   bool valiateSchedule() {
-    if(title.isEmpty ||
-       _childCount < 1 ||
-       _roads.isEmpty) return false;
+    if (title.isEmpty || _childCount < 1 || _roads.isEmpty) return false;
 
     return true;
   }

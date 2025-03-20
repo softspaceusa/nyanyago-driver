@@ -21,92 +21,177 @@ class _DirectViewState extends State<DirectView> {
   late DirectVM vm;
   static const double sideMargin = 100;
   static const double margin = 20;
-  static const double messageSpacing = 10;
 
   @override
   void initState() {
     super.initState();
     vm = DirectVM(context: context, update: setState, idChat: widget.idChat);
+
+    vm.scrollController.addListener(() {
+      if (vm.scrollController.position.pixels ==
+              vm.scrollController.position.maxScrollExtent &&
+          !vm.isLoadingMore &&
+          vm.hasMoreMessages) {
+        // Пользователь достиг верхней границы — подгружаем сообщения
+        vm.loadMessages();
+      }
+    });
   }
 
   @override
   void dispose() {
-    super.dispose();
     vm.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: NannyAppBar(
-          title: widget.name ?? "Чат",
-          isTransparent: false,
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: RequestLoader(
-                request: vm.messagesRequest,
-                completeView: (context, data) {
-                  vm.messages ??= data!.messages;
+    return Scaffold(
+      backgroundColor: const Color(0xFFf7f7f7),
+      appBar: NannyAppBar(
+        title: widget.name ?? "Чат",
+        isTransparent: false,
+        color: NannyTheme.secondary,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                vm.toggleEditingMode();
+              });
+            },
+            icon: Icon(
+              Icons.edit_rounded,
+              color: vm.isEditingMode ? NannyTheme.primary : Colors.black,
+            ),
+            splashRadius: 30,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: RequestLoader(
+              request: vm.messagesRequest,
+              completeView: (context, data) {
+                vm.messages ??= data!.messages;
 
-                  return ListView(
-                    shrinkWrap: true,
-                    reverse: true,
-                    children: vm.messages!.map((e) => directPanel(e)).toList(),
-                  );
-                },
-                errorView: (context, error) =>
-                    ErrorView(errorText: error.toString()),
+                return Stack(
+                  children: [
+                    ListView.separated(
+                      controller: vm.scrollController,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shrinkWrap: true,
+                      reverse: true,
+                      itemCount: vm.messages!.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 20),
+                      itemBuilder: (context, index) => GestureDetector(
+                        onTap: () {
+                          if (vm.isEditingMode) {
+                            vm.startEditingMessage(vm.messages![index]);
+                          }
+                        },
+                        child: directPanel(
+                          vm.messages![index],
+                        ),
+                      ),
+                    ),
+                    if (vm.isLoadingMore)
+                      const Positioned(
+                        top: 10,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                              color: NannyTheme.primary),
+                        ),
+                      ),
+                  ],
+                );
+              },
+              errorView: (context, error) => ErrorView(
+                errorText: error.toString(),
               ),
             ),
-            NannyBottomSheet(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: MessageSendPanel(
+          ),
+          NannyBottomSheet(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 16),
+              child: MessageSendPanel(
                   onPressed: vm.sendTextMessage,
                   onAttachmentPressed: vm.attachImage,
-                  controller: vm.textController,
-                ),
-              ),
+                  controller: vm.textController),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget directPanel(ChatMessage message) {
-    return Container(
-        margin: EdgeInsets.only(
-            left: message.isMe ? sideMargin : margin,
-            right: message.isMe ? margin : sideMargin,
-            top: messageSpacing,
-            bottom: messageSpacing),
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            color: message.isMe ? NannyTheme.primary : NannyTheme.secondary,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: const [BoxShadow(blurRadius: 1, color: Colors.black)]),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Align(
-              alignment: Alignment.centerLeft,
-              child: decideMessageContent(message)),
-          Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                  DateFormat("HH:mm").format(
+    return Stack(
+      alignment: message.isMe ? Alignment.bottomRight : Alignment.bottomLeft,
+      children: [
+        Container(
+          margin: EdgeInsets.only(
+            left: message.isMe ? sideMargin : margin + 3.5,
+            right: message.isMe ? margin + 3.5 : sideMargin,
+            bottom: 8.5,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 10),
+          decoration: BoxDecoration(
+            color: message.isMe ? NannyTheme.primary : NannyTheme.lightGreen,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                offset: const Offset(0, 5),
+                blurRadius: 7,
+                color: const Color(0xFF171170).withOpacity(.11),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: decideMessageContent(message),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    '${message.edited ? '(ред.) ' : ''} ${DateFormat("HH:mm").format(
                       DateTime.fromMillisecondsSinceEpoch(
-                          (message.timestampSend * 1000).toInt())),
-                  style: TextStyle(
-                      color: message.isMe ? NannyTheme.secondary : null)))
-        ]));
+                        (message.timestampSend * 1000).toInt(),
+                      ),
+                    )}',
+                    style: TextStyle(
+                        color: message.isMe
+                            ? NannyTheme.secondary
+                            : const Color(0xFF2B2B2B),
+                        fontSize: 12,
+                        height: 16.8 / 12,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Nunito'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Widget decideMessageContent(ChatMessage message) {
-    var textStyle =
-        TextStyle(color: message.isMe ? NannyTheme.secondary : null);
+    var textStyle = TextStyle(
+        color: message.isMe ? NannyTheme.secondary : const Color(0xFF2B2B2B),
+        fontSize: 12,
+        height: 16.8 / 12,
+        fontWeight: FontWeight.w400,
+        fontFamily: 'Nunito');
 
     if (message.msg.split('.').last == "gif") message.msgType = 2;
 
@@ -123,17 +208,23 @@ class _DirectViewState extends State<DirectView> {
       3 => GestureDetector(
           onTap: () => vm.navigateToView(VideoView(url: message.msg)),
           child: Container(
-              height: 200,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: NannyTheme.onSecondary),
-              child: const Center(
-                  child: Icon(Icons.play_circle_outline_rounded,
-                      color: NannyTheme.secondary, size: 50)))),
+            height: 200,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: NannyTheme.onSecondary),
+            child: const Center(
+                child: Icon(
+              Icons.play_circle_outline_rounded,
+              color: NannyTheme.secondary,
+              size: 50,
+            )),
+          ),
+        ),
       4 => TextButton(
           onPressed: () => _openPdfFile(message.msg),
           child: Text(message.msg.split('/').last,
-              style: const TextStyle(color: NannyTheme.lightGreen))),
+              style: textStyle.copyWith(decoration: TextDecoration.underline)),
+        ),
       _ => const Placeholder()
     };
   }

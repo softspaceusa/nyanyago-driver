@@ -50,9 +50,11 @@ class LoginVM extends ViewModelBase {
     }
 
     String passHash = Md5Converter.convert(password);
-    var token = "";
+
     var request = NannyUser.login(LoginRequest(
-        login: phone, password: passHash, fbid: token ?? "Пятисотый"));
+        login: phone,
+        password: passHash,
+        fbid: (await FirebaseMessaging.instance.getToken()) ?? ''));
 
     bool success = await DioRequest.handleRequest(
         // ignore: use_build_context_synchronously

@@ -2,44 +2,44 @@ import 'package:nanny_core/models/from_api/drive_and_map/address_data.dart';
 import 'package:nanny_core/nanny_core.dart';
 
 class OnetimeDriveRequest implements NannyBaseRequest {
-    OnetimeDriveRequest({
-        required this.myLocation,
-        required this.addresses,
-        required this.price,
-        required this.distance,
-        required this.duration,
-        required this.description,
-        required this.typeDrive,
-        required this.idTariff,
-        required this.otherParametrs,
-    });
+  OnetimeDriveRequest({
+    required this.myLocation,
+    required this.addresses,
+    required this.price,
+    required this.distance,
+    required this.duration,
+    required this.description,
+    required this.typeDrive,
+    required this.idTariff,
+    required this.otherParametrs,
+  });
 
-    final LocationData? myLocation;
-    final List<DriveAddress> addresses;
-    final int price;
-    final int distance;
-    final int duration;
-    final String description;
-    final int typeDrive;
-    final int idTariff;
-    final List<int> otherParametrs;
+  final LocationData? myLocation;
+  final List<DriveAddress> addresses;
+  final int price;
+  final int distance;
+  final int duration;
+  final String description;
+  final int typeDrive;
+  final int idTariff;
+  final List<Map<String, dynamic>> otherParametrs;
 
-    // factory OnetimeDriveRequest.fromJson(Map<String, dynamic> json){ 
-    //     return OnetimeDriveRequest(
-    //         myLocation: json["my_location"] == null ? null : Location.fromJson(json["my_location"]),
-    //         addresses: json["addresses"] == null ? [] : List<DriveAddress>.from(json["addresses"]!.map((x) => DriveAddress.fromJson(x))),
-    //         price: json["price"] ?? 0,
-    //         distance: json["distance"] ?? 0,
-    //         duration: json["duration"] ?? 0,
-    //         description: json["description"] ?? "",
-    //         typeDrive: json["typeDrive"] ?? 0,
-    //         idTariff: json["idTariff"] ?? 0,
-    //         otherParametrs: json["other_parametrs"] == null ? [] : List<dynamic>.from(json["other_parametrs"]!.map((x) => x)),
-    //     );
-    // }
+  // factory OnetimeDriveRequest.fromJson(Map<String, dynamic> json){
+  //     return OnetimeDriveRequest(
+  //         myLocation: json["my_location"] == null ? null : Location.fromJson(json["my_location"]),
+  //         addresses: json["addresses"] == null ? [] : List<DriveAddress>.from(json["addresses"]!.map((x) => DriveAddress.fromJson(x))),
+  //         price: json["price"] ?? 0,
+  //         distance: json["distance"] ?? 0,
+  //         duration: json["duration"] ?? 0,
+  //         description: json["description"] ?? "",
+  //         typeDrive: json["typeDrive"] ?? 0,
+  //         idTariff: json["idTariff"] ?? 0,
+  //         otherParametrs: json["other_parametrs"] == null ? [] : List<dynamic>.from(json["other_parametrs"]!.map((x) => x)),
+  //     );
+  // }
 
-    @override
-    Map<String, dynamic> toJson() => {
+  @override
+  Map<String, dynamic> toJson() => {
         "my_location": {
           "latitude": myLocation!.latitude!,
           "longitude": myLocation!.longitude!
@@ -52,7 +52,7 @@ class OnetimeDriveRequest implements NannyBaseRequest {
         "typeDrive": typeDrive,
         "idTariff": idTariff,
         "other_parametrs": otherParametrs.map((x) => x).toList(),
-    };
+      };
 }
 
 /*

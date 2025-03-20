@@ -47,9 +47,21 @@ class NannyButtonStyles {
       elevation: WidgetStatePropertyAll(0));
 
   static ButtonStyle main = ButtonStyle(
-    elevation: const WidgetStatePropertyAll(2),
-    backgroundColor: const WidgetStatePropertyAll(NannyTheme.primary),
-    foregroundColor: const WidgetStatePropertyAll(NannyTheme.secondary),
+    elevation: WidgetStateProperty.resolveWith<double?>(
+      (states) => states.contains(WidgetState.disabled)
+          ? 0
+          : 2, // Без тени, если отключено
+    ),
+    backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+      (states) => states.contains(WidgetState.disabled)
+          ? NannyTheme.grey
+          : NannyTheme.primary, // Серый фон, если отключено
+    ),
+    foregroundColor: WidgetStateProperty.resolveWith<Color?>(
+      (states) => states.contains(WidgetState.disabled)
+          ? NannyTheme.onBackground
+          : NannyTheme.secondary, // Серый текст, если отключено
+    ),
     shape: WidgetStatePropertyAll(
       RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
