@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nanny_components/modal_widget/base_modal.dart';
 import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/circular_button.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
 import 'package:nanny_components/widgets/order_action_button.dart';
 import 'package:nanny_core/api/web_sockets/nanny_web_socket.dart';
+import 'package:nanny_core/models/from_api/drive_and_map/current_order_response.dart';
+import 'package:nanny_core/models/from_api/drive_and_map/drive_tariff.dart';
 import 'package:nanny_core/nanny_core.dart';
 import 'package:nanny_driver/view_models/map_view_order_vm.dart';
 
@@ -223,12 +226,15 @@ class _MapViewOrderState extends State<MapViewOrder> {
           style: NannyTextStyles.textTheme.bodyLarge),
       Text(vm.oneTimeDriveModel.addresses.first.to),
       const SizedBox(height: 20),
-      ElevatedButton(
-          style: NannyButtonStyles.main,
-          onPressed: () {
-            vm.onStatusChange(StatusValue.arrived);
-          },
-          child: const Text('Прибыл на конечную')),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: ElevatedButton(
+            style: NannyButtonStyles.main,
+            onPressed: () {
+              vm.onStatusChange(StatusValue.arrived);
+            },
+            child: const Text('Прибыл на конечную')),
+      ),
       const SizedBox(height: 32),
       seekDrive()
     ]);
@@ -312,14 +318,34 @@ class _MapViewOrderState extends State<MapViewOrder> {
         Expanded(
             child: CircularButton(
                 sized: false,
-                callback: () {},
+                callback: () async {
+                  // Получаем номер телефона
+                  String? phoneNumber = vm.oneTimeDriveModel.phone;
+
+                  // Формируем URL для звонка
+                  final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+
+                  // Проверяем, может ли устройство открыть телефонное приложение
+                  if (await canLaunch(phoneUri.toString())) {
+                    await launch(phoneUri.toString());
+                  } else {
+                    // Если не может, показываем ошибку
+                    print("Невозможно открыть телефонную книгу");
+                  }
+                },
                 label: 'Связаться',
                 child: SvgPicture.asset(
                     'packages/nanny_components/assets/images/call.svg'))),
         Expanded(
             child: CircularButton(
                 sized: false,
-                callback: Navigator.of(context).pop,
+                callback: () => Navigator.push(
+                      vm.context,
+                      MaterialPageRoute(
+                        builder: (context) => DirectView(
+                            name: vm.oneTimeDriveModel.username, idChat: 1),
+                      ),
+                    ),
                 label: 'Чат',
                 child: SvgPicture.asset(
                     'packages/nanny_components/assets/images/chat.svg')))
@@ -393,14 +419,34 @@ class _MapViewOrderState extends State<MapViewOrder> {
         Expanded(
             child: CircularButton(
                 sized: false,
-                callback: () {},
+                callback: () async {
+                  // Получаем номер телефона
+                  String? phoneNumber = vm.oneTimeDriveModel.phone;
+
+                  // Формируем URL для звонка
+                  final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+
+                  // Проверяем, может ли устройство открыть телефонное приложение
+                  if (await canLaunch(phoneUri.toString())) {
+                    await launch(phoneUri.toString());
+                  } else {
+                    // Если не может, показываем ошибку
+                    print("Невозможно открыть телефонную книгу");
+                  }
+                },
                 label: 'Связаться',
                 child: SvgPicture.asset(
                     'packages/nanny_components/assets/images/call.svg'))),
         Expanded(
             child: CircularButton(
                 sized: false,
-                callback: Navigator.of(context).pop,
+                callback: () => Navigator.push(
+                      vm.context,
+                      MaterialPageRoute(
+                        builder: (context) => DirectView(
+                            name: vm.oneTimeDriveModel.username, idChat: 1),
+                      ),
+                    ),
                 label: 'Чат',
                 child: SvgPicture.asset(
                     'packages/nanny_components/assets/images/chat.svg')))
@@ -610,34 +656,35 @@ class _MapViewOrderState extends State<MapViewOrder> {
               title: 'Связаться',
               asset: 'packages/nanny_components/assets/order/call.png'),
           OrderActionButton(
-              callback: () {},
+              callback: () => Navigator.push(
+                    vm.context,
+                    MaterialPageRoute(
+                      builder: (context) => DirectView(
+                          name: vm.oneTimeDriveModel.username, idChat: 1),
+                    ),
+                  ),
               title: 'Чат',
               asset: 'packages/nanny_components/assets/order/message.png'),
           OrderActionButton(
               callback: () {
-                /*Order order =
-                    vm.orders.firstWhere((e) => e.idOrder == vm.currentOrder);
                 BaseBottomSheet.showDetails([
-                  order.addresses.first.from ?? '',
-                  order.addresses.last.to ?? ''
-                ],
-                        vm.otherParametrs,
-                        vm.params,
-                        vm.idTypeOrder ?? DriveType.oneWay.id,
-                        vm.totalPrice ?? order.amount ?? 0,
-                        vm.tariffs.firstWhere((e) => e.id == vm.tariffId),
+                  vm.oneTimeDriveModel.addresses.first.from,
+                  vm.oneTimeDriveModel.addresses.last.to
+                ], [], {},
+                        DriveType.oneWay.id,
+                        double.tryParse(vm.oneTimeDriveModel.price) ?? 0,
+                        DriveTariff(id: 1),
                         (Map<String, dynamic> params) async {
                   if (params['cancelOrder'] == true) {
-                    await vm.cancelOrder(order.idOrder!);
+                    await vm.onStatusChange(StatusValue.canceledByDriver);
                   }
-                }, duration: vm.durationMinutes)
-                    .then((v) {
+                }, duration: 0)
+                    .then((v) async {
                   if (v) {
-                    vm.cancelOrder(vm.currentOrder);
+                    await vm.onStatusChange(StatusValue.canceledByDriver);
                     Navigator.of(context).pop();
                   }
                 });
-                */
               },
               title: 'Детали',
               asset: 'packages/nanny_components/assets/order/hamburger.png')

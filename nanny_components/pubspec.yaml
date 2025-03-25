@@ -31,6 +31,7 @@ dependencies:
   time_range_picker:
     path: ./flutter_time_range_picker
   webview_flutter: ^4.8.0
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:

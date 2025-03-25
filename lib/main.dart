@@ -59,15 +59,16 @@ void main() async {
 
   NannyConsts.setLoginPaths([
     LoginPath(
-        userType: UserType.driver,
-        path: BlocProvider(
-          create: (context) => SocketBloc(context: context)..add(StartSocket()),
-          child: BlocBuilder<SocketBloc, SocketState>(
-            builder: (context, state) {
-              return const HomeView();
-            },
-          ),
-        )),
+      userType: UserType.driver,
+      path: BlocProvider(
+        create: (context) => SocketBloc(context: context)..add(StartSocket()),
+        child: BlocBuilder<SocketBloc, SocketState>(
+          builder: (context, state) {
+            return const HomeView();
+          },
+        ),
+      ),
+    ),
     LoginPath(
         userType: UserType.franchiseAdmin, path: const FranchiseHomeView()),
     LoginPath(userType: UserType.manager, path: const FranchiseHomeView()),

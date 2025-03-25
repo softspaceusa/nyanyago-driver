@@ -29,6 +29,8 @@ class NannyTextStyles {
     titleSmall: titleStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w700),
   );
 
+  static TextStyle get nw60024 =>
+      GoogleFonts.nunito(fontWeight: FontWeight.w600, fontSize: 24);
   static TextStyle get nw600 => GoogleFonts.nunito(fontWeight: FontWeight.w600);
   static TextStyle get nw40018 =>
       GoogleFonts.nunito(fontWeight: FontWeight.w400, fontSize: 18);

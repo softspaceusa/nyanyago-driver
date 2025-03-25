@@ -225,6 +225,8 @@ class _DirectViewState extends State<DirectView> {
           child: Text(message.msg.split('/').last,
               style: textStyle.copyWith(decoration: TextDecoration.underline)),
         ),
+      5 => Text('Клиенту отправлена ссылка для присоединения к маршруту',
+          style: textStyle),
       _ => const Placeholder()
     };
   }
