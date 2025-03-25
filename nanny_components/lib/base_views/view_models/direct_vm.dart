@@ -116,13 +116,13 @@ class DirectVM extends ViewModelBase {
 
   // Прикрепление изображения
   void attachImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? file = await picker.pickMedia();
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-    if (file == null || !context.mounted) return;
+    if (result == null || result.files.isEmpty) return;
+    if (!context.mounted) return;
 
     LoadScreen.showLoad(context, true);
-    var fileUpload = await NannyFilesApi.uploadFiles([file]);
+    var fileUpload = await NannyFilesApi.uploadFiles(result.files);
 
     if (!context.mounted) return;
     LoadScreen.showLoad(context, false);

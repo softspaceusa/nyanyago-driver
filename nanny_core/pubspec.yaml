@@ -16,7 +16,8 @@ dependencies:
   crypto: ^3.0.3
   logger: ^2.0.2+1
 
-  image_picker: ^1.0.4
+  image_picker: ^1.1.2
+  file_picker: ^8.0.7
   localstorage: ^4.0.1+4
   open_file_plus: ^3.4.1+1
   permission_handler: ^11.0.1

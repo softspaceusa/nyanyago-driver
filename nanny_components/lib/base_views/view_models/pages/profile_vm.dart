@@ -197,13 +197,15 @@ class ProfileVM extends ViewModelBase {
   }
 
   void changeProfilePhoto() async {
-    var file = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (file == null) return;
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+
+    if (result == null || result.files.isEmpty) return;
     if (!context.mounted) return;
 
     LoadScreen.showLoad(context, true);
 
-    var upload = NannyFilesApi.uploadFiles([file]);
+    var upload = NannyFilesApi.uploadFiles([result.files.first]);
     bool uploaded = await DioRequest.handleRequest(
       context,
       upload,

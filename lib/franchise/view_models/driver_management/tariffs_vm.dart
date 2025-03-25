@@ -8,29 +8,27 @@ import 'package:nanny_core/models/from_api/drive_and_map/franchise_tariff.dart';
 import 'package:nanny_core/nanny_core.dart';
 
 class TariffsVM extends ViewModelBase {
-  TariffsVM({
-    required super.context, 
-    required super.update
-  });
+  TariffsVM({required super.context, required super.update});
 
-  Future< ApiResponse<List<DriveTariff>> > request = NannyStaticDataApi.getTariffs();
-  
+  Future<ApiResponse<List<DriveTariff>>> request =
+      NannyStaticDataApi.getTariffs();
+
   void reloadView() {
     request = NannyStaticDataApi.getTariffs();
     update(() {});
   }
 
   Future<String?> pickPhoto() async {
-    ImagePicker imgPick = ImagePicker();
-    var img = await imgPick.pickImage(source: ImageSource.gallery);
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result == null || result.files.isEmpty) return null;
+    if (!context.mounted) return null;
 
-    if(img == null) return null;
+    var uploadRes = await NannyFilesApi.uploadFiles([result.files.first]);
 
-    var uploadRes = await NannyFilesApi.uploadFiles([img]);
-
-    if(!context.mounted) return null;
-    if(!uploadRes.success) {
-      NannyDialogs.showMessageBox(context, "Ошибка", "Не удалось выложить фото! Попробуйте ещё раз");
+    if (!context.mounted) return null;
+    if (!uploadRes.success) {
+      NannyDialogs.showMessageBox(
+          context, "Ошибка", "Не удалось выложить фото! Попробуйте ещё раз");
       return null;
     }
 
@@ -41,70 +39,67 @@ class TariffsVM extends ViewModelBase {
     String title = "";
     String description = "";
     String photoPath = "";
-    
+
     bool confirm = await NannyDialogs.showModalDialog(
-      context: context, 
+      context: context,
       title: "Создание тарифа",
-      child: StatefulBuilder(
-        builder: (context, setState) {
-          return Column(
-            children: [
-              NannyTextForm(
-                labelText: "Название",
-                hintText: "Название",
-                onChanged: (text) => title = text,
-              ),
-              const SizedBox(height: 10),
-              NannyTextForm(
-                labelText: "Описание",
-                hintText: "Описание",
-                formatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: (text) => description = text,
-                maxLines: 5,
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
+      child: StatefulBuilder(builder: (context, setState) {
+        return Column(
+          children: [
+            NannyTextForm(
+              labelText: "Название",
+              hintText: "Название",
+              onChanged: (text) => title = text,
+            ),
+            const SizedBox(height: 10),
+            NannyTextForm(
+              labelText: "Описание",
+              hintText: "Описание",
+              formatters: [FilteringTextInputFormatter.digitsOnly],
+              onChanged: (text) => description = text,
+              maxLines: 5,
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
                 onPressed: () async {
                   photoPath = await pickPhoto() ?? "";
                   setState(() {});
-                }, 
-                child: photoPath.isEmpty ? const Text("Выберите фото") : Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: SizedBox(
-                    height: 150,
-                    child: NetImage(url: photoPath, radius: 5, fitToShortest: false)
-                  ),
-                )
-              ),
-              const SizedBox(height: 20),
-            ],
-          );
-        }
-      ),
+                },
+                child: photoPath.isEmpty
+                    ? const Text("Выберите фото")
+                    : Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: SizedBox(
+                            height: 150,
+                            child: NetImage(
+                                url: photoPath,
+                                radius: 5,
+                                fitToShortest: false)),
+                      )),
+            const SizedBox(height: 20),
+          ],
+        );
+      }),
     );
 
-    if(!confirm) return;
-    if(!context.mounted) return;
+    if (!confirm) return;
+    if (!context.mounted) return;
 
-    if(title.isEmpty) {
-      NannyDialogs.showMessageBox(context, "Ошибка", "Не все данные были заполнены!");
+    if (title.isEmpty) {
+      NannyDialogs.showMessageBox(
+          context, "Ошибка", "Не все данные были заполнены!");
       return;
     }
 
     LoadScreen.showLoad(context, true);
 
     bool success = await DioRequest.handleRequest(
-      context, 
-      NannyFranchiseApi.createTariff(
-        FranchiseTariff(
-          title: title,
-          description: description
-        )
-      )
-    );
+        context,
+        NannyFranchiseApi.createTariff(
+            FranchiseTariff(title: title, description: description)));
 
-    if(!success) return;
-    if(!context.mounted) return;
+    if (!success) return;
+    if (!context.mounted) return;
 
     LoadScreen.showLoad(context, false);
     NannyDialogs.showMessageBox(context, "Успех", "Тариф создан");
@@ -114,9 +109,9 @@ class TariffsVM extends ViewModelBase {
   void editTariff(DriveTariff tariff) async {
     String title = tariff.title!;
     String description = "";
-    
+
     bool confirm = await NannyDialogs.showModalDialog(
-      context: context, 
+      context: context,
       title: "Изменение тарифа",
       child: Column(
         children: [
@@ -140,24 +135,21 @@ class TariffsVM extends ViewModelBase {
       ),
     );
 
-    if(!confirm) return;
-    if(!context.mounted) return;
+    if (!confirm) return;
+    if (!context.mounted) return;
 
     LoadScreen.showLoad(context, true);
 
     bool success = await DioRequest.handleRequest(
-      context, 
-      NannyFranchiseApi.updateTariff(
-        FranchiseTariff(
+        context,
+        NannyFranchiseApi.updateTariff(FranchiseTariff(
           id: tariff.id,
           title: title,
           description: description,
-        )
-      )
-    );
+        )));
 
-    if(!success) return;
-    if(!context.mounted) return;
+    if (!success) return;
+    if (!context.mounted) return;
 
     LoadScreen.showLoad(context, false);
     NannyDialogs.showMessageBox(context, "Успех", "Тариф изменен");
@@ -166,19 +158,18 @@ class TariffsVM extends ViewModelBase {
 
   void deleteTariff(int id) async {
     bool confirm = await NannyDialogs.confirmAction(context, "Удалить тариф?");
-    if(!confirm) return;
-    if(!context.mounted) return;
+    if (!confirm) return;
+    if (!context.mounted) return;
 
     LoadScreen.showLoad(context, true);
 
     bool success = await DioRequest.handleRequest(
-      context, 
-      NannyFranchiseApi.deleteTariff(id)
-    );
+        context, NannyFranchiseApi.deleteTariff(id));
 
-    if(!context.mounted) return;
-    if(!success) {
-      NannyDialogs.showMessageBox(context, "Ошибка", "Не удалось удалить тариф!");
+    if (!context.mounted) return;
+    if (!success) {
+      NannyDialogs.showMessageBox(
+          context, "Ошибка", "Не удалось удалить тариф!");
       return;
     }
 
