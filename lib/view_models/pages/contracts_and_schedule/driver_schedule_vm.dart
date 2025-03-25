@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -7,6 +8,7 @@ import 'package:nanny_components/nanny_components.dart';
 import 'package:nanny_components/widgets/one_time_drive_widget.dart';
 import 'package:nanny_core/api/api_models/onetime_drive_request.dart';
 import 'package:nanny_core/api/nanny_orders_api.dart';
+import 'package:nanny_core/models/from_api/chat_message.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/address_data.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/drive_tariff.dart';
 import 'package:nanny_core/models/from_api/drive_and_map/driver_schedule_response.dart';
@@ -133,7 +135,18 @@ class DriverScheduleVM extends ViewModelBase {
 
     OnetimeOrderResponseModel order = createOrderRes.data!;
 
-    var acceptOrderRes = await DioRequest.handle(
+    NannyGlobals.chatsSocket.sink?.add(
+      jsonEncode(
+        ChatMessage(
+            idChat: 1,
+            msg: order.token,
+            msgType: 5,
+            timestampSend: 0,
+            isMe: true),
+      ),
+    );
+
+    await DioRequest.handle(
       context,
       NannyOrdersApi.acceptOrder(order.idOrder),
     );
